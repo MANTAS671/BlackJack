@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blackjack против Курицы 🐔</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Comic Sans MS', cursive;
+      background: #14532d url('https://i.imgur.com/F5qK5uW.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      text-align: center;
+    }
+    h1 {
+      margin-top: 20px;
+      font-size: 2.5em;
+      text-shadow: 2px 2px 8px #000;
+    }
+    #game {
+      margin: 30px auto;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 15px;
+      width: 95%;
+      max-width: 500px;
+    }
+    .hand {
+      display: flex;
+      justify-content: center;
+      margin: 10px 0;
+      flex-wrap: wrap;
+    }
+    .card {
+      width: 60px;
+      height: 90px;
+      background: white;
+      color: black;
+      border-radius: 8px;
+      margin: 5px;
+      font-size: 1.2em;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 2px 2px 5px #000;
+      animation: pop 0.3s ease-out;
+    }
+    @keyframes pop {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    button {
+      margin: 10px;
+      padding: 12px 24px;
+      font-size: 1em;
+      font-weight: bold;
+      background-color: #ffd700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #ffb700;
+    }
+    #chicken {
+      width: 180px;
+      height: auto;
+      animation: dance 1s infinite alternate;
+      margin-bottom: 10px;
+      border-radius: 12px;
+    }
+    @keyframes dance {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-10px); }
+    }
+    #phrase {
+      font-style: italic;
+      color: #ffd700;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Blackjack против Курицы 🐔</h1>
+  <div id="game">
+    <img id="chicken" src="https://i.imgur.com/zPb0X9K.gif" alt="Курица-крупье" />
+    <p id="balance">Баланс: 50000 MDL</p>
+    <p id="status">Сделайте ставку и начнем игру!</p>
+
+    <h3>Ваши карты:</h3>
+    <div class="hand" id="player-cards"></div>
+
+    <h3>Карты курицы:</h3>
+    <div class="hand" id="dealer-cards"></div>
+
+    <p id="phrase"></p>
+
+    <button onclick="startGame()">🎲 Начать игру</button>
+    <button onclick="hit()">🃏 Взять карту</button>
+    <button onclick="stand()">✋ Хватит</button>
+  </div>
+
+  <script>
+    let balance = 50000;
+    let playerCards = [];
+    let dealerCards = [];
+    let gameOver = false;
+
+    const phrases = [
+      "Куда лезешь, пернатых не обыграть! 😏",
+      "Кря-кря, лошара! 🐔",
+      "Собери яйца в кулак и попробуй ещё!",
+      "Ты проиграл, человек. Природа рулит.",
+      "Чирик-чирик, ты в минусе!"
+    ];
+
+    function getCardValue() {
+      return Math.floor(Math.random() * 10) + 2;
+    }
+
+    function drawCard(handId, value) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.textContent = value;
+      document.getElementById(handId).appendChild(card);
+    }
+
+    function calculateTotal(cards) {
+      return cards.reduce((a, b) => a + b, 0);
+    }
+
+    function updateBalance() {
+      document.getElementById("balance").innerText = `Баланс: ${balance} MDL`;
+    }
+
+    function updateStatus(msg) {
+      document.getElementById("status").innerText = msg;
+    }
+
+    function clearTable() {
+      document.getElementById("player-cards").innerHTML = '';
+      document.getElementById("dealer-cards").innerHTML = '';
+      document.getElementById("phrase").innerText = '';
+    }
+
+    function startGame() {
+      clearTable();
+      playerCards = [getCardValue(), getCardValue()];
+      dealerCards = [getCardValue()];
+      gameOver = false;
+
+      playerCards.forEach(val => drawCard("player-cards", val));
+      dealerCards.forEach(val => drawCard("dealer-cards", val));
+
+      updateStatus(`Ваши очки: ${calculateTotal(playerCards)}. Ходите.`);
+    }
+
+    function hit() {
+      if (gameOver) return;
+
+      const card = getCardValue();
+      playerCards.push(card);
+      drawCard("player-cards", card);
+
+      const total = calculateTotal(playerCards);
+      if (total > 21) {
+        updateStatus(`Перебор! У вас ${total}. Курица победила! 🐔`);
+        document.getElementById("phrase").innerText = getPhrase();
+        balance -= 1000;
+        updateBalance();
+        gameOver = true;
+      } else {
+        updateStatus(`Ваши очки: ${total}. Ещё карту?`);
+      }
+    }
+
+    function stand() {
+      if (gameOver) return;
+
+      while (calculateTotal(dealerCards) < 17) {
+        const card = getCardValue();
+        dealerCards.push(card);
+        drawCard("dealer-cards", card);
+      }
+
+      const playerTotal = calculateTotal(playerCards);
+      const dealerTotal = calculateTotal(dealerCards);
+
+      let result = '';
+      if (dealerTotal > 21 || playerTotal > dealerTotal) {
+        result = `Вы победили! 🥳 (${playerTotal} vs ${dealerTotal})`;
+        balance += 1000;
+      } else if (playerTotal === dealerTotal) {
+        result = `Ничья! 🐔 (${playerTotal} vs ${dealerTotal})`;
+      } else {
+        result = `Курица победила! 🐔 (${playerTotal} vs ${dealerTotal})`;
+        document.getElementById("phrase").innerText = getPhrase();
+        balance -= 1000;
+      }
+
+      updateStatus(result);
+      updateBalance();
+      gameOver = true;
+    }
+
+    function getPhrase() {
+      return phrases[Math.floor(Math.random() * phrases.length)];
+    }
+  </script>
+</body>
+</html>
