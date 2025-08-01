@@ -3,61 +3,64 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Blackjack: Шурик vs Курица Minimalist Mobile</title>
+  <title>Blackjack: Шурик vs Курица Ultimate</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#1f2947" />
+  <meta name="theme-color" content="#0f1b33" />
   <style>
-    :root{--radius:12px;--shadow:0 24px 48px rgba(0,0,0,.3);--bg1:#1f2947;--bg2:#2f3d67;--accent:#ffd74f;--accent2:#ff9060;--text:#f0f2fa;--muted:#9aa2cc;--glass:rgba(255,255,255,0.05);--transition:.3s cubic-bezier(.33,.17,.22,1);}
+    :root{--radius:14px;--shadow:0 30px 60px rgba(0,0,0,.35);--bg-start:#0f1b33;--bg-mid:#1f2947;--bg-end:#2f3d67;--accent:#ffd74f;--accent2:#ff9060;--text:#f0f2fa;--muted:#8fa0c4;--glass:rgba(255,255,255,0.03);--transition:.35s cubic-bezier(.3,.1,.2,1);}
     *{box-sizing:border-box;}
-    html,body{margin:0;padding:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 90%);color:var(--text);-webkit-text-size-adjust:none;overflow-x:hidden;}
-    body{min-height:100dvh; padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); -webkit-font-smoothing:antialiased; -webkit-user-select:none;}
-    .app{max-width:1024px;margin:0 auto;display:flex;flex-direction:column;gap:8px;position:relative;min-height:100dvh;}
-    .top-bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:start;gap:6px;padding:6px 8px;}
-    .title{display:flex;align-items:center;gap:6px;font-size:clamp(1.2rem,4vw,1.6rem);font-weight:700;line-height:1.1;}
+    html,body{margin:0;padding:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f1b33;color:var(--text);-webkit-text-size-adjust:none;overflow-x:hidden;}
+    body{min-height:100dvh; padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);-webkit-font-smoothing:antialiased;}
+    .app{max-width:1024px;margin:0 auto;display:flex;flex-direction:column;gap:10px;position:relative;min-height:100vh;}
+    .top-bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:6px;padding:10px 12px;}
+    .title{display:flex;align-items:center;gap:6px;font-size:clamp(1.3rem,4vw,1.8rem);font-weight:700;line-height:1.1;}
     .subtitle{font-size:.65rem;color:var(--muted);margin-top:2px;flex:1 1 100%;}
-    .game{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:20px;display:flex;flex-direction:column;position:relative;overflow:hidden;margin:0 6px;flex:1;padding:12px;}
-    .players{display:flex;gap:12px;margin-top:6px;}
-    .panel{flex:1 1 0;display:flex;flex-direction:column;gap:6px;background:var(--glass);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:10px;position:relative;}
-    .badge{background:linear-gradient(135deg,var(--accent),var(--accent2));padding:5px 12px;border-radius:999px;font-size:.55rem;text-transform:uppercase;letter-spacing:1px;display:inline-block;}
+    .game{position:relative;overflow:hidden;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.08);border-radius:22px;display:flex;flex-direction:column;margin:0 8px;flex:1;padding:14px;}
+    .players{display:flex;gap:14px;margin-top:6px;}
+    .panel{flex:1 1 0;display:flex;flex-direction:column;gap:6px;background:var(--glass);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:12px;position:relative;}
+    .badge{background:linear-gradient(135deg,var(--accent),var(--accent2));padding:6px 14px;border-radius:999px;font-size:.55rem;text-transform:uppercase;letter-spacing:1.2px;display:inline-block;}
     .flex{display:flex;align-items:center;gap:6px;}
-    .score{font-size:1rem;font-weight:700;}
-    .cards{display:flex;gap:-8px;margin-top:6px;min-height:90px;}
-    .card{width:clamp(50px,16vw,72px);aspect-ratio:78/110;border-radius:12px;background:#fff;position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:6px;font-size:12px;font-weight:600;color:#222;box-shadow:0 18px 48px rgba(0,0,0,.25);transform-origin:center;transition:transform var(--transition),filter .2s;will-change:transform;}
+    .score{font-size:1.05rem;font-weight:700;}
+    .cards{display:flex;gap:-10px;margin-top:6px;min-height:100px;}
+    .card{width:clamp(52px,16vw,80px);aspect-ratio:78/110;border-radius:14px;background:#0f203e;position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:8px;font-size:12px;font-weight:700;color:var(--text);box-shadow:0 35px 75px rgba(0,0,0,.45);transform-origin:center;transition:transform var(--transition),filter .2s;will-change:transform;}
+    .card::before{content:'';position:absolute;inset:0;border-radius:14px;background:linear-gradient(135deg,rgba(255,255,255,0.08) 0%,rgba(255,255,255,0) 60%);mix-blend-mode:overlay;pointer-events:none;}
     .card .corner{display:flex;flex-direction:column;}
-    .card .suit-large{font-size:26px;line-height:1;margin-top:4px;}
-    .card.red{color:#d4477a;}
-    .card.back{background: linear-gradient(135deg,#444c7a,#2a3259);color:#fff;}
-    .controls{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
-    button{display:flex;align-items:center;gap:6px;border:none;cursor:pointer;padding:10px 14px;border-radius:10px;font-weight:700;font-size:.75rem;background:rgba(255,255,255,.1);color:var(--text);position:relative;overflow:hidden;transition:filter .2s,transform .2s;backdrop-filter:blur(4px);}
-    button svg{width:16px;height:16px;flex-shrink:0;}
+    .card .suit-large{font-size:28px;line-height:1;margin-top:4px;}
+    .card.red .value,.card.red .suit{color:#ff7fa7;}
+    .card.red .suit-large{color:#ff7fa7;}
+    .card .value{font-size:0.9em;}
+    .card.back{background:linear-gradient(135deg,#1c264f,#0f1b33);color:#d0d8ff;}
+    .controls{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+    button{display:flex;align-items:center;gap:6px;border:none;cursor:pointer;padding:12px 16px;border-radius:12px;font-weight:700;font-size:.85rem;background:rgba(255,255,255,.08);color:var(--text);position:relative;overflow:hidden;transition:filter .2s,transform .2s;backdrop-filter:blur(6px);}
+    button svg{width:18px;height:18px;flex-shrink:0;}
     button:hover{filter:brightness(1.1);transform:translateY(-1px);}
     .btn-primary{background:var(--accent);color:#1b1427;}
-    .btn-secondary{background:rgba(255,255,255,.08);}
-    .message{margin-top:8px;background:rgba(255,255,255,0.06);padding:10px 14px;border-radius:12px;font-size:.75rem;display:inline-block;}
-    .result-box{margin-top:8px;background:rgba(255,255,255,0.04);padding:10px 14px;border-radius:12px;font-size:.9rem;font-weight:600;min-height:34px;}
+    .btn-secondary{background:rgba(255,255,255,.07);}
+    .message{margin-top:8px;background:rgba(255,255,255,0.06);padding:12px 16px;border-radius:14px;font-size:.8rem;display:inline-block;}
+    .result-box{margin-top:10px;background:rgba(255,255,255,0.04);padding:12px 16px;border-radius:14px;font-size:1rem;font-weight:600;min-height:40px;}
     .small{font-size:.55rem;}
-    .chicken-wrapper{display:flex;align-items:flex-start;gap:8px;}
-    .chicken{width:100px;height:125px;position:relative;flex-shrink:0;}
-    .speech{position:absolute;top:-6px;left:100%;background:#fff3b8;padding:6px 12px;border-radius:12px;font-size:.65rem;color:#403d4f;font-weight:600;box-shadow:0 14px 34px rgba(0,0,0,.2);max-width:160px;}
+    .chicken-wrapper{display:flex;align-items:flex-start;gap:10px;}
+    .chicken{width:110px;height:135px;position:relative;flex-shrink:0;z-index:2;}
+    .speech{position:absolute;top:6px;right:-4px;background:#fff3b8;padding:8px 14px;border-radius:12px;font-size:.65rem;color:#403d4f;font-weight:600;box-shadow:0 18px 40px rgba(0,0,0,.25);max-width:170px;line-height:1.1;z-index:3;}
+    .speech:after{content:'';position:absolute;left:100%;top:12px;border:8px solid transparent;border-left-color:#fff3b8;}
     .footer{margin-top:8px;display:flex;flex-wrap:wrap;justify-content:space-between;font-size:.55rem;gap:6px;}
-    .background-anim{position:absolute;inset:0;pointer-events:none;}
+    .background{position:absolute;inset:0;pointer-events:none;}
     .confetti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;}
-    @media (max-width:900px){.players{flex-direction:column;} .top-bar{align-items:flex-start;} .subtitle{display:block;} }
-    @media (max-width:600px){.title{font-size:1.3rem;} .subtitle{display:none;} .cards{gap:-4px;} .chicken{width:80px;height:100px;} .speech{top:auto;bottom:-8px;left:50%;transform:translateX(-50%);max-width:140px;} .panel{padding:8px;} button{padding:8px 12px;font-size:.65rem;} }
-    .hidden{display:none;}
-    /* light floating glow */
-    .glow{position:relative;}
-    .glow:before{content:'';position:absolute;inset:0;filter:blur(20px);background:radial-gradient(circle at 30% 30%,rgba(255,215,79,.4),transparent 70%);mix-blend-mode:overlay;border-radius:inherit;}
+    @media (max-width:950px){.players{flex-direction:column;} .top-bar{align-items:flex-start;} }
+    @media (max-width:600px){.title{font-size:1.3rem;} .subtitle{display:none;} .cards{gap:-4px;} .chicken{width:80px;height:100px;} .speech{top:auto;bottom:-6px;right:50%;transform:translateX(50%);max-width:140px;} .panel{padding:10px;} button{padding:10px 12px;font-size:.7rem;} }
+    .pulse{animation:pulse 1.6s ease-in-out infinite;}
+    @keyframes pulse{0%{filter:brightness(1);}50%{filter:brightness(1.08);}100%{filter:brightness(1);} }
   </style>
 </head>
 <body>
   <div class="app" role="application" aria-label="Blackjack с курицей-крупье">
     <div class="top-bar">
-      <div class="title">🃏 Blackjack Минимализм — Шурик vs Курица</div>
-      <div class="subtitle">Оптимизировано под телефон: всё видно на экране, шутки, адаптивность, быстрые анимации.</div>
+      <div class="title">🃏 Blackjack Ultimate — Шурик vs Курица</div>
+      <div class="subtitle">Больше фраз, всё видно, курица не перекрывается. Анимированный тёмный фон с переливами и атмосферой. Максимально проработанный, но минималистичный интерфейс.</div>
     </div>
     <div class="game">
-      <canvas class="background-anim" id="bg-canvas"></canvas>
+      <canvas id="gradient-canvas" class="background" aria-hidden="true"></canvas>
+      <canvas id="particle-canvas" class="background" aria-hidden="true"></canvas>
       <div class="players">
         <div class="panel dealer-area" aria-label="Крупье">
           <div class="flex" style="justify-content:space-between;">
@@ -105,7 +108,7 @@
       </div>
       <div class="message" id="log">Нажми «Новая», Шурик — покажи курице, что значит прокачка. 🎮🐔</div>
       <div class="footer">
-        <div>Минималистичный прототип: всё помещается на экране, адаптирован для телефона. Молдавские шутки + геймерские подколы.</div>
+        <div>Ultimate минималистичный прототип: адаптирован под мобильные, курица видна, много уникальных фраз, глубокий фон.</div>
         <div class="small">«Șuriku, dai la joc, nu la somn!»</div>
       </div>
       <div class="confetti" id="confetti-container"></div>
@@ -119,15 +122,135 @@
     </div>
   </template>
   <script>
-    // mobile 100vh fix
+    // mobile viewport fix
     (function(){ function setVh(){document.documentElement.style.setProperty('--vh', window.innerHeight * 0.01 + 'px');} window.addEventListener('resize', setVh); setVh(); })();
 
-    // Logic
+    // Phrase pools with large variety; ensure minimal repeats until exhaustion
+    const phrasePools = {
+      start: [
+        "Șuriku, dai la joc! Курочка ждёт твоих ходов.",
+        "Hardmode активирован — покажи, что значит прокачка.",
+        "Ты в игре, как в рейде: нет места для багов.",
+        "Курица поставила ставку на твою удачу, не подведи.",
+        "Сегодня ты будешь легендой, или курица залетит в мемы.",
+        "Почувствуй лут, Шурик! Сейчас будет эпик!",
+        "Играй, как будто у тебя есть последний чекпоинт.",
+        "Если проиграешь — курица тебя пожалеет... или нет.",
+        "Звуки победы уже написаны в твоей голове.",
+        "Ставки подняты, курица напряглась — всё серьёзно.",
+        "Начинаем дуэль: Шурик против курицы — никто не останется равнодушным.",
+        "Это не просто игра, это флоу-стейт. Дерзай!",
+        "Курочка ждёт твоей ошибки. Не дай ей шанса.",
+        "Поймай удачу за хвост, Шурик!", 
+        "Пусть карты будут к тебе добры, как крит по боссу."
+      ],
+      hit: [
+        "Крит? Или лаг? Берём ещё!",
+        "Это как чекпоинт: ещё попытка!",
+        "Щас будет лут-бокс — держись!",
+        "Ai noroc, sau doar skill?",
+        "Еще одна карта — прокачка продолжается.",
+        "Твоя сборка требует ещё энергии.",
+        "Боевой рюкзак пуст? Заполним его картами!",
+        "Взять? Конечно, это как взять редкий дроп.",
+        "Риск — это путь к легенде.",
+        "Твоя курица смотрит с уважением (или с опаской).",
+        "Ощущение, будто идёшь в подземелье и выбираешь дверь.",
+        "Жми ещё, Шурик, покажи её RNG, кто тут босс.",
+        "Пусть другие думают, что у тебя чит — просто это стиль игры.",
+        "Взяв карту, ты почти на грани победы."
+      ],
+      playerWin: [
+        "GG WP! Курочка даже не ожидала.",
+        "Ты сломал её RNG, Шурик!",
+        "Прокачка прошла успешно.",
+        "Ты как ультимативный билд — никто тебя не остановит.",
+        "Эта победа заслуживает легендарного лута.",
+        "Курица делает реверанс. Ты король карт.",
+        "Ты выиграл, и это как финиш в режиме без смертей.",
+        "Победа — это твой стиль. Никаких репов не нужно.",
+        "Шурик, твой HDR включён: всё ярче и точнее.",
+        "Это было мастерство, а не случайность."
+      ],
+      dealerWin: [
+        "Курица говорит: 'Может в следующий раз, Шурик?'",
+        "Это был фейл-магия курицы.",
+        "Ai pierdut, dar nu te supăra!",
+        "Курица получила крит, но ты близок.",
+        "Шурик, не грусти, даже у лучших бывают вайпы.",
+        "Она ловила твои движения как про-игрок.",
+        "Настройка противника была жесткой — заслуживаешь реванша.",
+        "Не переживай, это только начало кампании."
+      ],
+      push: [
+        "Ничья — рефрешим и идём снова.",
+        "Одинаковые сборки, никто не сдаётся.",
+        "Равный баланс сил, как в хорошей команде.",
+        "Твоя стратегия почти сработала, но курица тоже читает схемы.",
+        "Это как ничья в финале — обе стороны достойны уважения."
+      ],
+      idle: [
+        "Я наблюдаю... Твоя стратегия развивается.",
+        "Не забывай: курица знает, когда ты думаешь два хода вперёд.",
+        "Каждая карта — как шаг к высокому уровню.",
+        "Никогда не недооценивай чувство момента.",
+        "Хм... Шурик, твои шансы растут.",
+        "Иногда лучшая игра — это терпение.",
+        "Курица говорит: 'Ты сделал хороший выбор.'",
+        "Выбор правильной карты — это как выбор оружия перед битвой.",
+        "Смотри на карты и чувствуй поток.",
+        "Не торопись. Настоящая победа приходит к тем, кто ждёт."
+      ],
+      roast: [
+        "Лаг? Или просто плохо думал?",
+        "Шурик, ты как лоу-уровневый экип — нужно апгрейдить.",
+        "Может, курица знает твои карты лучше, чем ты сам?",
+        "Это был почти промах. Почти — не значит победа.",
+        "Ты как тот игрок, что забывает проверить инвентарь.",
+        "Серьёзно? Эта карта? Ну ладно...",
+        "Без обновлений ты в зоне вайпа.",
+        "Курица шепчет: 'Пора учить новые стратегии.'"
+      ],
+      'player-bust': [
+        "Шурик перебрал — это было слишком жадно.",
+        "Курица говорит: 'Ты думал, что сможешь вытянуть?'.",
+        "Ох, этот перебор — как крит по своей собственной сборке.",
+        "Ты зашёл слишком далеко, пора откатиться и перепланировать."
+      ],
+      'dealer-bust': [
+        "Курица перепутала карты — Шурик ловит удачу!",
+        "Ха! Курочка не справилась, твоя победа красивая.",
+        "Ты выиграл, как будто взял редкий дроп без усилий.",
+        "Система дала тебе плюшку — не пропусти момент!"
+      ]
+    };
+    const poolsRemaining = {};
+    function refillPool(cat){
+      if(!phrasePools.hasOwnProperty(cat)){
+        console.warn(`Unknown phrase category: ${cat}, falling back to idle`);
+        poolsRemaining[cat]=[...phrasePools.idle];
+      } else {
+        poolsRemaining[cat]=[...phrasePools[cat]];
+      }
+      shuffleArray(poolsRemaining[cat]);
+    }
+    function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} }
+    function getPhrase(context){
+      if(!phrasePools.hasOwnProperty(context)){
+        console.warn(`Unknown phrase category: ${context}, falling back to idle`);
+        context='idle';
+      }
+      if(!poolsRemaining[context] || poolsRemaining[context].length===0) refillPool(context);
+      const phrase=poolsRemaining[context].pop();
+      return phrase;
+    }
+
+    // Blackjack logic
     const suits=['♠','♥','♦','♣'];
     const values=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
     let deck=[], playerHand=[], dealerHand=[], inRound=false;
 
-    // Elements
+    // DOM elements
     const playerCardsEl=document.getElementById('player-cards');
     const dealerCardsEl=document.getElementById('dealer-cards');
     const playerScoreEl=document.getElementById('player-score');
@@ -143,45 +266,102 @@
     document.getElementById('btn-stand').addEventListener('click', playerStand);
 
     function createDeck(){ const d=[]; for(const s of suits){ for(const v of values){ d.push({suit:s,value:v}); } } return d; }
-    function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
+    function shuffleDeck(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
     function computeBestScore(hand){ let total=0, aces=0; for(const c of hand){ if(c.value==='A'){ aces++; total+=11; } else if(['J','Q','K'].includes(c.value)){ total+=10; } else { total+=parseInt(c.value); } } while(total>21 && aces>0){ total-=10; aces--; } return total; }
 
-    function renderCard(cardObj, hidden=false){ const tpl=document.getElementById('card-template'); const el=tpl.content.firstElementChild.cloneNode(true); if(hidden){ el.classList.add('back'); el.innerHTML=''; return el; } el.querySelectorAll('.value').forEach(x=>x.textContent=cardObj.value); el.querySelectorAll('.suit').forEach(x=>x.textContent=cardObj.suit); el.querySelector('.suit-large').textContent=cardObj.suit; if(cardObj.suit==='♥' || cardObj.suit==='♦'){ el.classList.add('red'); } // легкий flip
-      el.style.transform='rotateY(360deg)'; setTimeout(()=>{ el.style.transform='none'; },80); return el; }
+    function renderCard(cardObj, hidden=false){ const tpl=document.getElementById('card-template'); const el=tpl.content.firstElementChild.cloneNode(true); if(hidden){ el.classList.add('back'); el.innerHTML=''; return el; } el.querySelectorAll('.value').forEach(x=>x.textContent=cardObj.value); el.querySelectorAll('.suit').forEach(x=>x.textContent=cardObj.suit); el.querySelector('.suit-large').textContent=cardObj.suit; if(cardObj.suit==='♥' || cardObj.suit==='♦'){ el.classList.add('red'); } el.style.transform='scale(1.05)'; setTimeout(()=>{ el.style.transform='scale(1)'; },140); return el; }
 
-    function dealCard(toPlayer=true, hidden=false){ if(deck.length===0) deck=shuffle(createDeck()); const card=deck.pop(); if(toPlayer){ playerHand.push(card); const c=renderCard(card,false); c.classList.add('deal-animate'); playerCardsEl.appendChild(c); } else { dealerHand.push(card); const c=hidden?renderCard(card,true):renderCard(card,false); c.classList.add('deal-animate'); dealerCardsEl.appendChild(c); } updateScores(); }
+    function dealCard(toPlayer=true, hidden=false){ if(deck.length===0) deck=shuffleDeck(createDeck()); const card=deck.pop(); if(toPlayer){ playerHand.push(card); const c=renderCard(card,false); c.classList.add('pulse'); playerCardsEl.appendChild(c); } else { dealerHand.push(card); const c=hidden?renderCard(card,true):renderCard(card,false); c.classList.add('pulse'); dealerCardsEl.appendChild(c); } updateScores(); }
     function updateScores(){ playerScoreEl.textContent=computeBestScore(playerHand); let shown=[]; if(dealerCardsEl.children.length>0){ if(dealerCardsEl.children[1] && dealerCardsEl.children[1].classList.contains('back')) shown=[dealerHand[0]]; else shown=dealerHand; } dealerScoreEl.textContent=computeBestScore(shown); }
     function clearTable(){ playerHand=[]; dealerHand=[]; playerCardsEl.innerHTML=''; dealerCardsEl.innerHTML=''; playerResultEl.textContent=''; dealerResultEl.textContent=''; dealerScoreEl.textContent='?'; playerScoreEl.textContent='0'; }
 
-    function startGame(){ inRound=true; clearTable(); deck=shuffle(createDeck()); dealCard(true); dealCard(true); dealCard(false); dealCard(false,true); showLog('Новая игра. Шурик, покажи курице, что значит прокачка!'); chickenSay(randomLine('start')); }
-    function playerHit(){ if(!inRound) return; dealCard(true); showLog('Шурик берёт карту... ' + randomLine('hit')); if(computeBestScore(playerHand)>21){ endRound('player-bust'); } }
-    function playerStand(){ if(!inRound) return; showLog('Шурик остановился. Курица готовится...'); revealDealerHidden(); dealerPlay(); }
+    function startGame(){ inRound=true; clearTable(); deck=shuffleDeck(createDeck()); dealCard(true); dealCard(true); dealCard(false); dealCard(false,true); showLog(getPhrase('start')); chickenSay(getPhrase('start')); }
+    function playerHit(){ if(!inRound) return; dealCard(true); showLog(getPhrase('hit')); chickenSay(getPhrase('hit')); if(computeBestScore(playerHand)>21){ endRound('player-bust'); } }
+    function playerStand(){ if(!inRound) return; showLog('Шурик остановился. ' + getPhrase('idle')); revealDealerHidden(); dealerPlay(); }
     function revealDealerHidden(){ if(dealerCardsEl.children[1] && dealerCardsEl.children[1].classList.contains('back')){ dealerCardsEl.children[1].replaceWith(renderCard(dealerHand[1],false)); } updateScores(); }
-    function dealerPlay(){ let score=computeBestScore(dealerHand); while(score<17){ dealCard(false); score=computeBestScore(dealerHand); } setTimeout(()=>evaluateWinner(),300); }
+    function dealerPlay(){ let score=computeBestScore(dealerHand); while(score<17){ dealCard(false); score=computeBestScore(dealerHand); } setTimeout(()=>evaluateWinner(),350); }
     function evaluateWinner(){ const playerScore=computeBestScore(playerHand); const dealerScore=computeBestScore(dealerHand); if(dealerScore>21){ endRound('dealer-bust'); } else if(playerScore>21){ endRound('player-bust'); } else if(playerScore>dealerScore){ endRound('player-win'); } else if(playerScore<dealerScore){ endRound('dealer-win'); } else endRound('push'); }
 
-    function endRound(reason){ inRound=false; const playerScore=computeBestScore(playerHand); const dealerScore=computeBestScore(dealerHand); let msg=''; switch(reason){ case 'player-bust': msg='Шурик перебрал — курица ликует!'; playerResultEl.textContent='Проигрыш'; dealerResultEl.textContent='Победа'; break; case 'dealer-bust': msg='Курица перебрала — Шурик сокрушает!'; playerResultEl.textContent='Победа'; dealerResultEl.textContent='Проигрыш'; break; case 'player-win': msg='Шурик выигрывает!'; playerResultEl.textContent='Победа'; dealerResultEl.textContent='Проигрыш'; break; case 'dealer-win': msg='Курица побеждает, бей-беги!'; playerResultEl.textContent='Проигрыш'; dealerResultEl.textContent='Победа'; break; case 'push': msg='Ничья. Даже курица в шоке.'; playerResultEl.textContent='Ничья'; dealerResultEl.textContent='Ничья'; break; } revealDealerHidden(); showLog(`${msg} (Шурик: ${playerScore}, Курица: ${dealerScore}) ` + randomLine(reason)); animateChickenReaction(reason); if(reason==='player-win' || reason==='dealer-bust') celebrateConfetti(); }
+    function endRound(reason){ inRound=false; const playerScore=computeBestScore(playerHand); const dealerScore=computeBestScore(dealerHand); let msg=''; switch(reason){ case 'player-bust': msg='Шурик перебрал — курица ликует!'; playerResultEl.textContent='Проигрыш'; dealerResultEl.textContent='Победа'; break; case 'dealer-bust': msg='Курица перебрала — Шурик сокрушает!'; playerResultEl.textContent='Победа'; dealerResultEl.textContent='Проигрыш'; break; case 'player-win': msg='Шурик выигрывает!'; playerResultEl.textContent='Победа'; dealerResultEl.textContent='Проигрыш'; break; case 'dealer-win': msg='Курица побеждает, бей-беги!'; playerResultEl.textContent='Проигрыш'; dealerResultEl.textContent='Победа'; break; case 'push': msg='Ничья. Даже курица в шоке.'; playerResultEl.textContent='Ничья'; dealerResultEl.textContent='Ничья'; break; } revealDealerHidden(); showLog(`${msg} (Шурик: ${playerScore}, Курица: ${dealerScore})`); chickenSay(getPhrase(reason==='player-win'? 'playerWin' : reason==='dealer-win'? 'dealerWin' : reason)); animateChickenReaction(reason); if(reason==='player-win' || reason==='dealer-bust') celebrateConfetti(); }
     function showLog(txt){ logEl.textContent=txt; }
-    function chickenSay(text){ chickenSpeech.textContent=text; chickenSpeech.classList.add('shake'); setTimeout(()=>chickenSpeech.classList.remove('shake'),400); }
-    function animateChickenReaction(reason){ const svg=document.querySelector('.chicken svg'); if(reason==='player-win' || reason==='dealer-bust'){ svg.classList.add('shake'); setTimeout(()=>svg.classList.remove('shake'),500); } else if(reason==='dealer-win' || reason==='player-bust'){ svg.style.filter='brightness(.9)'; setTimeout(()=>{ svg.style.filter=''; },400); } }
+    function chickenSay(text){ chickenSpeech.textContent=text; chickenSpeech.classList.add('shake'); setTimeout(()=>chickenSpeech.classList.remove('shake'),500); }
+    function animateChickenReaction(reason){ const svg=document.querySelector('.chicken svg'); if(reason==='player-win' || reason==='dealer-bust'){ svg.classList.add('shake'); setTimeout(()=>svg.classList.remove('shake'),600); } else if(reason==='dealer-win' || reason==='player-bust'){ svg.style.filter='brightness(.9)'; setTimeout(()=>{ svg.style.filter=''; },500); } }
 
-    // Фразы
-    function randomLine(context){ const lines={ 'start':["Șuriku, dai la joc! Курочка ждёт твоих ходов.","Ты в игре, как в рейде: всё или ничего.","Hardmode активирован — не подведи, чемпион!"], 'hit':["Крит? Или лаг? Берём ещё!","Это как чекпоинт: ещё попытка!","Щас будет лут-бокс — держись!","Ai noroc, sau doar skill?"], 'player-win':["GG WP! Курочка даже не ожидала.","Ты сломал её RNG, Шурик!","Прокачка прошла успешно."], 'dealer-win':["Курица говорит: 'Может в следующий раз, Шурик?'","Это был фейл-магия курицы.","Ai pierdut, dar nu te supăra!"], 'push':["Ничья — рефрешим и идём снова.","Одинаковые сборки, никто не сдаётся."] }; const arr=lines[context]||["Что-то пошло не так, Шурик..."]; return arr[Math.floor(Math.random()*arr.length)]; }
+    // Confetti effect
+    function celebrateConfetti(){ const count = window.innerWidth < 600 ? 30 : 60; for(let i=0;i<count;i++){ const el=document.createElement('div'); el.style.position='absolute'; const size= Math.random()*7+5; el.style.width=size+'px'; el.style.height=size+'px'; el.style.backgroundColor=['#ffd74f','#ff6b6b','#7afcff','#9d7aff'][Math.floor(Math.random()*4)]; el.style.left=Math.random()*100+'%'; el.style.top='-15%'; el.style.opacity=1; el.style.borderRadius='3px'; el.style.pointerEvents='none'; confettiContainer.appendChild(el); const duration=1800+Math.random()*900; const endX=(Math.random()-0.5)*50; const fall=()=>{ const start=performance.now(); function frame(t){ const progress=(t-start)/duration; if(progress>=1){ el.remove(); return; } el.style.transform=`translate(${endX*progress}px, ${progress*120}vh) rotate(${progress*720}deg)`; el.style.opacity=1-progress; requestAnimationFrame(frame); } requestAnimationFrame(frame); }; setTimeout(fall, Math.random()*180); } }
 
-    // Конфетти
-    function celebrateConfetti(){ const count = window.innerWidth < 600 ? 30 : 60; for(let i=0;i<count;i++){ const el=document.createElement('div'); el.style.position='absolute'; const size= Math.random()*8+5; el.style.width=size+'px'; el.style.height=size+'px'; el.style.backgroundColor=['#ffd74f','#ff6b6b','#7afcff','#9d7aff'][Math.floor(Math.random()*4)]; el.style.left=Math.random()*100+'%'; el.style.top='-10%'; el.style.opacity=1; el.style.borderRadius='3px'; el.style.pointerEvents='none'; confettiContainer.appendChild(el); const duration=1800+Math.random()*800; const endX=(Math.random()-0.5)*40; const fall=()=>{ const start=performance.now(); function frame(t){ const progress=(t-start)/duration; if(progress>=1){ el.remove(); return; } el.style.transform=`translate(${endX*progress}px, ${progress*110}vh) rotate(${progress*720}deg)`; el.style.opacity=1-progress; requestAnimationFrame(frame); } requestAnimationFrame(frame); }; setTimeout(fall, Math.random()*150); } }
+    // Animated dark shifting gradient background + subtle noise/particles
+    const gradCanvas=document.getElementById('gradient-canvas'); const pCanvas=document.getElementById('particle-canvas'); const gCtx=gradCanvas.getContext('2d'); const pCtx=pCanvas.getContext('2d');
+    function resizeAll(){ gradCanvas.width=window.innerWidth; gradCanvas.height=window.innerHeight; pCanvas.width=window.innerWidth; pCanvas.height=window.innerHeight; }
+    window.addEventListener('resize', resizeAll); resizeAll();
 
-    // Background particles
-    const canvas=document.getElementById('bg-canvas'); const ctx=canvas.getContext('2d'); let particles=[]; function resizeCanvas(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; } window.addEventListener('resize', resizeCanvas); resizeCanvas();
-    class Particle{ constructor(){ this.reset(); } reset(){ this.x=Math.random()*canvas.width; this.y=canvas.height + Math.random()*150; this.size= Math.random()*6+3; this.speedY= Math.random()*0.4+0.2; this.alpha= Math.random()*0.25+0.07; this.tilt=Math.random()*Math.PI*2; this.type=Math.random()<0.15? 'chip':'circle'; } update(){ this.y -= this.speedY; this.tilt += 0.015; if(this.y< -30) this.reset(); } draw(){ ctx.save(); ctx.globalAlpha=this.alpha; if(this.type==='chip'){ ctx.translate(this.x + Math.sin(this.tilt)*5, this.y); ctx.beginPath(); ctx.lineWidth=1.5; ctx.strokeStyle='rgba(255,255,255,0.12)'; ctx.arc(0,0,6,0,Math.PI*2); ctx.stroke(); ctx.fillStyle='rgba(255,215,79,0.08)'; ctx.fill(); ctx.font='7px system-ui'; ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.fillText('₵',0,1); } else { ctx.fillStyle='rgba(255,255,255,0.05)'; ctx.beginPath(); ctx.arc(this.x + Math.sin(this.tilt)*3, this.y, this.size,0,Math.PI*2); ctx.fill(); } ctx.restore(); } }
-    const initialCount = window.innerWidth < 600 ? 30 : 60; for(let i=0;i<initialCount;i++) particles.push(new Particle()); function animateBg(){ ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{ p.update(); p.draw(); }); requestAnimationFrame(animateBg); } animateBg();
+    // Gradient helper with robust parsing to avoid NaN
+    function lerp(a,b,t){ return a + (b-a)*t; }
+    function parseColor(col){
+      if(typeof col !== 'string') return {r:0,g:0,b:0};
+      col=col.trim();
+      if(col.startsWith('#')){
+        let hex=col.slice(1); if(hex.length===3) hex=hex.split('').map(c=>c+c).join(''); if(hex.length!==6) return {r:0,g:0,b:0}; const bigint=parseInt(hex,16); return {r:(bigint>>16)&255, g:(bigint>>8)&255, b:bigint&255};
+      }
+      const m=col.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([0-9.]+))?\)/i);
+      if(m){ return {r:parseInt(m[1]), g:parseInt(m[2]), b:parseInt(m[3])}; }
+      console.warn('Unable to parse color:', col); return {r:0,g:0,b:0};
+    }
+    function lerpColor(c1,c2,t){
+      const p1=parseColor(c1);
+      const p2=parseColor(c2);
+      const r=Math.round(lerp(p1.r,p2.r,t));
+      const g=Math.round(lerp(p1.g,p2.g,t));
+      const b=Math.round(lerp(p1.b,p2.b,t));
+      return `rgb(${r},${g},${b})`;
+    }
 
-    // Shortcuts
+    let gradShift=0;
+    function drawGradient(){
+      gradShift += 0.002;
+      const t1=(Math.sin(gradShift)+1)/2;
+      const t2=(Math.cos(gradShift*0.7)+1)/2;
+      const c1=lerpColor('#0f1b33','#1f2947', Math.min(1, Math.max(0, t1*0.5 + 0.25)));
+      const c2=lerpColor('#1f2947','#2f3d67', Math.min(1, Math.max(0, t2*0.5 + 0.25)));
+      const gradient=gCtx.createLinearGradient(0,0,gradCanvas.width, gradCanvas.height);
+      try{
+        gradient.addColorStop(0,c1);
+        gradient.addColorStop(0.5,lerpColor(c1,c2,0.5));
+        gradient.addColorStop(1,c2);
+      } catch(e){
+        console.warn('Gradient stop failed, falling back:', e);
+        gCtx.fillStyle='#0f1b33';
+        gCtx.fillRect(0,0,gradCanvas.width, gradCanvas.height);
+        return;
+      }
+      gCtx.fillStyle=gradient;
+      gCtx.fillRect(0,0,gradCanvas.width, gradCanvas.height);
+      const noiseCount=150;
+      pCtx.clearRect(0,0,pCanvas.width,pCanvas.height);
+      for(let i=0;i<noiseCount;i++){ const x=Math.random()*pCanvas.width; const y=Math.random()*pCanvas.height; const size=Math.random()*2; const alpha=Math.random()*0.04; pCtx.fillStyle=`rgba(255,255,255,${alpha})`; pCtx.fillRect(x,y,size,size); }
+    }
+
+    // Floating light particles
+    class LightParticle{ constructor(){ this.reset(); } reset(){ this.x=Math.random()*pCanvas.width; this.y=Math.random()*pCanvas.height; this.r= Math.random()*1.5+0.5; this.speed= Math.random()*0.2+0.05; this.alpha= Math.random()*0.15+0.05; }
+      update(){ this.y -= this.speed; if(this.y < -10) this.reset(); }
+      draw(){ pCtx.beginPath(); pCtx.fillStyle=`rgba(255,255,255,${this.alpha})`; pCtx.arc(this.x, this.y, this.r, 0, Math.PI*2); pCtx.fill(); }
+    }
+    const lightParticles=[]; for(let i=0;i<120;i++) lightParticles.push(new LightParticle());
+    function animateBackground(){ drawGradient(); lightParticles.forEach(p=>{ p.update(); p.draw(); }); requestAnimationFrame(animateBackground); }
+    animateBackground();
+
+    // Idle and roast dynamic speech rotations to last long without repeats
+    let idleToggle=true;
+    setInterval(()=>{ const pool=idleToggle? 'idle':'roast'; chickenSay(getPhrase(pool)); idleToggle=!idleToggle; }, 9000+Math.random()*3000);
+
+    // Keyboard shortcuts
     document.addEventListener('keydown', e=>{ if(e.key==='h'||e.key==='H') playerHit(); if(e.key==='s'||e.key==='S') playerStand(); if(e.key==='n'||e.key==='N') startGame(); });
 
-    // Init
-    showLog('Жми «Новая», Шурик! Минимализм + прокачка.');
-    setInterval(()=>{ const phrases=["Курица следит за твоими картами...","Готовься к флипу","Ai noroc sau doar skill?"]; chickenSay(phrases[Math.floor(Math.random()*phrases.length)]); },10000);
+    // Initialize phrase pools before first use
+    ['start','hit','playerWin','dealerWin','push','idle','roast','player-bust','dealer-bust'].forEach(c=> refillPool(c));
+
+    // Initial log
+    showLog('Жми «Новая», Шурик! Курочка следит за каждым ходом.');
   </script>
 </body>
 </html>
