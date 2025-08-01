@@ -2,121 +2,131 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Blackjack: Шурик против Курицы</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Blackjack: Шурик vs Курица 2.0</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#1f2947" />
   <style>
-    :root { --radius: 16px; --shadow: 0 12px 24px rgba(0,0,0,0.15); }
+    :root{
+      --radius:14px;
+      --shadow:0 30px 60px rgba(0,0,0,.35);
+      --bg1:#1f2947;
+      --bg2:#2f3d67;
+      --accent:#ffd74f;
+      --accent2:#ff9060;
+      --text:#f0f2fa;
+      --muted:#9aa2cc;
+      --glass:rgba(255,255,255,0.05);
+      --transition:.35s cubic-bezier(.3,.1,.2,1);
+    }
     *{box-sizing:border-box;}
-    body {margin:0; font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background: linear-gradient(135deg,#2a2f4a 0%,#1f2a3e 60%); color:#f0f2fa; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:1rem; }
-    .game {width:100%; max-width:1000px; background: radial-gradient(circle at 50% 20%, #2f3d67, #1f2947 80%); border-radius:22px; padding:1rem 1rem 2rem; position:relative; overflow:hidden; box-shadow:0 30px 60px rgba(0,0,0,0.4); }
-    .top-bar {display:flex; flex-wrap:wrap; gap:1rem; justify-content:space-between; align-items:center;}
-    .title {font-size:1.6rem; font-weight:700; display:flex; gap:.5rem; align-items:center;}
-    .subtitle {font-size:.9rem; color:#c0c8ff;}
-    .players {display:flex; flex-wrap:wrap; gap:1rem; margin-top:0.75rem;}
-    .panel {background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:18px; padding:1rem; flex:1 1 260px; position:relative;}
-    .dealer-area, .player-area{display:flex; flex-direction:column; gap:.5rem;}
-    .cards {display:flex; gap: -14px; margin-top:6px; position:relative;}
-    .card {width:72px; height:100px; border-radius:12px; background:#fff; position:relative; display:flex; flex-direction:column; justify-content:space-between; padding:6px; font-size:14px; font-weight:600; color:#222; box-shadow:0 12px 30px rgba(0,0,0,0.25); transform-origin:center; transition:transform .35s ease, opacity .35s ease;}
-    .card.back {background: linear-gradient(135deg,#444c7a,#2a3259); color:#fff;}
-    .card .corner {display:flex; flex-direction:column;}
-    .suit {font-size:1.1rem;}
-    .value {display:inline-block;}
-    .controls {margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;}
-    button {cursor:pointer; padding:10px 18px; border:none; border-radius:12px; font-weight:600; background:#ffcf3f; color:#1c1c2e; position:relative; overflow:hidden; box-shadow:0 12px 28px rgba(255,207,63,0.5); transition:filter .2s;}
-    button:hover{filter:brightness(1.05);}    
-    .small {font-size:.75rem;}
-    .message {margin-top:6px; background:rgba(255,255,255,0.08); padding:8px 14px; border-radius:10px; font-size:.9rem; display:inline-block;}
-    .score {font-size:1rem; font-weight:700;}
-    .status {margin-top:4px; font-size:.9rem;}
-    .flex {display:flex; align-items:center; gap:8px;}
-    .chicken-wrapper {display:flex; align-items:center; gap:10px;}
-    .chicken {width:110px; height:140px; position:relative;}
-    /* Chicken SVG container styling for animation trigger */
-    .speech {position:absolute; top:-10px; left:100px; background:#ffeaa7; padding:8px 14px; border-radius:14px; font-size:.75rem; color:#2d2d3a; box-shadow:0 10px 30px rgba(0,0,0,0.2);}
-    .badge {background:#ff6b6b; padding:4px 10px; border-radius:10px; font-size:.6rem; text-transform:uppercase; letter-spacing:1px;}
-    .result-box {margin-top:10px; background:rgba(255,255,255,0.07); padding:12px 18px; border-radius:14px; font-size:1rem; font-weight:600;}
-    .hidden {visibility:hidden;}
-    .footer {margin-top:1.2rem; display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; font-size:.7rem;}
-    .bg-table{position:absolute; inset:0; pointer-events:none; background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwMCIgaGVpZ2h0PSIxNTAwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxnIG9wYWNpdHk9Ii4zIj4KICAgIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIyMDAwIiBoZWlnaHQ9IjE1MDAiIGZpbGw9IiMwMTEyMjYiIC8+CiAgICA8ZyBmaWxsPSIjMzQ0Zjg2Ij4KICAgICAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjIwMDAiIGhlaWdodD0iMjAiIC8+CiAgICAgIDxyZWN0IHg9IjAiIHk9IjQwIiB3aWR0aD0iMjAwMCIgaGVpZ2h0PSIyMCIgLz4KICAgICAgPHJlY3QgeD0iMCIgeT0iIj4KICAgICAgICA8YW5pbWF0ZSBhdHRyaWJ1dGVOYW1lPSJ5IiBiZWdpbj0iMCIgZHVyPSIxM2MiIHZhbHVlcz0iMCA7IDEwMDAiIHJlcGVhdENvdW50PSJpbmRlZmF0ZSIgLz4KICAgICAgPC9yZWN0PgogICAgPC9nPgogIDwvZz4KPC9zdmc+'); background-size:cover; mix-blend-mode:overlay; }
-    @media (max-width: 950px){.title{font-size:1.3rem;} .card{width:60px; height:84px;} }
-    @keyframes flap {0%{transform: rotate(0deg);}50%{transform: rotate(15deg);}100%{transform: rotate(0deg);} }
-    .wing {transform-origin:top center; animation:flap 0.6s ease-in-out infinite;}
-    .deal-animate {animation:deal-move .5s ease forwards;}
-    @keyframes deal-move {from{transform: translateY(-25px) scale(.85);} to{transform: translateY(0) scale(1);} }
-    .shake {animation:shake 0.4s ease-in-out;}
-    @keyframes shake {0%{transform:translateX(0);}25%{transform:translateX(-3px);}50%{transform:translateX(3px);}75%{transform:translateX(-2px);}100%{transform:translateX(0);} }
-    .btn-group{display:flex; gap:8px; flex-wrap:wrap;}
+    body{margin:0; font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background: linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 80%); color:var(--text); min-height:100dvh; padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); -webkit-font-smoothing:antialiased; -webkit-user-select:none; }
+    .app{max-width:1024px; margin:0 auto; padding:1rem; display:flex; flex-direction:column; gap:12px; position:relative; height:calc(var(--vh,1vh)*100);}
+    .top-bar{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px;}
+    .title{display:flex; align-items:center; gap:8px; font-size:1.8rem; font-weight:700;}
+    .subtitle{font-size:.85rem; color:var(--muted);}
+    .game{background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:24px; flex:1; display:flex; flex-direction:column; padding:1rem; position:relative; overflow:hidden; backdrop-filter:blur(14px);}
+    .players{display:flex; flex-wrap:wrap; gap:14px; margin-top:6px; flex:1;}
+    .panel{flex:1 1 300px; background:var(--glass); border:1px solid rgba(255,255,255,0.09); padding:14px; border-radius:18px; position:relative; display:flex; flex-direction:column;}
+    .badge{background:linear-gradient(135deg,var(--accent),var(--accent2)); padding:6px 14px; border-radius:999px; font-size:.55rem; text-transform:uppercase; letter-spacing:1.2px; display:inline-block;}
+    .flex{display:flex; align-items:center; gap:8px;}
+    .score{font-size:1.1rem; font-weight:700;}
+    .cards{display:flex; gap:-16px; margin-top:8px; min-height:110px; position:relative;}
+    .card{width:78px; height:110px; border-radius:14px; background:#fff; position:relative; display:flex; flex-direction:column; justify-content:space-between; padding:8px; font-size:14px; font-weight:600; color:#222; box-shadow:0 24px 60px rgba(0,0,0,.3); transform-origin:center; transition:transform var(--transition), filter .2s; will-change:transform;
+      perspective:800px;
+    }
+    .card .corner{display:flex; flex-direction:column;}
+    .card .suit-large{font-size:32px; line-height:1;}
+    .card.red{color:#d4477a;}
+    .card.back{background: linear-gradient(135deg,#444c7a,#2a3259); color:#fff;}
+    .controls{margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;}
+    button{display:flex; align-items:center; gap:6px; border:none; cursor:pointer; padding:12px 18px; border-radius:12px; font-weight:700; font-size:.9rem; background:rgba(255,255,255,.1); color:var(--text); position:relative; overflow:hidden; transition:filter .2s, transform .2s; backdrop-filter:blur(6px);}
+    button svg{width:18px; height:18px; flex-shrink:0;}
+    button:hover{filter:brightness(1.1); transform:translateY(-1px);}
+    .btn-primary{background:var(--accent); color:#1b1427;}
+    .btn-secondary{background:rgba(255,255,255,.08);}
+    .message{margin-top:6px; background:rgba(255,255,255,0.07); padding:12px 16px; border-radius:14px; font-size:.9rem; display:inline-block; position:relative;}
+    .result-box{margin-top:10px; background:rgba(255,255,255,0.05); padding:12px 16px; border-radius:14px; font-size:1rem; font-weight:600; min-height:38px;}
+    .small{font-size:.65rem;}
+    .chicken-wrapper{display:flex; align-items:start; gap:10px;}
+    .chicken{width:120px; height:150px; position:relative; flex-shrink:0;}
+    .speech{position:absolute; top:-8px; left:110px; background:#fff3b8; padding:8px 14px; border-radius:14px; font-size:.7rem; color:#403d4f; font-weight:600; box-shadow:0 18px 40px rgba(0,0,0,.2); max-width:180px;}
+    .footer{margin-top:6px; display:flex; flex-wrap:wrap; justify-content:space-between; font-size:.6rem; gap:10px;}
+    .background-anim{position:absolute; inset:0; pointer-events:none;}
+    .confetti{position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; overflow:hidden;}
+    @media (max-width:1000px){.title{font-size:1.4rem;} .card{width:64px; height:90px;} }
+    .glow{position:relative;}
+    .glow:before{content:''; position:absolute; inset:0; filter:blur(24px); background:radial-gradient(circle at 30% 30%, rgba(255,215,79,.6), transparent 60%); mix-blend-mode:overlay; border-radius:inherit;}
+    /* Floating particle/backdrop */
+    .particle{position:absolute; border-radius:50%; opacity:.2; will-change:transform, opacity;}
+    .chip{position:absolute; border-radius:50%; border:2px solid #fff; width:20px; height:20px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;}
+    .icon-small{width:16px; height:16px;}
   </style>
 </head>
 <body>
-  <div class="game" role="application" aria-label="Blackjack с курицей-крупье">
-    <div class="bg-table"></div>
+  <div class="app" role="application" aria-label="Blackjack с курицей-крупье">
     <div class="top-bar">
-      <div class="title">🃏 Blackjack: Шурик vs Курица</div>
-      <div class="subtitle">Играй, побеждай, не забывай: у курицы есть чувство юмора!</div>
+      <div class="title">🃏 Blackjack 2.0 — Шурик vs Курица <span style="font-size:.8rem; margin-left:4px;">(Hardcore Mode)</span></div>
+      <div class="subtitle">Смешной крупье-курица, адаптивно под iPhone/Safari, анимации, шутки и подколы. Готов играть?</div>
     </div>
-    <div class="players">
-      <div class="panel dealer-area" aria-label="Крупье">
-        <div class="flex">
-          <div class="badge">Крупье</div>
-          <div class="chicken-wrapper">
-            <div class="chicken" aria-label="Курица-крупье">
-              <!-- SVG курицы -->
-              <svg viewBox="0 0 160 180" width="100%" height="100%" aria-hidden="true">
-                <!-- тело -->
-                <ellipse cx="80" cy="110" rx="50" ry="55" fill="#ffe699" />
-                <!-- голова -->
-                <circle cx="80" cy="60" r="35" fill="#ffe699" />
-                <!-- глаза -->
-                <circle cx="68" cy="55" r="6" fill="#222" />
-                <circle cx="92" cy="55" r="6" fill="#222" />
-                <!-- клюв -->
-                <polygon points="80,70 70,80 90,80" fill="#ff9f43" />
-                <!-- гребень -->
-                <path d="M60,42 q10 -25 20 0 q10 -25 20 0 q10 -25 20 0" fill="#ff5f5f" />
-                <!-- крылья -->
-                <g class="wing" transform="translate(25,100)">
-                  <ellipse cx="40" cy="10" rx="25" ry="40" fill="#fff3d9" />
-                </g>
-                <g class="wing" transform="translate(65,100) scale(-1,1)">
-                  <ellipse cx="40" cy="10" rx="25" ry="40" fill="#fff3d9" />
-                </g>
-                <!-- ноги -->
-                <rect x="65" y="160" width="6" height="14" fill="#ff9f43" />
-                <rect x="89" y="160" width="6" height="14" fill="#ff9f43" />
-              </svg>
-              <div class="speech" id="chicken-speech">Привет, Шурик! Готов проиграть?</div>
+    <div class="game">
+      <canvas class="background-anim" id="bg-canvas"></canvas>
+      <div class="players">
+        <div class="panel dealer-area" aria-label="Крупье">
+          <div class="flex" style="justify-content:space-between;">
+            <div><div class="badge">Крупье</div></div>
+            <div class="chicken-wrapper">
+              <div class="chicken" aria-label="Курица-крупье">
+                <!-- SVG курицы с дополнительной анимацией -->
+                <svg viewBox="0 0 160 180" width="100%" height="100%" aria-hidden="true">
+                  <ellipse cx="80" cy="110" rx="50" ry="55" fill="#ffe699" />
+                  <circle cx="80" cy="60" r="35" fill="#ffe699" />
+                  <circle cx="68" cy="55" r="6" fill="#222" />
+                  <circle cx="92" cy="55" r="6" fill="#222" />
+                  <polygon points="80,70 70,80 90,80" fill="#ff9f43" />
+                  <path d="M60,42 q10 -25 20 0 q10 -25 20 0 q10 -25 20 0" fill="#ff5f5f" />
+                  <g class="wing" transform="translate(25,100)">
+                    <ellipse cx="40" cy="10" rx="25" ry="40" fill="#fff3d9" />
+                  </g>
+                  <g class="wing" transform="translate(65,100) scale(-1,1)">
+                    <ellipse cx="40" cy="10" rx="25" ry="40" fill="#fff3d9" />
+                  </g>
+                  <rect x="65" y="160" width="6" height="14" fill="#ff9f43" />
+                  <rect x="89" y="160" width="6" height="14" fill="#ff9f43" />
+                </svg>
+                <div class="speech" id="chicken-speech">Привет, Шурик! Готов проиграть?</div>
+              </div>
             </div>
           </div>
+          <div class="status small">Крупье показывает: <span id="dealer-score">?</span></div>
+          <div class="cards" aria-label="Карты крупье" id="dealer-cards"></div>
+          <div class="result-box" id="dealer-result">&nbsp;</div>
         </div>
-        <div class="status">Крупье показывает: <span id="dealer-score">?</span></div>
-        <div class="cards" aria-label="Карты крупье" id="dealer-cards"></div>
-        <div class="result-box" id="dealer-result">&nbsp;</div>
-      </div>
-      <div class="panel player-area" aria-label="Игрок Шурик">
-        <div class="flex">
-          <div class="badge">Игрок</div>
-          <div style="margin-left:6px; font-weight:700;">Шурик</div>
-        </div>
-        <div class="score">Счёт: <span id="player-score">0</span></div>
-        <div class="cards" aria-label="Карты игрока" id="player-cards"></div>
-        <div class="controls">
-          <div class="btn-group">
-            <button id="btn-hit">Взять</button>
-            <button id="btn-stand">Стоп</button>
-            <button id="btn-new">Новая</button>
+        <div class="panel player-area" aria-label="Игрок Шурик">
+          <div class="flex" style="justify-content:space-between;">
+            <div><div class="badge">Игрок</div> <span style="margin-left:6px; font-weight:700;">Шурик</span></div>
+            <div class="small">Уровень: <span id="difficulty">Hardmode</span></div>
           </div>
+          <div class="score">Счёт: <span id="player-score">0</span></div>
+          <div class="cards" aria-label="Карты игрока" id="player-cards"></div>
+          <div class="controls">
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button id="btn-hit" class="btn-primary" aria-label="Взять карту"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Взять</button>
+              <button id="btn-stand" class="btn-secondary" aria-label="Стоп"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h12v16H6z"/></svg>Стоп</button>
+              <button id="btn-new" class="btn-primary" aria-label="Новая игра"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v6h6M20 20v-6h-6"/><circle cx="12" cy="12" r="9"/></svg>Новая</button>
+            </div>
+          </div>
+          <div class="result-box" id="player-result">&nbsp;</div>
         </div>
-        <div class="result-box" id="player-result">&nbsp;</div>
       </div>
-    </div>
-    <div class="message" id="log">Нажми "Новая", чтобы начать игру.</div>
-    <div class="footer">
-      <div>Прототип Blackjack. Мобильная адаптация через flex и относительные размеры.</div>
-      <div>© Курица-крупье. Шурик — чемпион в обучении.</div>
+      <div class="message" id="log">Нажми "Новая", Шурик — пора показать курице, кто тут босс. 🎮🐔</div>
+      <div class="footer">
+        <div>Прототип: адаптация под Safari/iPhone, анимации, шутки в стиле гейминга и молдавские подколы.</div>
+        <div class="small">«Șuriku, dai la joc, nu la somn!» — Шурик, играй, не спи!</div>
+      </div>
+      <div class="confetti" id="confetti-container"></div>
     </div>
   </div>
-
   <template id="card-template">
     <div class="card">
       <div class="corner top"><div class="value"></div><div class="suit"></div></div>
@@ -124,237 +134,124 @@
       <div class="corner bottom" style="transform: rotate(180deg);"><div class="value"></div><div class="suit"></div></div>
     </div>
   </template>
-
   <script>
-    // Карты и значения
-    const suits = ['♠','♥','♦','♣'];
-    const values = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
-    let deck = [];
-    let playerHand = [];
-    let dealerHand = [];
-    let inRound = false;
+    // Fix mobile 100vh
+    (function(){ function setVh(){document.documentElement.style.setProperty('--vh', window.innerHeight * 0.01 + 'px');} window.addEventListener('resize', setVh); setVh(); })();
 
-    const playerCardsEl = document.getElementById('player-cards');
-    const dealerCardsEl = document.getElementById('dealer-cards');
-    const playerScoreEl = document.getElementById('player-score');
-    const dealerScoreEl = document.getElementById('dealer-score');
-    const logEl = document.getElementById('log');
-    const playerResultEl = document.getElementById('player-result');
-    const dealerResultEl = document.getElementById('dealer-result');
-    const chickenSpeech = document.getElementById('chicken-speech');
+    // Blackjack logic
+    const suits=['♠','♥','♦','♣'];
+    const values=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+    let deck=[], playerHand=[], dealerHand=[]; let inRound=false;
+
+    // DOM
+    const playerCardsEl=document.getElementById('player-cards');
+    const dealerCardsEl=document.getElementById('dealer-cards');
+    const playerScoreEl=document.getElementById('player-score');
+    const dealerScoreEl=document.getElementById('dealer-score');
+    const logEl=document.getElementById('log');
+    const playerResultEl=document.getElementById('player-result');
+    const dealerResultEl=document.getElementById('dealer-result');
+    const chickenSpeech=document.getElementById('chicken-speech');
+    const confettiContainer=document.getElementById('confetti-container');
 
     document.getElementById('btn-new').addEventListener('click', startGame);
     document.getElementById('btn-hit').addEventListener('click', playerHit);
     document.getElementById('btn-stand').addEventListener('click', playerStand);
 
-    function createDeck(){
-      const d = [];
-      for(const s of suits){
-        for(const v of values){
-          d.push({suit:s, value:v});
-        }
-      }
-      return d;
-    }
-    function shuffle(array){
-      for(let i=array.length-1;i>0;i--){
-        const j=Math.floor(Math.random()*(i+1));
-        [array[i],array[j]]=[array[j],array[i]];
-      }
-      return array;
-    }
-    function cardValue(card){
-      if(card.value==='A') return 11;
-      if(['J','Q','K'].includes(card.value)) return 10;
-      return parseInt(card.value);
-    }
-    function computeBestScore(hand){
-      let total=0; let aces=0;
-      for(const c of hand){
-        if(c.value==='A'){aces++; total+=11;} else if(['J','Q','K'].includes(c.value)){total+=10;} else {total+=parseInt(c.value);}      
-      }
-      while(total>21 && aces>0){total-=10; aces--;}
-      return total;
-    }
+    function createDeck(){const d=[]; for(const s of suits){ for(const v of values){ d.push({suit:s,value:v}); } } return d; }
+    function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
+    function computeBestScore(hand){ let total=0, aces=0; for(const c of hand){ if(c.value==='A'){ aces++; total+=11;} else if(['J','Q','K'].includes(c.value)){ total+=10;} else { total+=parseInt(c.value);} } while(total>21 && aces>0){ total-=10; aces--; } return total; }
+
     function renderCard(cardObj, hidden=false){
-      const template = document.getElementById('card-template');
-      const el = template.content.firstElementChild.cloneNode(true);
-      if(hidden){
-        el.classList.add('back');
-        el.innerHTML = '';
-        el.textContent = '';
-        return el;
-      }
+      const tpl=document.getElementById('card-template');
+      const el=tpl.content.firstElementChild.cloneNode(true);
+      if(hidden){ el.classList.add('back'); el.innerHTML=''; return el; }
       el.querySelectorAll('.value').forEach(x=>x.textContent=cardObj.value);
       el.querySelectorAll('.suit').forEach(x=>x.textContent=cardObj.suit);
       el.querySelector('.suit-large').textContent=cardObj.suit;
-      if(cardObj.suit==='♥' || cardObj.suit==='♦'){
-        el.style.color='#d4477a';
-      }
+      if(cardObj.suit==='♥' || cardObj.suit==='♦'){ el.classList.add('red'); }
+      // flip in animation
+      el.style.transform='rotateY(360deg)';
+      setTimeout(()=>{ el.style.transform='none'; },10);
       return el;
     }
+    function dealCard(toPlayer=true, hidden=false){ if(deck.length===0) deck=shuffle(createDeck()); const card=deck.pop(); if(toPlayer){ playerHand.push(card); const c=renderCard(card,false); c.classList.add('deal-animate'); playerCardsEl.appendChild(c); } else { dealerHand.push(card); const c=hidden?renderCard(card,true):renderCard(card,false); c.classList.add('deal-animate'); dealerCardsEl.appendChild(c);} updateScores(); }
+    function updateScores(){ playerScoreEl.textContent=computeBestScore(playerHand); let shown=[]; if(dealerCardsEl.children.length>0){ if(dealerCardsEl.children[1] && dealerCardsEl.children[1].classList.contains('back')){ shown=[dealerHand[0]];} else shown=dealerHand; } dealerScoreEl.textContent=computeBestScore(shown); }
+    function clearTable(){ playerHand=[]; dealerHand=[]; playerCardsEl.innerHTML=''; dealerCardsEl.innerHTML=''; playerResultEl.textContent=''; dealerResultEl.textContent=''; dealerScoreEl.textContent='?'; playerScoreEl.textContent='0'; }
 
-    function dealCard(toPlayer=true, hidden=false){
-      if(deck.length===0) deck = shuffle(createDeck());
-      const card = deck.pop();
-      if(toPlayer){
-        playerHand.push(card);
-        const cardEl = renderCard(card,false);
-        cardEl.classList.add('deal-animate');
-        playerCardsEl.appendChild(cardEl);
-      } else {
-        dealerHand.push(card);
-        const cardEl = hidden ? renderCard(card, true) : renderCard(card,false);
-        cardEl.classList.add('deal-animate');
-        dealerCardsEl.appendChild(cardEl);
-      }
-      updateScores();
+    function startGame(){ inRound=true; clearTable(); deck=shuffle(createDeck()); dealCard(true); dealCard(true); dealCard(false); dealCard(false,true); showLog('Новая игра. Шурик, сделай ход — возьми или стоп!'); chickenSay(randomLine('start')); }
+    function playerHit(){ if(!inRound) return; dealCard(true); showLog('Шурик берёт карту... ' + randomLine('hit')); if(computeBestScore(playerHand)>21){ endRound('player-bust'); } }
+    function playerStand(){ if(!inRound) return; showLog('Шурик остановился. Курица готовится...'); revealDealerHidden(); dealerPlay(); }
+    function revealDealerHidden(){ if(dealerCardsEl.children[1] && dealerCardsEl.children[1].classList.contains('back')){ dealerCardsEl.children[1].replaceWith(renderCard(dealerHand[1],false)); } updateScores(); }
+    function dealerPlay(){ let score=computeBestScore(dealerHand); while(score<17){ dealCard(false); score=computeBestScore(dealerHand); } setTimeout(()=>evaluateWinner(),350); }
+    function evaluateWinner(){ const playerScore=computeBestScore(playerHand); const dealerScore=computeBestScore(dealerHand); if(dealerScore>21){ endRound('dealer-bust'); } else if(playerScore>21){ endRound('player-bust'); } else if(playerScore>dealerScore){ endRound('player-win'); } else if(playerScore<dealerScore){ endRound('dealer-win'); } else endRound('push'); }
+
+    function endRound(reason){ inRound=false; const playerScore=computeBestScore(playerHand); const dealerScore=computeBestScore(dealerHand); let msg=''; switch(reason){
+      case 'player-bust': msg='Шурик перебрал — курица ликует!'; playerResultEl.textContent='Проигрыш'; dealerResultEl.textContent='Победа'; break;
+      case 'dealer-bust': msg='Курица перебрала — Шурик сокрушает!'; playerResultEl.textContent='Победа'; dealerResultEl.textContent='Проигрыш'; break;
+      case 'player-win': msg='Шурик выигрывает!'; playerResultEl.textContent='Победа'; dealerResultEl.textContent='Проигрыш'; break;
+      case 'dealer-win': msg='Курица побеждает, бей-беги!'; playerResultEl.textContent='Проигрыш'; dealerResultEl.textContent='Победа'; break;
+      case 'push': msg='Ничья. Даже курица в шоке.'; playerResultEl.textContent='Ничья'; dealerResultEl.textContent='Ничья'; break;
     }
+    revealDealerHidden(); showLog(`${msg} (Шурик: ${playerScore}, Курица: ${dealerScore}) ` + randomLine(reason)); animateChickenReaction(reason); if(reason==='player-win' || reason==='dealer-bust') celebrateConfetti(); }
+    function showLog(txt){ logEl.textContent=txt; }
+    function chickenSay(text){ chickenSpeech.textContent=text; chickenSpeech.classList.add('shake'); setTimeout(()=>chickenSpeech.classList.remove('shake'),500); }
+    function animateChickenReaction(reason){ const svg=document.querySelector('.chicken svg'); if(reason==='player-win' || reason==='dealer-bust'){ svg.classList.add('shake'); setTimeout(()=>svg.classList.remove('shake'),600); } else if(reason==='dealer-win' || reason==='player-bust'){ // мини-эффект грусти
+      svg.style.filter='brightness(.9)'; setTimeout(()=>{ svg.style.filter=''; },500);
+    } }
 
-    function updateScores(){
-      playerScoreEl.textContent=computeBestScore(playerHand);
-      const showingDealer = dealerCardsEl.children.length>0;
-      if(showingDealer){
-        // первая карта
-        let shown = [];
-        if(dealerHand.length>0){
-          // если скрыта вторая
-          if(dealerCardsEl.children[1] && dealerCardsEl.children[1].classList.contains('back')){
-            shown = [dealerHand[0]]; // только первая
-          } else {shown = dealerHand;}
+    // Юмористические фразы, включая молдавские
+    function randomLine(context){ const lines={
+      'start':["Șuriku, dai la joc! Курочка ждёт твоих ходов.","Готовься, Шурик, курица читает твои карты, как читает мангу игрок быка.","Ставим на Hardmode — не подведи, чемпион!"],
+      'hit':["Крит? Или лаг? Берём ещё!","Можешь ещё, Шурик, курица любит риск.","Щас будет флоп — держись!","Это как в рейде: либо лут, либо вайп.","Ai noroc, sau doar интуиция?"],
+      'player-win':["GG WP! Курочка в шоке.","Ты не просто выиграл, ты сломал её RNG!","Шурик, ты как прокачанный игрок: критическая победа!"],
+      'dealer-win':["Курица говорит: 'Может в следующий раз, Шурик?'","Черт, Шурик, это был фейл-магия курицы.","Ты был близко, но курица взяла своё.","Ai pierdut, dar nu te supăra, data viitoare o să fie mai bine!"],
+      'push':["Ничья — ничто не решено. Перезарядка!","Мы оба на одном уровне, как две одинаковые сборки."]
+    }; const arr=lines[context]||["Что-то пошло не так, Шурик..."]; return arr[Math.floor(Math.random()*arr.length)]; }
+
+    // Confetti
+    function celebrateConfetti(){ const count=60; for(let i=0;i<count;i++){ const el=document.createElement('div'); el.classList.add('confetti-piece'); const size= Math.random()*10+6; el.style.position='absolute'; el.style.width=size+'px'; el.style.height=size+'px'; el.style.backgroundColor=['#ffd74f','#ff6b6b','#7afcff','#9d7aff'][Math.floor(Math.random()*4)]; el.style.left=Math.random()*100+'%'; el.style.top='-10%'; el.style.opacity=1; el.style.borderRadius='3px'; el.style.pointerEvents='none'; confettiContainer.appendChild(el);
+      const duration=2000+Math.random()*1000;
+      const endX = (Math.random()-0.5)*50;
+      const fall = () => {
+        const start=performance.now();
+        function frame(t){
+          const progress=(t-start)/duration;
+          if(progress>=1){ el.remove(); return; }
+          el.style.transform=`translate(${endX*progress}px, ${progress*120}vh) rotate(${progress*720}deg)`;
+          el.style.opacity=1-progress;
+          requestAnimationFrame(frame);
         }
-        dealerScoreEl.textContent=computeBestScore(shown);
-      }
-    }
+        requestAnimationFrame(frame);
+      };
+      setTimeout(fall, Math.random()*200);
+    } }
 
-    function clearTable(){
-      playerHand = [];
-      dealerHand = [];
-      playerCardsEl.innerHTML='';
-      dealerCardsEl.innerHTML='';
-      playerResultEl.textContent='';
-      dealerResultEl.textContent='';
-      dealerScoreEl.textContent='?';
-      playerScoreEl.textContent='0';
+    // Background particles (легкий floating effect)
+    const canvas=document.getElementById('bg-canvas'); const ctx=canvas.getContext('2d'); let particles=[];
+    function resizeCanvas(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
+    window.addEventListener('resize', resizeCanvas); resizeCanvas();
+    class Particle{ constructor(){ this.reset(); }
+      reset(){ this.x=Math.random()*canvas.width; this.y=canvas.height + Math.random()*200; this.size= Math.random()*8+4; this.speedY= Math.random()*0.5+0.3; this.alpha= Math.random()*0.3+0.1; this.tilt=Math.random()*Math.PI*2; this.type=Math.random()<0.15? 'chip':'circle'; }
+      update(){ this.y -= this.speedY; this.tilt += 0.02; if(this.y< -50) this.reset(); }
+      draw(){ ctx.save(); ctx.globalAlpha=this.alpha; if(this.type==='chip'){
+          ctx.translate(this.x + Math.sin(this.tilt)*6, this.y);
+          ctx.beginPath(); ctx.lineWidth=2; ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.arc(0,0,8,0,Math.PI*2); ctx.stroke(); ctx.fillStyle='rgba(255,215,79,0.1)'; ctx.fill(); ctx.font='8px system-ui'; ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.fillText('₵',0,2);
+        } else {
+          ctx.fillStyle='rgba(255,255,255,0.06)'; ctx.beginPath(); ctx.arc(this.x + Math.sin(this.tilt)*4, this.y, this.size,0,Math.PI*2); ctx.fill(); }
+        ctx.restore(); }
     }
+    for(let i=0;i<60;i++) particles.push(new Particle());
+    function animateBg(){ ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{ p.update(); p.draw(); }); requestAnimationFrame(animateBg); }
+    animateBg();
 
-    function startGame(){
-      if(inRound){
-        showLog('Игра уже идёт. Сброс...');
-      }
-      inRound=true;
-      clearTable();
-      deck = shuffle(createDeck());
-      dealCard(true);
-      dealCard(true);
-      dealCard(false);
-      dealCard(false,true); // закрытая карта
-      showLog('Ход Шурика: взять или стоп?');
-      chickenSay('Готовься, Шурик, курица наблюдает!');
-      checkPlayerBlackjack();
-    }
+    // Keyboard shortcuts
+    document.addEventListener('keydown', e=>{ if(e.key==='h'||e.key==='H') playerHit(); if(e.key==='s'||e.key==='S') playerStand(); if(e.key==='n'||e.key==='N') startGame(); });
 
-    function playerHit(){
-      if(!inRound) return;
-      dealCard(true);
-      showLog('Шурик берёт карту...');
-      if(computeBestScore(playerHand)>21){
-        endRound('player-bust');
-      }
-    }
-
-    function playerStand(){
-      if(!inRound) return;
-      showLog('Шурик остановился. Ход курицы...');
-      revealDealerHidden();
-      dealerPlay();
-    }
-
-    function revealDealerHidden(){
-      if(dealerCardsEl.children[1] && dealerCardsEl.children[1].classList.contains('back')){
-        dealerCardsEl.children[1].replaceWith(renderCard(dealerHand[1],false));
-      }
-      updateScores();
-    }
-
-    function dealerPlay(){
-      let score = computeBestScore(dealerHand);
-      while(score < 17){
-        dealCard(false);
-        score = computeBestScore(dealerHand);
-      }
-      setTimeout(()=>{
-        evaluateWinner();
-      }, 400);
-    }
-
-    function evaluateWinner(){
-      const playerScore = computeBestScore(playerHand);
-      const dealerScore = computeBestScore(dealerHand);
-      if(dealerScore>21){
-        endRound('dealer-bust');
-      } else if(playerScore>21){
-        endRound('player-bust');
-      } else if(playerScore>dealerScore){
-        endRound('player-win');
-      } else if(playerScore<dealerScore){
-        endRound('dealer-win');
-      } else {endRound('push');}
-    }
-
-    function checkPlayerBlackjack(){
-      const score = computeBestScore(playerHand);
-      if(score===21){
-        showLog('У Шурика блэкджек!');
-        setTimeout(()=>{ playerStand(); },350);
-      }
-    }
-
-    function endRound(reason){
-      inRound=false;
-      const playerScore=computeBestScore(playerHand);
-      const dealerScore=computeBestScore(dealerHand);
-      let msg='';
-      switch(reason){
-        case 'player-bust': msg='Шурик перебрал — Курица побеждает!'; chickenSay('Ха! Я знала, что ты не вытянешь!'); playerResultEl.textContent='Проигрыш'; dealerResultEl.textContent='Победа'; break;
-        case 'dealer-bust': msg='Курица перебрала — Шурик побеждает!'; chickenSay('Чтооо? Ты победил меня, Шурик!'); playerResultEl.textContent='Победа'; dealerResultEl.textContent='Проигрыш'; break;
-        case 'player-win': msg='Шурик выигрывает!'; chickenSay('Ну, ладно... Но на следующий раз я отомщу.'); playerResultEl.textContent='Победа'; dealerResultEl.textContent='Проигрыш'; break;
-        case 'dealer-win': msg='Курица побеждает!'; chickenSay('Курочка знает свои карты.'); playerResultEl.textContent='Проигрыш'; dealerResultEl.textContent='Победа'; break;
-        case 'push': msg='Ничья!'; chickenSay('Ничья? Мы справедливо сыграли.'); playerResultEl.textContent='Ничья'; dealerResultEl.textContent='Ничья'; break;
-      }
-      revealDealerHidden();
-      showLog(msg + ` (Шурик: ${playerScore}, Курица: ${dealerScore})`);
-      animateChickenReaction(reason);
-    }
-
-    function showLog(t){
-      logEl.textContent=t;
-    }
-
-    function chickenSay(text){
-      chickenSpeech.textContent=text;
-      chickenSpeech.classList.add('shake');
-      setTimeout(()=>{ chickenSpeech.classList.remove('shake'); },500);
-    }
-
-    function animateChickenReaction(reason){
-      const chickenSvg = document.querySelector('.chicken svg');
-      if(reason === 'player-win' || reason==='dealer-bust'){
-        // счастливая курица --> покачивание
-        chickenSvg.classList.add('shake');
-        setTimeout(()=>{chickenSvg.classList.remove('shake');},600);
-      } else if(reason === 'dealer-win' || reason==='player-bust'){
-        // курица подмигнет (небольшая анимация)
-        // можно добавить эффект позже
-      }
-    }
-
-    // Клавиши для доступа
-    document.addEventListener('keydown', e=>{
-      if(e.key==='h' || e.key==='H') playerHit();
-      if(e.key==='s' || e.key==='S') playerStand();
-      if(e.key==='n' || e.key==='N') startGame();
-    });
+    // Инициализация
+    showLog('Жми Новая, Шурик! 🐔💥');
+    // Мелкие анимации курицы
+    setInterval(()=>{ const phrases=["Я вижу твои карты, Шурик...","Готовься к потрясению","Чёрт, у неё отличный рейд!","Ai noroc, sau doar skill?"]; chickenSay(phrases[Math.floor(Math.random()*phrases.length)]); },12000);
   </script>
 </body>
 </html>
