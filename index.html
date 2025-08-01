@@ -3,83 +3,108 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Blackjack против Курицы</title>
+  <title>Blackjack против Курицы 🐔</title>
   <style>
     body {
+      margin: 0;
+      padding: 0;
       font-family: 'Comic Sans MS', cursive;
-      background: url('https://i.imgur.com/9g7P4xW.jpg') no-repeat center center fixed;
+      background: url('https://i.imgur.com/U5f3pda.jpg') no-repeat center center fixed;
       background-size: cover;
       color: #fff;
       text-align: center;
-      margin: 0;
-      padding: 0;
     }
+
     h1 {
       margin-top: 20px;
-      font-size: 2em;
-      text-shadow: 2px 2px 4px #000;
+      font-size: 2.5em;
+      text-shadow: 2px 2px 8px #000;
     }
+
     #game {
-      margin-top: 20px;
-      background-color: rgba(0, 0, 0, 0.7);
+      margin: 30px auto;
       padding: 20px;
-      border-radius: 10px;
-      display: inline-block;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 15px;
+      width: 90%;
+      max-width: 400px;
     }
+
     button {
       margin: 10px;
-      padding: 10px 20px;
+      padding: 12px 24px;
       font-size: 1em;
-      border: none;
-      border-radius: 5px;
+      font-weight: bold;
       background-color: #ffd700;
-      color: #000;
+      border: none;
+      border-radius: 10px;
       cursor: pointer;
-      transition: 0.3s;
+      transition: background 0.3s;
     }
+
     button:hover {
-      background-color: #ffa500;
+      background-color: #ffb700;
     }
+
     #chicken {
-      width: 150px;
-      height: 150px;
-      margin: 20px auto;
-      animation: bob 1s infinite alternate;
+      width: 120px;
+      height: auto;
+      animation: dance 1s infinite alternate;
+      margin-bottom: 10px;
     }
-    @keyframes bob {
-      from { transform: translateY(0px); }
-      to { transform: translateY(-10px); }
+
+    @keyframes dance {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-10px); }
     }
-    @media (max-width: 600px) {
-      h1 { font-size: 1.5em; }
-      button { font-size: 0.9em; }
+
+    p {
+      font-size: 1.1em;
+      margin: 10px 0;
+    }
+
+    @media screen and (max-width: 600px) {
+      h1 { font-size: 1.8em; }
+      button { font-size: 0.9em; padding: 10px 18px; }
     }
   </style>
 </head>
 <body>
-  <h1>Blackjack против Курицы 🐔</h1>
+  <h1>Blackjack против Курицы 🃏🐔</h1>
   <div id="game">
-    <img id="chicken" src="https://i.imgur.com/fqYDA8E.gif" alt="Курица крупье" />
+    <img id="chicken" src="https://i.imgur.com/zPb0X9K.gif" alt="Курица-крупье" />
     <p id="balance">Баланс: 50000 MDL</p>
     <p id="status">Сделайте ставку и начнем игру!</p>
-    <button onclick="startGame()">Начать игру</button>
-    <button onclick="hit()">Взять карту</button>
-    <button onclick="stand()">Хватит</button>
+    <button onclick="startGame()">🎲 Начать игру</button>
+    <button onclick="hit()">🃏 Взять карту</button>
+    <button onclick="stand()">✋ Хватит</button>
   </div>
+
   <script>
     let balance = 50000;
     let playerTotal = 0;
     let dealerTotal = 0;
 
+    function getCard() {
+      return Math.floor(Math.random() * 11) + 1;
+    }
+
+    function updateBalance() {
+      document.getElementById("balance").innerText = `Баланс: ${balance} MDL`;
+    }
+
+    function updateStatus(msg) {
+      document.getElementById("status").innerText = msg;
+    }
+
     function startGame() {
       playerTotal = getCard() + getCard();
       dealerTotal = getCard();
-      updateStatus(`Ваши очки: ${playerTotal}. Ходите или стойте.`);
+      updateStatus(`Ваши очки: ${playerTotal}. Еще карту или хватит?`);
     }
 
     function hit() {
-      const card = getCard();
-      playerTotal += card;
+      playerTotal += getCard();
       if (playerTotal > 21) {
         updateStatus(`Перебор! У вас ${playerTotal}. Курица победила! 🐔`);
         balance -= 1000;
@@ -91,30 +116,18 @@
 
     function stand() {
       dealerTotal += getCard();
-      let result = "";
+      let message = "";
       if (dealerTotal > 21 || playerTotal > dealerTotal) {
-        result = "Вы победили курицу! 🥳";
+        message = `Вы победили курицу! 🥳 (${playerTotal} vs ${dealerTotal})`;
         balance += 1000;
       } else if (playerTotal === dealerTotal) {
-        result = "Ничья с курицей. 🐔";
+        message = `Ничья! 🐔 (${playerTotal} vs ${dealerTotal})`;
       } else {
-        result = "Курица победила! 🐔";
+        message = `Курица победила! 🐔 (${playerTotal} vs ${dealerTotal})`;
         balance -= 1000;
       }
-      updateStatus(`${result} Ваши очки: ${playerTotal}, курицы: ${dealerTotal}`);
+      updateStatus(message);
       updateBalance();
-    }
-
-    function getCard() {
-      return Math.floor(Math.random() * 11) + 1;
-    }
-
-    function updateBalance() {
-      document.getElementById("balance").innerText = `Баланс: ${balance} MDL`;
-    }
-
-    function updateStatus(text) {
-      document.getElementById("status").innerText = text;
     }
   </script>
 </body>
