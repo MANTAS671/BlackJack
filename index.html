@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blackjack против Курицы</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive;
+      background: url('https://i.imgur.com/9g7P4xW.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      margin-top: 20px;
+      font-size: 2em;
+      text-shadow: 2px 2px 4px #000;
+    }
+    #game {
+      margin-top: 20px;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+      display: inline-block;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      background-color: #ffd700;
+      color: #000;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #ffa500;
+    }
+    #chicken {
+      width: 150px;
+      height: 150px;
+      margin: 20px auto;
+      animation: bob 1s infinite alternate;
+    }
+    @keyframes bob {
+      from { transform: translateY(0px); }
+      to { transform: translateY(-10px); }
+    }
+    @media (max-width: 600px) {
+      h1 { font-size: 1.5em; }
+      button { font-size: 0.9em; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Blackjack против Курицы 🐔</h1>
+  <div id="game">
+    <img id="chicken" src="https://i.imgur.com/fqYDA8E.gif" alt="Курица крупье" />
+    <p id="balance">Баланс: 50000 MDL</p>
+    <p id="status">Сделайте ставку и начнем игру!</p>
+    <button onclick="startGame()">Начать игру</button>
+    <button onclick="hit()">Взять карту</button>
+    <button onclick="stand()">Хватит</button>
+  </div>
+  <script>
+    let balance = 50000;
+    let playerTotal = 0;
+    let dealerTotal = 0;
+
+    function startGame() {
+      playerTotal = getCard() + getCard();
+      dealerTotal = getCard();
+      updateStatus(`Ваши очки: ${playerTotal}. Ходите или стойте.`);
+    }
+
+    function hit() {
+      const card = getCard();
+      playerTotal += card;
+      if (playerTotal > 21) {
+        updateStatus(`Перебор! У вас ${playerTotal}. Курица победила! 🐔`);
+        balance -= 1000;
+      } else {
+        updateStatus(`Ваши очки: ${playerTotal}. Еще карту или хватит?`);
+      }
+      updateBalance();
+    }
+
+    function stand() {
+      dealerTotal += getCard();
+      let result = "";
+      if (dealerTotal > 21 || playerTotal > dealerTotal) {
+        result = "Вы победили курицу! 🥳";
+        balance += 1000;
+      } else if (playerTotal === dealerTotal) {
+        result = "Ничья с курицей. 🐔";
+      } else {
+        result = "Курица победила! 🐔";
+        balance -= 1000;
+      }
+      updateStatus(`${result} Ваши очки: ${playerTotal}, курицы: ${dealerTotal}`);
+      updateBalance();
+    }
+
+    function getCard() {
+      return Math.floor(Math.random() * 11) + 1;
+    }
+
+    function updateBalance() {
+      document.getElementById("balance").innerText = `Баланс: ${balance} MDL`;
+    }
+
+    function updateStatus(text) {
+      document.getElementById("status").innerText = text;
+    }
+  </script>
+</body>
+</html>
