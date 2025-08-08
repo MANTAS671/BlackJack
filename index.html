@@ -2,174 +2,165 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>HTML RPG</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monkey Blackjack 🐒</title>
   <style>
-    * { box-sizing: border-box; }
     body {
-      margin: 0; font-family: Arial, sans-serif;
-      background: #111; color: #fff; display: flex; flex-direction: column; align-items: center;
-    }
-    h1 { margin-top: 10px; }
-
-    #game {
-      display: grid;
-      grid-template-columns: repeat(10, 32px);
-      grid-template-rows: repeat(10, 32px);
-      gap: 2px;
-      margin-top: 20px;
-    }
-
-    .cell {
-      width: 32px; height: 32px;
-      background: #333;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px;
-    }
-
-    .player { background: #0f0; }
-    .enemy { background: #800; }
-    .gold { background: gold; color: black; }
-    .boss  { background: purple; }
-
-    #hud {
-      margin-top: 20px;
+      margin: 0;
+      padding: 0;
+      background: url('https://i.imgur.com/n9z3sLg.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      color: #fff;
       text-align: center;
     }
-
-    #controls {
-      display: flex; gap: 10px; margin-top: 10px;
-      flex-wrap: wrap; justify-content: center;
+    h1 {
+      margin-top: 20px;
+      text-shadow: 2px 2px #000;
     }
-
-    .btn {
-      padding: 10px 15px;
-      background: #222;
-      border: 1px solid #555;
-      color: white;
+    .game {
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 20px;
+      padding: 20px;
+      max-width: 400px;
+      margin: auto;
+      box-shadow: 0 0 20px #000;
+    }
+    .cards {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    .card {
+      width: 60px;
+      height: 90px;
+      background-color: white;
+      color: black;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+      transform: rotate(0deg);
+      animation: drop 0.4s ease;
+    }
+    @keyframes drop {
+      0% { transform: translateY(-100px) rotate(-10deg); opacity: 0; }
+      100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    }
+    .buttons {
+      margin-top: 15px;
+    }
+    button {
+      background-color: #fdd835;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      border-radius: 12px;
       font-size: 16px;
-      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
     }
-
-    .btn:active {
-      background: #444;
+    button:hover {
+      background-color: #fff176;
+      transform: scale(1.05);
     }
-
+    .msg {
+      font-size: 18px;
+      margin-top: 15px;
+    }
+    .monkey {
+      font-size: 28px;
+    }
   </style>
 </head>
 <body>
+  <h1>🐒 Monkey Blackjack</h1>
+  <div class="game">
+    <div class="monkey">🕶️ Обезьян Эдвард приветствует тебя!</div>
+    <h2>Твои карты</h2>
+    <div id="player-cards" class="cards"></div>
+    <h2>Карты крупье</h2>
+    <div id="dealer-cards" class="cards"></div>
 
-  <h1>Mini RPG</h1>
-  <div id="game"></div>
-  <div id="hud">
-    ❤️ HP: <span id="hp">10</span> |
-    🪙 Gold: <span id="gold">0</span>
-  </div>
-
-  <!-- Controls for mobile -->
-  <div id="controls">
-    <button class="btn" onclick="move('up')">⬆️</button><br>
-    <button class="btn" onclick="move('left')">⬅️</button>
-    <button class="btn" onclick="move('down')">⬇️</button>
-    <button class="btn" onclick="move('right')">➡️</button>
+    <div class="buttons">
+      <button onclick="hit()">Взять карту 🍌</button>
+      <button onclick="stand()">Хватит 🙈</button>
+      <button onclick="restart()">Заново 🔁</button>
+    </div>
+    <div class="msg" id="message"></div>
   </div>
 
   <script>
-    const mapSize = 10;
-    const game = document.getElementById('game');
-    const hpSpan = document.getElementById('hp');
-    const goldSpan = document.getElementById('gold');
+    const suits = ['♥', '♦', '♣', '♠'];
+    const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+    let deck = [];
+    let playerHand = [];
+    let dealerHand = [];
+    let gameOver = false;
 
-    let player = { x: 0, y: 0, hp: 10, gold: 0 };
-
-    const cells = [];
-
-    // Генерация карты
-    for (let y = 0; y < mapSize; y++) {
-      for (let x = 0; x < mapSize; x++) {
-        const div = document.createElement('div');
-        div.classList.add('cell');
-        div.dataset.x = x;
-        div.dataset.y = y;
-        game.appendChild(div);
-        cells.push(div);
-      }
-    }
-
-    // Размещение врагов, золота и босса
-    const enemies = [{x:2,y:3},{x:5,y:6},{x:7,y:1}];
-    const golds   = [{x:1,y:1},{x:4,y:4},{x:8,y:2}];
-    const boss    = {x:9,y:9};
-
-    function render() {
-      cells.forEach(cell => {
-        cell.className = 'cell';
-        const x = +cell.dataset.x;
-        const y = +cell.dataset.y;
-
-        if (x === player.x && y === player.y) cell.classList.add('player');
-        else if (enemies.some(e => e.x === x && e.y === y)) cell.classList.add('enemy');
-        else if (golds.some(g => g.x === x && g.y === y)) cell.classList.add('gold');
-        else if (boss.x === x && boss.y === y) cell.classList.add('boss');
-      });
-
-      hpSpan.textContent = player.hp;
-      goldSpan.textContent = player.gold;
-    }
-
-    function move(dir) {
-      if (player.hp <= 0) return alert('Ты умер! Перезагрузи страницу.');
-
-      if (dir === 'up' && player.y > 0) player.y--;
-      else if (dir === 'down' && player.y < mapSize - 1) player.y++;
-      else if (dir === 'left' && player.x > 0) player.x--;
-      else if (dir === 'right' && player.x < mapSize - 1) player.x++;
-
-      checkCell();
-      render();
-    }
-
-    function checkCell() {
-      // золото
-      const goldIndex = golds.findIndex(g => g.x === player.x && g.y === player.y);
-      if (goldIndex !== -1) {
-        player.gold += 10;
-        golds.splice(goldIndex, 1);
-        alert('Ты нашёл золото!');
-      }
-
-      // враг
-      const enemyIndex = enemies.findIndex(e => e.x === player.x && e.y === player.y);
-      if (enemyIndex !== -1) {
-        player.hp -= 2;
-        alert('Ты получил урон от врага!');
-        enemies.splice(enemyIndex, 1);
-      }
-
-      // босс
-      if (player.x === boss.x && player.y === boss.y) {
-        if (player.hp >= 5) {
-          alert('Ты победил финального босса! Победа!');
-        } else {
-          alert('Ты слишком слаб для босса и погиб.');
-          player.hp = 0;
+    function createDeck() {
+      deck = [];
+      for (let suit of suits) {
+        for (let value of values) {
+          deck.push({ suit, value });
         }
       }
+      deck.sort(() => Math.random() - 0.5);
     }
 
-    document.addEventListener('keydown', (e) => {
-      const keyMap = {
-        'ArrowUp': 'up',
-        'ArrowDown': 'down',
-        'ArrowLeft': 'left',
-        'ArrowRight': 'right',
-        'w': 'up', 's': 'down', 'a': 'left', 'd': 'right'
-      };
-      const dir = keyMap[e.key];
-      if (dir) move(dir);
-    });
+    function getCardValue(card) {
+      if (['J', 'Q', 'K'].includes(card.value)) return 10;
+      if (card.value === 'A') return 11;
+      return parseInt(card.value);
+    }
 
-    render();
-  </script>
-</body>
-</html>
+    function calculateTotal(hand) {
+      let total = hand.reduce((sum, card) => sum + getCardValue(card), 0);
+      let aces = hand.filter(c => c.value === 'A').length;
+      while (total > 21 && aces > 0) {
+        total -= 10;
+        aces--;
+      }
+      return total;
+    }
+
+    function drawCard(hand, containerId) {
+      const card = deck.pop();
+      hand.push(card);
+      const div = document.createElement('div');
+      div.className = 'card';
+      div.innerText = card.value + card.suit;
+      document.getElementById(containerId).appendChild(div);
+    }
+
+    function startGame() {
+      createDeck();
+      playerHand = [];
+      dealerHand = [];
+      gameOver = false;
+      document.getElementById('player-cards').innerHTML = '';
+      document.getElementById('dealer-cards').innerHTML = '';
+      document.getElementById('message').innerText = '';
+      drawCard(playerHand, 'player-cards');
+      drawCard(playerHand, 'player-cards');
+      drawCard(dealerHand, 'dealer-cards');
+    }
+
+    function hit() {
+      if (gameOver) return;
+      drawCard(playerHand, 'player-cards');
+      const total = calculateTotal(playerHand);
+      if (total > 21) {
+        endGame("🙈 Ты перебрал! Обезьянка грустит...");
+      }
+    }
+
+    function stand() {
+      if (gameOver) return;
+      while (calculateTotal(de
