@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blackjack Ultimate</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Blackjack Ultimate</h1>
+  <div id="game">
+    <div id="balance">Баланс: $<span id="money">500</span></div>
+    <div class="chips">
+      <button class="chip" data-value="10">$10</button>
+      <button class="chip" data-value="50">$50</button>
+      <button class="chip" data-value="100">$100</button>
+    </div>
+    <div class="dealer-area">
+      <h3>Карты дилера</h3>
+      <div class="hand" id="dealer-hand"></div>
+    </div>
+    <div class="player-area">
+      <h3>Твои карты</h3>
+      <div class="hand" id="player-hand"></div>
+    </div>
+    <div class="buttons">
+      <button id="hit">Ещё</button>
+      <button id="stand">Хватит</button>
+      <button id="double">Дабл</button>
+      <button id="split">Сплит</button>
+      <button id="deal">Раздать</button>
+    </div>
+    <div id="status"></div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
