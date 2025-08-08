@@ -75,3 +75,246 @@ index 0000000000000000000000000000000000000000..527a410d11b5913e54a12d06050f07c4
 +
 +if __name__ == '__main__':
 +    play_game()
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Блэкджек</title>
+    <style>
+        body {
+            background-color: #0a502b;
+            font-family: Arial, sans-serif;
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            margin-top: 0;
+        }
+        #table {
+            margin: 0 auto;
+            max-width: 900px;
+        }
+        .hand {
+            display: flex;
+            justify-content: center;
+            min-height: 160px;
+            margin-bottom: 20px;
+        }
+        .card {
+            width: 80px;
+            height: 120px;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #333;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+            margin: 0 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 6px;
+            font-weight: bold;
+            position: relative;
+            transform: translateY(-200px) rotate(-15deg);
+            opacity: 0;
+            transition: transform .6s ease, opacity .6s ease;
+        }
+        .card.red {
+            color: #d40000;
+        }
+        .card.black {
+            color: #000;
+        }
+        .card.show {
+            transform: translateY(0) rotate(0);
+            opacity: 1;
+        }
+        .controls {
+            margin-top: 20px;
+        }
+        .controls button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background .3s;
+        }
+        .controls button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        #btn-deal { background: #007bff; color:#fff; }
+        #btn-hit { background: #28a745; color:#fff; }
+        #btn-stand { background: #ffc107; color:#000; }
+        .info {
+            margin: 10px 0;
+        }
+        #message {
+            font-size: 22px;
+            min-height: 30px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div id="table">
+    <h1>Блэкджек</h1>
+    <div class="info">Очки дилера: <span id="dealer-score">0</span></div>
+    <div class="hand" id="dealer-hand"></div>
+    <div class="info">Ваши очки: <span id="player-score">0</span></div>
+    <div class="hand" id="player-hand"></div>
+    <div class="controls">
+        <button id="btn-deal">Новая игра</button>
+        <button id="btn-hit" disabled>Взять карту</button>
+        <button id="btn-stand" disabled>Стоп</button>
+    </div>
+    <div id="message"></div>
+</div>
+<script>
+    const suits = ['\u2660', '\u2665', '\u2666', '\u2663'];
+    const ranks = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+    const values = { '2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,'J':10,'Q':10,'K':10,'A':11 };
+    let deck = [];
+    let playerHand = [];
+    let dealerHand = [];
+    const dealerHandElem = document.getElementById('dealer-hand');
+    const playerHandElem = document.getElementById('player-hand');
+    const dealerScoreElem = document.getElementById('dealer-score');
+    const playerScoreElem = document.getElementById('player-score');
+    const messageElem = document.getElementById('message');
+    const btnDeal = document.getElementById('btn-deal');
+    const btnHit = document.getElementById('btn-hit');
+    const btnStand = document.getElementById('btn-stand');
+
+    function createDeck() {
+        deck = [];
+        for (let suit of suits) {
+            for (let rank of ranks) {
+                deck.push({suit, rank});
+            }
+        }
+    }
+
+    function shuffle() {
+        for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+    }
+
+    function dealCard(hand, element) {
+        const card = deck.pop();
+        hand.push(card);
+        const cardDiv = document.createElement('div');
+        cardDiv.classList.add('card');
+        const color = (card.suit === '\u2665' || card.suit === '\u2666') ? 'red' : 'black';
+        cardDiv.classList.add(color);
+        cardDiv.innerHTML = `<span>${card.rank}</span><span style="align-self:flex-end">${card.suit}</span>`;
+        element.appendChild(cardDiv);
+        requestAnimationFrame(() => cardDiv.classList.add('show'));
+        return card;
+    }
+
+    function calculate(hand) {
+        let value = hand.reduce((sum, card) => sum + values[card.rank], 0);
+        let aces = hand.filter(card => card.rank === 'A').length;
+        while (value > 21 && aces > 0) {
+            value -= 10;
+            aces--;
+        }
+        return value;
+    }
+
+    function updateScores(hideDealer=false) {
+        playerScoreElem.textContent = calculate(playerHand);
+        dealerScoreElem.textContent = hideDealer ? '?' : calculate(dealerHand);
+    }
+
+    function clearBoard() {
+        dealerHand = [];
+        playerHand = [];
+        dealerHandElem.innerHTML = '';
+        playerHandElem.innerHTML = '';
+        messageElem.textContent = '';
+    }
+
+    function startGame() {
+        clearBoard();
+        createDeck();
+        shuffle();
+        dealCard(playerHand, playerHandElem);
+        dealCard(dealerHand, dealerHandElem);
+        dealCard(playerHand, playerHandElem);
+        const hiddenCard = dealCard(dealerHand, dealerHandElem);
+        dealerHandElem.lastChild.classList.remove('show');
+        dealerHandElem.lastChild.style.background = '#444';
+        dealerHandElem.lastChild.style.color = '#444';
+        dealerHandElem.lastChild.id = 'hidden';
+        updateScores(true);
+        btnHit.disabled = false;
+        btnStand.disabled = false;
+    }
+
+    function endGame() {
+        btnHit.disabled = true;
+        btnStand.disabled = true;
+    }
+
+    btnDeal.addEventListener('click', () => {
+        startGame();
+    });
+
+    btnHit.addEventListener('click', () => {
+        dealCard(playerHand, playerHandElem);
+        const playerScore = calculate(playerHand);
+        updateScores(true);
+        if (playerScore > 21) {
+            revealDealer();
+            messageElem.textContent = 'Перебор! Вы проиграли.';
+            endGame();
+        }
+    });
+
+    btnStand.addEventListener('click', () => {
+        revealDealer();
+        dealerTurn();
+    });
+
+    function revealDealer() {
+        const hidden = document.getElementById('hidden');
+        if (hidden) {
+            hidden.removeAttribute('id');
+            hidden.style.background = '#fff';
+            hidden.style.color = (dealerHand[1].suit === '\u2665' || dealerHand[1].suit === '\u2666') ? '#d40000' : '#000';
+            requestAnimationFrame(() => hidden.classList.add('show'));
+        }
+        updateScores(false);
+    }
+
+    function dealerTurn() {
+        let dealerScore = calculate(dealerHand);
+        while (dealerScore < 17) {
+            dealCard(dealerHand, dealerHandElem);
+            dealerScore = calculate(dealerHand);
+            updateScores(false);
+        }
+        const playerScore = calculate(playerHand);
+        decideWinner(playerScore, dealerScore);
+    }
+
+    function decideWinner(playerScore, dealerScore) {
+        if (dealerScore > 21 || playerScore > dealerScore) {
+            messageElem.textContent = 'Вы выиграли!';
+        } else if (dealerScore > playerScore) {
+            messageElem.textContent = 'Дилер победил.';
+        } else {
+            messageElem.textContent = 'Ничья.';
+        }
+        endGame();
+    }
+</script>
+</body>
+</html>
