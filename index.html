@@ -1,0 +1,77 @@
+diff --git a//dev/null b/blackjack.py
+index 0000000000000000000000000000000000000000..527a410d11b5913e54a12d06050f07c4df91dfe6 100644
+--- a//dev/null
++++ b/blackjack.py
+@@ -0,0 +1,72 @@
++import random
++
++SUITS = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
++RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
++VALUES = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
++          'J': 10, 'Q': 10, 'K': 10, 'A': 11}
++
++
++def create_deck():
++    """Create a shuffled deck of 52 cards."""
++    deck = [(rank, suit) for suit in SUITS for rank in RANKS]
++    random.shuffle(deck)
++    return deck
++
++
++def calculate_hand_value(hand):
++    """Calculate the best hand value accounting for Aces."""
++    value = sum(VALUES[rank] for rank, _ in hand)
++    aces = sum(1 for rank, _ in hand if rank == 'A')
++    while value > 21 and aces:
++        value -= 10
++        aces -= 1
++    return value
++
++
++def display_hand(hand):
++    return ', '.join(f"{rank} of {suit}" for rank, suit in hand)
++
++
++def play_game():
++    deck = create_deck()
++    player = [deck.pop(), deck.pop()]
++    dealer = [deck.pop(), deck.pop()]
++
++    print(f"Dealer shows: {display_hand([dealer[0]])}")
++    print(f"Your hand: {display_hand(player)} (value: {calculate_hand_value(player)})")
++
++    # Player turn
++    while True:
++        move = input('Hit or stand? [h/s]: ').strip().lower()
++        if move == 'h':
++            player.append(deck.pop())
++            value = calculate_hand_value(player)
++            print(f"You draw: {display_hand([player[-1]])}")
++            print(f"Your hand: {display_hand(player)} (value: {value})")
++            if value > 21:
++                print('Bust! Dealer wins.')
++                return
++        elif move == 's':
++            break
++        else:
++            print('Please enter "h" to hit or "s" to stand.')
++
++    # Dealer turn
++    while calculate_hand_value(dealer) < 17:
++        dealer.append(deck.pop())
++
++    player_value = calculate_hand_value(player)
++    dealer_value = calculate_hand_value(dealer)
++
++    print(f"Dealer hand: {display_hand(dealer)} (value: {dealer_value})")
++
++    if dealer_value > 21 or player_value > dealer_value:
++        print('You win!')
++    elif dealer_value > player_value:
++        print('Dealer wins.')
++    else:
++        print('Push.')
++
++
++if __name__ == '__main__':
++    play_game()
