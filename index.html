@@ -2,234 +2,99 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Monkey Blackjack 🐒</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐒 Обезьяный Блэкджек 🎰</title>
   <style>
+    @keyframes bgPan { 0% { background-position: 0% 0%; } 50% { background-position: 50% 30%; } 100% { background-position: 100% 0%; } }
     body {
-      margin: 0;
-      font-family: 'Arial', sans-serif;
-      background: url('https://i.imgur.com/x5XfEvd.jpg') center center / cover no-repeat fixed;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      padding: 1rem;
+      margin: 0; padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('https://source.unsplash.com/1600x900/?monkey,jungle') center/cover no-repeat;
+      animation: bgPan 60s ease-in-out infinite alternate;
+      display: flex; flex-direction: column; align-items: center;
+      color: #fff; text-shadow: 1px 1px 3px #000;
     }
-
-    h1 {
-      text-shadow: 2px 2px 5px #000;
+    h1 { margin: 20px 0; font-size: 2.5em; letter-spacing: 2px; text-transform: uppercase; }
+    #balance { margin-bottom: 10px; font-size: 1.2em; }
+    #game {
+      background: rgba(0, 0, 0, 0.7); padding: 25px; border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.9); max-width: 650px; width: 95%;
     }
-
-    .game {
-      background: rgba(0,0,0,0.7);
-      padding: 20px;
-      border-radius: 15px;
-      max-width: 400px;
-      width: 100%;
-      box-shadow: 0 0 20px #000;
-    }
-
-    .cards {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 10px;
-    }
-
+    .hand { display: flex; justify-content: center; margin: 15px 0; min-height: 120px; }
     .card {
-      width: 60px;
-      height: 90px;
-      margin: 5px;
-      background-size: cover;
-      background-position: center;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-      animation: drop 0.3s ease-in;
+      width: 80px; height: 115px; margin: 0 6px;
+      transform: rotateY(90deg); transform-style: preserve-3d;
+      transition: transform 0.6s ease; backface-visibility: hidden;
     }
-
-    @keyframes drop {
-      from { transform: translateY(-20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+    .card.show { transform: rotateY(0deg); }
+    #controls { text-align: center; margin: 20px 0; }
+    #controls button {
+      margin: 5px; padding: 12px 25px; font-size: 1em; font-weight: bold;
+      text-transform: uppercase; border: none; border-radius: 8px;
+      cursor: pointer; background: rgba(255,255,255,0.2); color: #fff;
+      transition: background 0.3s, transform 0.1s;
     }
-
-    .buttons {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin: 10px 0;
-    }
-
-    button {
-      padding: 10px 15px;
-      font-size: 16px;
-      border: none;
-      border-radius: 10px;
-      background-color: #ffeb3b;
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #fff176;
-    }
-
-    .status {
-      margin-top: 10px;
-      font-size: 18px;
-      text-align: center;
-      min-height: 30px;
-    }
+    #controls button:hover:not(:disabled) { background: rgba(255,255,255,0.4); }
+    #controls button:active:not(:disabled) { transform: scale(0.95); }
+    #controls button:disabled { opacity: 0.4; cursor: not-allowed; }
+    #status { margin-top: 15px; font-size: 1.2em; min-height: 1.4em; }
   </style>
 </head>
 <body>
-  <h1>🐒 Monkey Blackjack</h1>
-  <div class="game">
-    <h2>Твои карты (<span id="player-total">0</span>)</h2>
-    <div id="player-cards" class="cards"></div>
-
-    <h2>Карты дилера (<span id="dealer-total">?</span>)</h2>
-    <div id="dealer-cards" class="cards"></div>
-
-    <div class="buttons">
-      <button onclick="hit()">Взять 🍌</button>
-      <button onclick="stand()">Хватит 🙈</button>
-      <button onclick="restart()">Заново 🔁</button>
+  <h1>🐒 Обезьяный Блэкджек 🎰</h1>
+  <div id="balance">Баланс: <span id="banana-balance">100</span> 🍌</div>
+  <div id="game">
+    <div><strong>Дилер:</strong> <span id="dealer-score">0</span></div>
+    <div class="hand" id="dealer-hand"></div>
+    <div><strong>Игрок:</strong> <span id="player-score">0</span></div>
+    <div class="hand" id="player-hand"></div>
+    <div id="controls">
+      <button id="btn-hit">Взять</button>
+      <button id="btn-stand">Стоп</button>
+      <button id="btn-double">Удвоить</button>
+      <button id="btn-split">Разделить</button>
+      <button id="btn-new">Новая игра</button>
     </div>
-
-    <div class="status" id="message"></div>
+    <div id="status"></div>
   </div>
-
   <script>
-    const suits = ['C', 'D', 'H', 'S'];
-    const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-    let deck = [];
-    let playerHand = [];
-    let dealerHand = [];
-    let gameOver = false;
-    let dealerHiddenCard;
+    const deckBaseUrl = 'https://deckofcardsapi.com/static/img/';
+    let deck = [], playerHand = [], dealerHand = [], currentHand = 'player';
+    let bananaBalance = 100, betAmount = 10;
+    let canSplit = false, doubled = false;
+    const monkeyComments = {
+      start: ['Ха-ха, думаешь сможешь меня обыграть?', 'Почувствуй мощь бананов!', 'Я готов к игре, маленький человек!'],
+      hit: ['Ещё карту? Дерзай!', 'Не торопись, подумай ещё!', 'Будь осторожен, друг!'],
+      stand: ['Стоп? Ну-ну...', 'Ты сдаёшься? Слабак!', 'Ждём результатов...'],
+      win: ['Ух ты, ты выиграл... Ну ладно.', 'Чёрт, повезло тебе!', 'Хмм, засчитываю!'],
+      lose: ['Обезьяна вас выиграла. Попробуйте снова. Вы потеряли бананы.', 'Мой триумф! Ваши бананы мои!', 'Ща я возьму твою еду! Бахахаха!'],
+      push: ['Ничья! Сегодня не мой день.', 'Ничья. Возьми ещё бананов и вернись!', 'Карта легла! Ничья.']
+    };
+    function getRandomComment(type) { const arr = monkeyComments[type]; return arr[Math.floor(Math.random()*arr.length)]; }
 
-    function createDeck() {
-      deck = [];
-      for (let s of suits) {
-        for (let v of values) {
-          deck.push({suit: s, value: v});
-        }
-      }
-      deck.sort(() => Math.random() - 0.5);
+    function buildDeck() {
+      const suits = { '♠': 'S', '♥': 'H', '♦': 'D', '♣': 'C' };
+      const values = ['A','2','3','4','5','6','7','8','9','10','J','Q','K']; deck = [];
+      Object.entries(suits).forEach(([sym, code]) => values.forEach(v => {
+        const codeV = v==='10'?'0'+code:v+code;
+        deck.push({ suitSym: sym, code: codeV, value: v });
+      }));
     }
-
-    function getCardImage(card) {
-      return `https://raw.githubusercontent.com/hayeah/playing-cards-assets/master/png/${card.value}${card.suit}.png`;
-    }
-
-    function getValue(card) {
-      if (['J','Q','K'].includes(card.value)) return 10;
-      if (card.value === 'A') return 11;
-      return parseInt(card.value);
-    }
-
-    function calculateTotal(hand) {
-      let total = 0;
-      let aces = 0;
-      hand.forEach(card => {
-        total += getValue(card);
-        if (card.value === 'A') aces++;
-      });
-      while (total > 21 && aces > 0) {
-        total -= 10;
-        aces--;
-      }
-      return total;
-    }
-
-    function drawCard(hand, containerId, hidden = false) {
-      const card = deck.pop();
-      hand.push(card);
-      const div = document.createElement('div');
-      div.className = 'card';
-      div.style.backgroundImage = hidden
-        ? "url('https://raw.githubusercontent.com/hayeah/playing-cards-assets/master/png/back.png')"
-        : `url(${getCardImage(card)})`;
-      document.getElementById(containerId).appendChild(div);
-      return card;
-    }
-
-    function startGame() {
-      createDeck();
-      playerHand = [];
-      dealerHand = [];
-      gameOver = false;
-      document.getElementById("player-cards").innerHTML = '';
-      document.getElementById("dealer-cards").innerHTML = '';
-      document.getElementById("message").innerText = '';
-      document.getElementById("player-total").innerText = '0';
-      document.getElementById("dealer-total").innerText = '?';
-
-      drawCard(playerHand, "player-cards");
-      drawCard(playerHand, "player-cards");
-      drawCard(dealerHand, "dealer-cards");
-      dealerHiddenCard = drawCard(dealerHand, "dealer-cards", true);
-
-      updateTotals();
-    }
-
-    function hit() {
-      if (gameOver) return;
-      drawCard(playerHand, "player-cards");
-      updateTotals();
-      if (calculateTotal(playerHand) > 21) {
-        endGame("🙈 Перебор! Обезьянка грустит...");
-      }
-    }
-
-    function stand() {
-      if (gameOver) return;
-      document.getElementById("dealer-cards").innerHTML = '';
-      dealerHand.forEach(card => {
-        const div = document.createElement('div');
-        div.className = 'card';
-        div.style.backgroundImage = `url(${getCardImage(card)})`;
-        document.getElementById("dealer-cards").appendChild(div);
-      });
-
-      while (calculateTotal(dealerHand) < 17) {
-        drawCard(dealerHand, "dealer-cards");
-      }
-
-      const playerTotal = calculateTotal(playerHand);
-      const dealerTotal = calculateTotal(dealerHand);
-      updateTotals(true);
-
-      if (dealerTotal > 21 || playerTotal > dealerTotal) {
-        endGame("🎉 Победа! Обезьянка танцует от счастья!");
-      } else if (playerTotal < dealerTotal) {
-        endGame("💀 Увы, дилер-обезьяна победил.");
-      } else {
-        endGame("🤝 Ничья! Обезьяны уважают друг друга.");
-      }
-    }
-
-    function endGame(msg) {
-      gameOver = true;
-      document.getElementById("message").innerText = msg;
-    }
-
-    function restart() {
-      startGame();
-    }
-
-    function updateTotals(revealDealer = false) {
-      const playerTotal = calculateTotal(playerHand);
-      document.getElementById("player-total").innerText = playerTotal;
-      if (revealDealer) {
-        document.getElementById("dealer-total").innerText = calculateTotal(dealerHand);
-      }
-    }
-
-    window.onload = startGame;
+    function shuffle() { for (let i=deck.length-1; i>0; i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];} }
+    function draw(){ let c=deck.pop(); if(!c){ buildDeck(); shuffle(); c=deck.pop(); } return c; }
+    function handValue(hand){ let sum=0, aces=0; hand.forEach(c=>{ if(!c||!c.value) return; if(['J','Q','K'].includes(c.value)) sum+=10; else if(c.value==='A'){sum+=11; aces++;} else sum+=Number(c.value);}); while(sum>21&&aces>0){sum-=10; aces--;} return sum; }
+    function renderHand(container,hand){container.innerHTML=''; hand.forEach((c,idx)=>{ if(!c||!c.code) return; const img=document.createElement('img'); img.className='card'; img.alt=`${c.value}${c.suitSym}`; img.src=`${deckBaseUrl}${c.code}.png`; container.appendChild(img); setTimeout(()=>img.classList.add('show'),idx*150); });}
+    function update(){ document.getElementById('banana-balance').innerText = bananaBalance; document.getElementById('player-score').innerText=handValue(playerHand); document.getElementById('dealer-score').innerText=currentHand==='dealer'?handValue(dealerHand):'?'; renderHand(document.getElementById('player-hand'),playerHand); renderHand(document.getElementById('dealer-hand'),dealerHand); canSplit=playerHand.length===2&&playerHand[0]?.value===playerHand[1]?.value; document.getElementById('btn-split').disabled=!canSplit; document.getElementById('btn-double').disabled=playerHand.length!==2||doubled; }
+    function endGame(msgType){ const msg=getRandomComment(msgType); document.getElementById('status').innerText = msg; ['btn-hit','btn-stand','btn-double','btn-split'].forEach(id=>document.getElementById(id).disabled=true); document.getElementById('dealer-score').innerText = handValue(dealerHand); }
+    function dealerPlay(){ while(handValue(dealerHand)<17){ const c=draw(); if(c) dealerHand.push(c); else break; } }
+    function compare(){ const pv=handValue(playerHand), dv=handValue(dealerHand); if(pv>21){ bananaBalance-=betAmount; return 'lose'; } if(dv>21){ bananaBalance+=betAmount; return 'win'; } if(pv===dv) return 'push'; if(pv>dv){ bananaBalance+=betAmount; return 'win'; } else { bananaBalance-=betAmount; return 'lose'; }}
+    document.getElementById('btn-hit').onclick=()=>{ playerHand.push(draw()); update(); document.getElementById('status').innerText=getRandomComment('hit'); if(handValue(playerHand)>21){ currentHand='dealer'; dealerPlay(); endGame(compare()); }};
+    document.getElementById('btn-stand').onclick=()=>{ currentHand='dealer'; dealerPlay(); const result=compare(); endGame(result); };
+    document.getElementById('btn-double').onclick=()=>{ playerHand.push(draw()); doubled=true; betAmount*=2; update(); currentHand='dealer'; dealerPlay(); endGame(compare()); };
+    document.getElementById('btn-split').onclick=()=>{ if(canSplit){ playerHand=[playerHand[0],draw()||playerHand[0]]; update(); document.getElementById('status').innerText='Разделили! Играем первую.';} };
+    document.getElementById('btn-new').onclick=initGame;
+    function initGame(){ buildDeck(); shuffle(); playerHand=[draw(),draw()].filter(Boolean); dealerHand=[draw(),draw()].filter(Boolean); currentHand='player'; betAmount=10; doubled=false; document.getElementById('status').innerText=getRandomComment('start'); ['btn-hit','btn-stand','btn-double','btn-split'].forEach(id=>document.getElementById(id).disabled=false); update(); }
+    window.onload=initGame;
   </script>
 </body>
 </html>
