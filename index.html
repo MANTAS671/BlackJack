@@ -1,166 +1,170 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Monkey Blackjack 🐒</title>
   <style>
     body {
-      margin: 0;
-      padding: 0;
-      background: url('https://i.imgur.com/n9z3sLg.jpg') no-repeat center center fixed;
+      background: #222 url('https://i.imgur.com/n9z3sLg.jpg') no-repeat center center fixed;
       background-size: cover;
-      font-family: 'Comic Sans MS', cursive, sans-serif;
+      font-family: sans-serif;
       color: #fff;
       text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    .game {
+      background: rgba(0,0,0,0.7);
+      border-radius: 15px;
+      margin: 20px auto;
+      padding: 20px;
+      max-width: 400px;
+      box-shadow: 0 0 10px #000;
     }
     h1 {
       margin-top: 20px;
       text-shadow: 2px 2px #000;
     }
-    .game {
-      background: rgba(0, 0, 0, 0.6);
-      border-radius: 20px;
-      padding: 20px;
-      max-width: 400px;
-      margin: auto;
-      box-shadow: 0 0 20px #000;
-    }
     .cards {
       display: flex;
       justify-content: center;
-      flex-wrap: wrap;
       gap: 10px;
+      flex-wrap: wrap;
       margin: 10px 0;
     }
     .card {
       width: 60px;
       height: 90px;
-      background-color: white;
-      color: black;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
+      background: #fff;
+      color: #000;
+      font-size: 20px;
       font-weight: bold;
-      box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
-      transform: rotate(0deg);
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       animation: drop 0.4s ease;
     }
     @keyframes drop {
-      0% { transform: translateY(-100px) rotate(-10deg); opacity: 0; }
-      100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      from { transform: translateY(-100px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
-    .buttons {
-      margin-top: 15px;
-    }
-    button {
-      background-color: #fdd835;
+    .buttons button {
+      background: #fdd835;
       border: none;
-      padding: 10px 20px;
       margin: 5px;
-      border-radius: 12px;
+      padding: 10px 15px;
+      border-radius: 10px;
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
-      transition: 0.2s;
     }
-    button:hover {
-      background-color: #fff176;
-      transform: scale(1.05);
-    }
-    .msg {
-      font-size: 18px;
-      margin-top: 15px;
-    }
-    .monkey {
-      font-size: 28px;
+    .buttons button:hover {
+      background: #fff176;
     }
   </style>
 </head>
 <body>
   <h1>🐒 Monkey Blackjack</h1>
   <div class="game">
-    <div class="monkey">🕶️ Обезьян Эдвард приветствует тебя!</div>
     <h2>Твои карты</h2>
     <div id="player-cards" class="cards"></div>
-    <h2>Карты крупье</h2>
+    <h2>Карты дилера</h2>
     <div id="dealer-cards" class="cards"></div>
 
     <div class="buttons">
-      <button onclick="hit()">Взять карту 🍌</button>
+      <button onclick="hit()">Взять 🍌</button>
       <button onclick="stand()">Хватит 🙈</button>
-      <button onclick="restart()">Заново 🔁</button>
+      <button onclick="startGame()">Заново 🔁</button>
     </div>
-    <div class="msg" id="message"></div>
+    <p id="message"></p>
   </div>
 
   <script>
-    const suits = ['♥', '♦', '♣', '♠'];
-    const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
     let deck = [];
-    let playerHand = [];
-    let dealerHand = [];
+    let player = [];
+    let dealer = [];
     let gameOver = false;
+
+    const suits = ['♥', '♦', '♣', '♠'];
+    const values = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
 
     function createDeck() {
       deck = [];
-      for (let suit of suits) {
-        for (let value of values) {
-          deck.push({ suit, value });
+      for (let s of suits) {
+        for (let v of values) {
+          deck.push({ value: v, suit: s });
         }
       }
       deck.sort(() => Math.random() - 0.5);
     }
 
-    function getCardValue(card) {
-      if (['J', 'Q', 'K'].includes(card.value)) return 10;
+    function getValue(card) {
+      if (['J','Q','K'].includes(card.value)) return 10;
       if (card.value === 'A') return 11;
       return parseInt(card.value);
     }
 
     function calculateTotal(hand) {
-      let total = hand.reduce((sum, card) => sum + getCardValue(card), 0);
+      let total = hand.reduce((sum, c) => sum + getValue(c), 0);
       let aces = hand.filter(c => c.value === 'A').length;
-      while (total > 21 && aces > 0) {
-        total -= 10;
-        aces--;
-      }
+      while (total > 21 && aces--) total -= 10;
       return total;
     }
 
-    function drawCard(hand, containerId) {
+    function drawCard(hand, id) {
       const card = deck.pop();
       hand.push(card);
       const div = document.createElement('div');
       div.className = 'card';
-      div.innerText = card.value + card.suit;
-      document.getElementById(containerId).appendChild(div);
+      div.textContent = card.value + card.suit;
+      document.getElementById(id).appendChild(div);
     }
 
     function startGame() {
       createDeck();
-      playerHand = [];
-      dealerHand = [];
+      player = [];
+      dealer = [];
       gameOver = false;
       document.getElementById('player-cards').innerHTML = '';
       document.getElementById('dealer-cards').innerHTML = '';
-      document.getElementById('message').innerText = '';
-      drawCard(playerHand, 'player-cards');
-      drawCard(playerHand, 'player-cards');
-      drawCard(dealerHand, 'dealer-cards');
+      document.getElementById('message').textContent = '';
+      drawCard(player, 'player-cards');
+      drawCard(player, 'player-cards');
+      drawCard(dealer, 'dealer-cards');
     }
 
     function hit() {
       if (gameOver) return;
-      drawCard(playerHand, 'player-cards');
-      const total = calculateTotal(playerHand);
-      if (total > 21) {
-        endGame("🙈 Ты перебрал! Обезьянка грустит...");
+      drawCard(player, 'player-cards');
+      if (calculateTotal(player) > 21) {
+        endGame("🙊 Ты перебрал! Обезьянка в шоке!");
       }
     }
 
     function stand() {
       if (gameOver) return;
-      while (calculateTotal(de
+      while (calculateTotal(dealer) < 17) {
+        drawCard(dealer, 'dealer-cards');
+      }
+      const pt = calculateTotal(player);
+      const dt = calculateTotal(dealer);
+      if (dt > 21 || pt > dt) {
+        endGame("🎉 Ты победил! Обезьяна пляшет от радости!");
+      } else if (pt < dt) {
+        endGame("💀 Обезьяна-дилер выиграл! Но ты держался молодцом.");
+      } else {
+        endGame("🤝 Ничья! Обезьяны обнялись.");
+      }
+    }
+
+    function endGame(msg) {
+      gameOver = true;
+      document.getElementById('message').textContent = msg;
+    }
+
+    window.onload = startGame;
+  </script>
+</body>
+</html>
