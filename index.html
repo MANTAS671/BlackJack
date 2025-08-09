@@ -3,259 +3,268 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
-<title>Блэкджек против Обезьяны — vMobile+</title>
+<title>Блэкджек против Обезьяны — Mobile v2</title>
 <style>
+/* ===== THEME ===== */
 :root{
-  /* Тёмный неон */
-  --bg:#0b0f12; --bg2:#11171c;
-  --felt:#0f2a24; --felt2:#132f28;
-  --accent:#00d1b2; --accent2:#8af3e6; --danger:#ff4d6d; --ok:#30e38a; --muted:#9ab0bd;
-  --card:#fffdf7; --ink:#0b0f12; --shadow:rgba(0,0,0,.35);
-  /* Карты адаптивно: iPhone 13 высота ~844px — делаем компакт */
-  --card-w: clamp(50px, 15vw, 70px);
-  --card-h: calc(var(--card-w) * 1.44);
-  --card-r: 10px;
-  /* Safe area (нижний жест в Safari) */
+  --bg:#0e1116; --bg2:#0b0f12;
+  --felt1:#0f2a24; --felt2:#14342c;
+  --neon:#00d1b2; --neon2:#8af3e6;
+  --danger:#ff4d6d; --ok:#2dde98; --muted:#9fb4c2;
+  --card:#fffdf7; --shadow:rgba(0,0,0,.35);
+
+  /* Карты — крупнее. Авто под высоту: iPhone 13 = 844px */
+  --card-w: clamp(74px, 22vw, 100px);
+  --card-h: calc(var(--card-w) * 1.45);
+  --card-r: 12px;
+
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-t: env(safe-area-inset-top, 0px);
+  --radius: 16px;
+  --pad: 12px;
+  --fs: 15px;
 }
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;background:linear-gradient(180deg,var(--bg2),var(--bg)); color:#e9eef1; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial}
+html,body{margin:0;padding:0;background:linear-gradient(180deg,var(--bg),var(--bg2)); color:#e8eef2; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial; font-size:var(--fs); -webkit-text-size-adjust:100%}
 body{min-height:100svh; overflow-x:hidden}
 
-/* ===== Шапка ===== */
-.header{position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:8px; justify-content:space-between;
-  padding:6px 10px calc(6px + var(--safe-t)); background:#0d1419f2; border-bottom:1px solid #1a2a34; backdrop-filter: blur(8px)}
-.h-title{display:flex; align-items:center; gap:6px; font-weight:900; font-size:0.98rem}
-.h-title .monkey{font-size:1.25rem}
-.h-bank{margin-left:auto; background:#0e161a; border:1px solid #1d2a32; padding:5px 8px; border-radius:9px; font-weight:800; color:#b1fff1; font-size:.9rem}
+/* ===== HEADER ===== */
+.header{
+  position:sticky; top:0; z-index:10;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:8px 12px calc(6px + var(--safe-t));
+  background:#0c1217f2; backdrop-filter:blur(10px); border-bottom:1px solid #18232b;
+}
+.h-left{display:flex; align-items:center; gap:8px; font-weight:900}
+.h-left .monkey{font-size:1.35rem}
+.bank{background:#0f171c; border:1px solid #1e2b33; padding:6px 10px; border-radius:12px; font-weight:900; color:#affff3}
 
-/* ===== Верхняя полка ставок ===== */
-.betbar{position:sticky; top:calc(36px + var(--safe-t)); z-index:4; display:flex; align-items:center; gap:8px; padding:6px 10px; background:#0b1217ef; border-bottom:1px solid #18242b}
-.betbar .label{font-weight:800}
-#bet{width:88px; padding:7px 9px; border-radius:10px; border:1px solid #22323a; background:#0e161a; color:#dce8ee; font-weight:700}
-.chips{margin-left:auto; display:flex; gap:6px}
-.chip{min-width:38px; height:38px; border-radius:999px; display:grid; place-items:center; background:#121a20; border:1px solid #1f2c35; color:#9ed8cc; font-weight:900; font-size:.85rem}
-.btn-tiny{margin-left:6px; font-size:.9rem; color:#9ab0bd; background:transparent; border:none}
+/* ===== TABLE ===== */
+.wrap{padding:10px 12px calc(140px + var(--safe-b));}
+.table{
+  position:relative; border-radius:var(--radius);
+  background:radial-gradient(70% 90% at 50% 0%, #1b4f43, #0f2e27 55%, #0b211c 100%);
+  box-shadow:0 20px 60px #000b, inset 0 0 0 1px #ffffff12;
+  padding:10px;
+}
+.row-head{display:flex; align-items:center; gap:10px; margin-bottom:6px}
+.badge{padding:6px 10px; border-radius:999px; background:#0f171c; border:1px solid #1e2b33; color:#b6cad6; font-weight:800}
+.title{display:flex; align-items:center; gap:8px; font-weight:900}
+.score{margin-left:auto; background:#0a1216; border:1px solid #20323a; padding:8px 12px; border-radius:12px; font-weight:900; font-size:1.05rem}
 
-/* ===== Основная зона ===== */
-.wrap{display:grid; grid-template-columns:1fr; gap:8px; padding:8px 10px 92px;} /* низ зарезервирован под action-bar */
-.table{position:relative; background:
- radial-gradient(60% 80% at 50% 0%, #173b33, #0e2621 60%, #0b1f1b 100%),
- linear-gradient(180deg, var(--felt2), var(--felt));
- border-radius:14px; box-shadow:0 14px 38px #000c, inset 0 0 0 1px #ffffff12; padding:10px; overflow:hidden}
-.glow{position:absolute; inset:-10% -10% auto -10%; height:48%; background:radial-gradient(80% 100% at 50% 0%, #00d1b226 0, #ffffff00 60%)}
+.hand{display:flex; align-items:center; gap:12px; min-height:var(--card-h); padding:6px 0; position:relative}
+.hand.is-active{outline:2px dashed #00d1b299; outline-offset:8px; border-radius:12px; animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{outline-color:#8af3e6aa; filter:drop-shadow(0 0 12px #00d1b244)}}
+.comment{margin:6px 0 10px; font-style:italic; opacity:.95; line-height:1.25; min-height:1.25em}
 
-.name-row{display:flex; align-items:center; gap:8px; font-weight:800; font-size:.98rem}
-.avatar{width:30px;height:30px;border-radius:50%; background:#1d3732; display:grid; place-items:center; border:1px solid #2a4e46}
-.score{margin-left:auto; font-weight:900; padding:4px 8px; border-radius:8px; background:#0b141680; border:1px solid #1d2a32}
-.badge{margin-left:8px; padding:4px 8px; border-radius:999px; background:#0d161a; border:1px solid #1b2b32; font-weight:800; font-size:.8rem; color:#b6c8d3}
-.comment{margin:2px 0 6px; font-style:italic; opacity:.95; font-size:.92rem}
-
-.dealer-area,.player-area{display:grid; gap:6px; margin-bottom:4px}
-.hands{display:flex; flex-direction:column; gap:6px}
-.hand{display:flex; align-items:flex-start; gap:6px; flex-wrap:wrap; min-height:var(--card-h); padding:2px 0}
-.hand.is-active{outline:2px dashed #00d1b2aa; outline-offset:6px; border-radius:12px; padding:4px; animation:pulse 1.2s ease-in-out infinite}
-@keyframes pulse{50%{outline-color:#8af3e6aa; filter:drop-shadow(0 0 8px #00d1b240)}}
-
-/* ===== Карты ===== */
+/* Карты — большие, с фан-аут при 4+ */
 .card{width:var(--card-w); height:var(--card-h); border-radius:var(--card-r); background:var(--card);
-  box-shadow:0 8px 18px var(--shadow), inset 0 0 0 1px #e7e0cf;
-  position:relative; transform:translateY(-12px) scale(.98); opacity:0; animation:deal .40s cubic-bezier(.21,.98,.6,.99) forwards}
+  box-shadow:0 10px 22px var(--shadow), inset 0 0 0 1px #e7e0cf;
+  position:relative; transform:translateY(-10px) scale(.98); opacity:0; animation:deal .38s cubic-bezier(.21,.98,.6,.99) forwards}
 @keyframes deal{to{transform:translateY(0) scale(1); opacity:1}}
-.card svg{width:100%; height:100%}
+.card svg{width:100%;height:100%}
 .hidden .face{visibility:hidden}
 .hidden::after{
   content:"🂠"; position:absolute; inset:0; display:grid; place-items:center; font-size:calc(var(--card-w) * .55);
-  background:repeating-linear-gradient(45deg, #1b255a 0 10px, #121a49 10px 20px);
+  background:repeating-linear-gradient(45deg,#1b255a 0 10px,#121a49 10px 20px);
   color:#e5ecff; border-radius:var(--card-r); box-shadow: inset 0 0 0 1px #2d3c90;
 }
+/* перекрытие, когда много карт */
+.hand.compact .card{margin-left:-28%}
+.hand.compact .card:first-child{margin-left:0}
 
-/* ===== Нижняя экшн‑панель ===== */
-.action-bar{
-  position:fixed; left:0; right:0; bottom:0; z-index:6; padding:8px 10px calc(8px + var(--safe-b));
-  background:#0b1217ee; backdrop-filter:blur(8px); border-top:1px solid #1a2a34;
+/* ===== FLOAT BET PILL ===== */
+.bet-pill{
+  position:fixed; left:12px; bottom:calc(104px + var(--safe-b)); z-index:12;
+  display:flex; align-items:center; gap:8px; padding:10px 12px;
+  background:#0c1418ee; border:1px solid #20313a; border-radius:14px; box-shadow:0 10px 30px #000a;
 }
-.action-grid{display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px}
-.btn{appearance:none; border:none; background:linear-gradient(180deg,#0e2622,#0b1f1c); color:#bffcf2; border:1px solid #13443b;
-  font-weight:900; letter-spacing:.2px; padding:11px 8px; border-radius:12px; box-shadow:0 6px 16px #00d1b220, inset 0 0 24px #00d1b210; transform:translateY(0); transition:transform .06s ease}
-.btn:active{transform:translateY(2px)}
-.secondary{background:linear-gradient(180deg,#2b2331,#1e1923); border-color:#3b2b46; color:#e9d2ff}
-.ghost{background:linear-gradient(180deg,#1b2126,#151a1f); border-color:#28313a; color:#d7e2ea}
-.success{background:linear-gradient(180deg,#11311f,#0e291a); border-color:#235a43; color:#c6ffe6}
+.bet-pill strong{font-size:1rem}
+.bet-pill .val{font-weight:900; color:#affff3}
+.bet-pill button{border:none; background:#10181c; color:#d7e6ee; border:1px solid #1e2b33; padding:6px 10px; border-radius:10px; font-weight:800}
+
+/* ===== ACTION BAR ===== */
+.actions{
+  position:fixed; left:0; right:0; bottom:0; z-index:11; padding:10px 12px calc(10px + var(--safe-b));
+  background:#0b1217ee; border-top:1px solid #1a2a34; backdrop-filter:blur(8px);
+}
+.grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+.btn{appearance:none; border:none; padding:14px 10px; border-radius:14px; font-weight:900; letter-spacing:.2px;
+  background:linear-gradient(180deg,#122d27,#0e251f); border:1px solid #1b4b3f; color:#c9fff6; box-shadow:0 8px 22px #00d1b226, inset 0 0 24px #00d1b214}
+.btn:active{transform:translateY(1px)}
+.secondary{background:linear-gradient(180deg,#2b2331,#1f1823); border-color:#3b2b46; color:#ead9ff}
+.ghost{background:linear-gradient(180deg,#1b2126,#141a1f); border-color:#27313a; color:#e5eef6}
+.success{background:linear-gradient(180deg,#12321f,#0f2a19); border-color:#255c44; color:#caffe6}
 .danger{background:linear-gradient(180deg,#2a1219,#1f0f14); border-color:#5a1e2f; color:#ffd7de}
 button[disabled]{opacity:.5}
 
-/* ===== Аккордеоны (мобайл — свёрнуты) ===== */
-.accord{background:#0c1418; border:1px solid #19262c; border-radius:12px; overflow:hidden}
-.accord summary{list-style:none; padding:8px 10px; cursor:pointer; font-weight:800; display:flex; align-items:center; justify-content:space-between}
+/* ===== BOTTOM SHEET: BET ===== */
+.sheet{position:fixed; left:0; right:0; bottom:-100%; z-index:20; background:#0d1419; border-top:1px solid #1c2a33; border-radius:16px 16px 0 0; box-shadow:0 -20px 60px #0008}
+.sheet.show{animation:rise .25s ease forwards}
+.sheet.hide{animation:drop .22s ease forwards}
+@keyframes rise{to{bottom:0}}
+@keyframes drop{to{bottom:-100%}}
+.sheet .hd{display:flex; align-items:center; justify-content:space-between; padding:12px}
+.sheet .hd strong{font-size:1.05rem}
+.sheet .body{padding:0 12px 12px}
+.range{width:100%}
+.sheet .row{display:flex; align-items:center; gap:10px; margin:10px 0}
+.sheet .chips{display:flex; gap:8px; overflow:auto; padding-bottom:6px}
+.sheet .chip{min-width:56px; height:40px; padding:0 12px; border-radius:12px; border:1px solid #1f2c35; background:#121a20; color:#affff3; font-weight:900}
+.sheet .num{display:flex; align-items:center; gap:8px}
+.sheet .num input{width:120px; padding:10px; border-radius:12px; border:1px solid #22323a; background:#0e161a; color:#dce8ee; font-weight:800; font-size:1.1rem; text-align:center}
+.sheet .num button{padding:10px 12px; border-radius:12px; border:1px solid #1e2b33; background:#0f171c; color:#e7f3f8; font-weight:900}
+
+/* ===== ACCORDIONS (лог/стат) ===== */
+.accord{margin-top:10px; background:#0c1418; border:1px solid #19262c; border-radius:12px; overflow:hidden}
+.accord summary{list-style:none; padding:10px 12px; font-weight:800; display:flex; justify-content:space-between; cursor:pointer}
 .accord summary::-webkit-details-marker{display:none}
-.accord .body{padding:8px 10px; border-top:1px solid #1a2a34}
-.stats{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px}
+.accord .body{padding:10px 12px; border-top:1px solid #1a2a34}
+.stats{display:grid; grid-template-columns:repeat(2,1fr); gap:8px}
 .stat{background:#0f1a20; border:1px solid #1a2a34; padding:8px 10px; border-radius:10px; text-align:center; font-weight:800}
-.log{max-height:40vh; overflow:auto; font-size:.92rem}
+.log{max-height:40vh; overflow:auto; font-size:.95rem}
 
-/* Баннер */
-.banner{position:fixed; left:50%; transform:translate(-50%,-120%); top:8px; background:#0b1217ee; border:1px solid #20313a; padding:8px 12px; border-radius:10px; font-weight:800; color:#affff3; opacity:0; pointer-events:none; box-shadow:0 18px 50px #000a; z-index:7}
-.banner.show{animation:drop .9s ease forwards}
-@keyframes drop{0%{transform:translate(-50%,-120%); opacity:0} 40%{transform:translate(-50%,10%); opacity:1} 100%{transform:translate(-50%,-20%); opacity:1}}
-
-/* Планшет/десктоп */
-@media (min-width:880px){
-  .wrap{grid-template-columns:1fr 320px; padding-bottom:100px}
-  .action-grid{grid-template-columns:repeat(6,1fr)}
+/* ===== RESPONSIVE HEIGHT ===== */
+@media (max-height:760px){
+  :root{ --card-w: clamp(68px, 20vw, 88px); }
 }
-
-/* Очень низкий экран (ландшафт) */
-@media (max-height:700px){
-  :root{ --card-w: clamp(46px, 12vw, 62px); }
-  .wrap{padding-bottom:86px}
+@media (max-height:690px){
+  :root{ --card-w: clamp(62px, 19vw, 82px); --fs:14px; }
+  .actions{padding-bottom:calc(8px + var(--safe-b))}
+  .bet-pill{bottom:calc(96px + var(--safe-b))}
 }
 </style>
 </head>
 <body>
-<div class="header">
-  <div class="h-title"><span class="monkey">🐒</span> Блэкджек против Обезьяны — vMobile+</div>
-  <div class="h-bank">Бананы: <span id="bank">500</span> 🍌</div>
-</div>
-
-<div class="betbar">
-  <span class="label">Ставка (🍌):</span>
-  <input id="bet" type="number" min="1" step="1" value="25" />
-  <div class="chips">
-    <button class="chip" data-chip="10">+10</button>
-    <button class="chip" data-chip="25">+25</button>
-    <button class="chip" data-chip="50">+50</button>
-    <button class="chip" data-chip="-10">-10</button>
-    <button class="chip" data-chip="max">MAX</button>
+  <div class="header">
+    <div class="h-left"><span class="monkey">🐒</span><div>Блэкджек против Обезьяны</div></div>
+    <div class="bank">Бананы: <span id="bank">500</span> 🍌</div>
   </div>
-  <button class="btn-tiny" id="togglePanels">Панели ⌄</button>
-</div>
 
-<div class="wrap">
-  <div class="table" id="table">
-    <div class="glow"></div>
-    <div id="banner" class="banner">🔁 Перетасовка… Обезьяна шепчет картам</div>
-
-    <div class="dealer-area">
-      <div class="name-row">
-        <div class="avatar"><span>🐒</span></div>
-        <div><strong>Дилер: Обезьяна</strong></div>
-        <span class="badge" id="shoeInfo">Туфля: 6 колод • 0% израсходовано</span>
+  <div class="wrap">
+    <div class="table">
+      <!-- DEALER -->
+      <div class="row-head">
+        <div class="title"><span>🙈</span><span><strong>Дилер: Обезьяна</strong></span></div>
+        <span class="badge" id="shoeInfo">6 колод • 0%</span>
         <div class="score" id="dealerScore">—</div>
       </div>
-      <div class="hand" id="dealerHand"></div>
-      <div class="comment" id="dealerComment">«Ставки повыше — бананы повкуснее…»</div>
-    </div>
+      <div id="dealerHand" class="hand"></div>
+      <div id="dealerComment" class="comment">«Ставки повыше — бананы повкуснее…»</div>
 
-    <div class="player-area">
-      <div class="name-row">
-        <div class="avatar"><span>🧑</span></div>
-        <div><strong>Игрок</strong></div>
+      <!-- PLAYER -->
+      <div class="row-head" style="margin-top:8px">
+        <div class="title"><span>🧑</span><span><strong>Игрок</strong></span></div>
         <span class="badge">Правило дилера: <b id="ruleText">S17</b></span>
         <div class="score" id="playerScore">—</div>
       </div>
-      <div class="hands" id="handsContainer">
-        <div class="hand is-active" id="playerHand0"></div>
-      </div>
-      <div class="comment" id="playerComment">Поставь и жми «Раздать».</div>
+      <div class="hand is-active" id="playerHand0"></div>
+      <div id="playerComment" class="comment">Нажми «Раздать», ставка внизу.</div>
+
+      <!-- Accordions -->
+      <details class="accord" id="statsAcc">
+        <summary>📊 Статистика</summary>
+        <div class="body">
+          <div class="stats">
+            <div class="stat">Раундов: <span id="stRounds">0</span></div>
+            <div class="stat">Побед: <span id="stWins">0</span></div>
+            <div class="stat">Пушей: <span id="stPush">0</span></div>
+            <div class="stat">Блэкджеков: <span id="stBJ">0</span></div>
+            <div class="stat">Профит (🍌): <span id="stProfit">0</span></div>
+            <div class="stat">Макс серия: <span id="stStreak">0</span></div>
+          </div>
+        </div>
+      </details>
+
+      <details class="accord" id="logAcc">
+        <summary>📝 История</summary>
+        <div class="body"><div id="log" class="log"></div></div>
+      </details>
     </div>
   </div>
 
-  <details class="accord" id="statsAcc">
-    <summary>📊 Статистика <span id="statsHint" style="opacity:.7;font-weight:600"></span></summary>
+  <!-- FLOAT BET -->
+  <div class="bet-pill">
+    <strong>Ставка:</strong> <span class="val" id="betShow">25</span> 🍌
+    <button id="betOpen">Изм.</button>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions">
+    <div class="grid">
+      <button id="dealBtn" class="btn">Раздать</button>
+      <button id="hitBtn" class="btn secondary" disabled>Ещё</button>
+      <button id="standBtn" class="btn ghost" disabled>Хватит</button>
+      <button id="doubleBtn" class="btn" disabled>Дабл</button>
+      <button id="splitBtn" class="btn" disabled>Сплит</button>
+      <button id="surrenderBtn" class="btn danger" disabled>Сдача</button>
+    </div>
+    <div class="grid" style="margin-top:10px">
+      <button id="insuranceBtn" class="btn success" disabled>Страховка</button>
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- BET SHEET -->
+  <div id="sheet" class="sheet" aria-hidden="true">
+    <div class="hd">
+      <strong>Изменить ставку</strong>
+      <button id="sheetClose" class="btn ghost" style="padding:8px 12px">Закрыть</button>
+    </div>
     <div class="body">
-      <div class="stats">
-        <div class="stat">Раундов: <span id="stRounds">0</span></div>
-        <div class="stat">Побед: <span id="stWins">0</span></div>
-        <div class="stat">Пушей: <span id="stPush">0</span></div>
-        <div class="stat">Блэкджеков: <span id="stBJ">0</span></div>
-        <div class="stat">Профит (🍌): <span id="stProfit">0</span></div>
-        <div class="stat">Макс серия: <span id="stStreak">0</span></div>
+      <div class="row num">
+        <button id="betMinus">−</button>
+        <input id="bet" type="number" min="1" step="1" value="25" />
+        <button id="betPlus">+</button>
+      </div>
+      <input id="betRange" class="range" type="range" min="1" max="500" value="25" />
+      <div class="chips" style="margin-top:10px">
+        <button class="chip" data-chip="10">+10</button>
+        <button class="chip" data-chip="25">+25</button>
+        <button class="chip" data-chip="50">+50</button>
+        <button class="chip" data-chip="-10">-10</button>
+        <button class="chip" data-chip="max">MAX</button>
       </div>
     </div>
-  </details>
-
-  <details class="accord" id="logAcc">
-    <summary>📝 История</summary>
-    <div class="body"><div id="log" class="log"></div></div>
-  </details>
-</div>
-
-<!-- Фикс‑панель действий -->
-<div class="action-bar">
-  <div class="action-grid">
-    <button id="dealBtn" class="btn">Раздать</button>
-    <button id="hitBtn" class="btn secondary" disabled>Ещё</button>
-    <button id="standBtn" class="btn ghost" disabled>Хватит</button>
-    <button id="doubleBtn" class="btn" disabled>Дабл</button>
-    <button id="splitBtn" class="btn" disabled>Сплит</button>
-    <button id="surrenderBtn" class="btn danger" disabled>Сдача</button>
   </div>
-  <div class="action-grid" style="margin-top:8px">
-    <button id="insuranceBtn" class="btn success" disabled>Страховка</button>
-    <span></span><span></span><span></span><span></span><span></span>
-  </div>
-</div>
 
 <script>
 (() => {
+  /* ==== helpers ==== */
   const $ = s => document.querySelector(s);
   const $$ = s => Array.from(document.querySelectorAll(s));
-  const banner = $('#banner'), logEl = $('#log');
+  const logEl = $('#log');
 
-  // Хинт для аккордеона
-  const statsHint = $('#statsHint');
-  function setStatsHint(){ statsHint.textContent = window.innerWidth < 880 ? '• нажми, чтобы раскрыть' : ''; }
-  setStatsHint(); addEventListener('resize', setStatsHint);
-  $('#togglePanels').addEventListener('click', ()=>{
-    $('#statsAcc').open = !$('#statsAcc').open;
-    $('#logAcc').open = !$('#logAcc').open;
-  });
+  /* ==== elements ==== */
+  const dealerHandEl = $('#dealerHand');
+  const dealerScoreEl = $('#dealerScore');
+  const dealerCommentEl = $('#dealerComment');
+  const playerScoreEl = $('#playerScore');
+  const playerCommentEl = $('#playerComment');
+  const ruleText = $('#ruleText');
+  const bankEl = $('#bank');
+  const shoeInfoEl = $('#shoeInfo');
 
-  // Опции
-  let OPT = { decks:6, penetration:75, S17:true, minBet:5, maxBet:500 };
+  const dealBtn = $('#dealBtn');
+  const hitBtn = $('#hitBtn');
+  const standBtn = $('#standBtn');
+  const doubleBtn = $('#doubleBtn');
+  const splitBtn = $('#splitBtn');
+  const surrenderBtn = $('#surrenderBtn');
+  const insuranceBtn = $('#insuranceBtn');
 
-  // Элементы
-  const dealerHandEl = $('#dealerHand'), dealerScoreEl = $('#dealerScore'), dealerCommentEl = $('#dealerComment');
-  const handsContainer = $('#handsContainer'), playerScoreEl = $('#playerScore'), playerCommentEl = $('#playerComment');
-  const bankEl = $('#bank'), shoeInfoEl = $('#shoeInfo'), ruleText = $('#ruleText');
-  const betInput = $('#bet');
-  const dealBtn = $('#dealBtn'), hitBtn = $('#hitBtn'), standBtn = $('#standBtn'), doubleBtn = $('#doubleBtn'), splitBtn = $('#splitBtn'), surrenderBtn = $('#surrenderBtn'), insuranceBtn = $('#insuranceBtn');
   const stRounds = $('#stRounds'), stWins=$('#stWins'), stPush=$('#stPush'), stBJ=$('#stBJ'), stProfit=$('#stProfit'), stStreak=$('#stStreak');
 
-  // Реплики (включая издёвку)
-  const lines = {
-    start: [
-      "«Ставки повыше — бананы повкуснее…»","«Я не жульничаю. Просто карты меня обожают.»","«Пахнет победой. Или это мои бананы?»",
-      "«Кто-то пришёл потерять витамин B(ананы)?»","«Джунгли шепчут: тяни. Мне так выгодно.»","«Профессиональный дилер. Любитель чужих бананов.»",
-      "«Не переживай, Игрок. Я нежно заберу немного бананов.»","«Правила просты: ты ставишь — я улыбаюсь.»"
-    ],
-    playerBlackjack: [
-      "«Блэкджек? Ладно… уважение. Но не привыкай.»","«Карты тебя любят. Я — не очень.»",
-      "«Красиво. В следующий раз — не отвлекусь.»","«Случайность уровня обезьяньей эволюции.»"
-    ],
-    dealerWin: [
-      "«Обезьяна вас выиграла. Попробуйте снова. Вы потеряли бананы.»","«Бананы — сюда. Эмоции — себе.»",
-      "«Статистика пахнет победой… моей.»","«Я бы сочувствовала, но занят(а) бухгалтерией бананов.»"
-    ],
-    playerWin: [
-      "«Хм. Впечатляет. Временно.»","«Запиши в дневник: обезьяна отвлеклась.»",
-      "«Окей, забери. Но джунгли помнят.»","«Случайности — тоже часть природы.»"
-    ],
-    push: ["«Пуш. Скучно. Но живи пока.»","«Ничья — это когда оба несчастны.»","«Пока без бананов. Разочаровала.»"],
-    hit: ["«Ещё? Люблю зрелища.»","«Тяни-тяни… может и повезёт. Мне.»","«Давай, герой. Карта не кусается. Я — да.»"],
-    stand: ["«Стоишь? Осторожность — путь к… скуке.»","«Хорошо. Пойду воровать твои шансы.»"],
-    double: ["«Дабл! Обожаю удваивать… чужие слёзы.»","«Смело. Или бананово‑безрассудно.»"],
-    split: ["«Сплит? Размножил проблемы — уважаю креатив.»","«Два шанса? Два промаха?»"],
-    bust: ["«Перебор. Бананы в утиль.»","«21 — мечта. У тебя — 22. Тоже число.»","«Назовём это творческой статистикой.»"],
-    insure: ["«Страховка? Вкусно пахнет отчаянием.»","«Полбанана на страх — имбирный привкус поражения.»"],
-    surrender: ["«Сдача принята. Смелость — знать, когда бежать.»","«Полбанана назад. Комиссия — ноль.»"]
-  };
+  // bet UI
+  const sheet = $('#sheet'), betOpen = $('#betOpen'), sheetClose = $('#sheetClose');
+  const betInput = $('#bet'), betRange = $('#betRange'), betMinus=$('#betMinus'), betPlus=$('#betPlus'), betShow=$('#betShow');
 
-  // Shoe / state
+  /* ==== settings/state ==== */
+  let OPT = { decks:6, penetration:75, S17:true, minBet:5, maxBet:500 };
+
   const ranks=["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
-  const suits=[{s:"♠",c:"#121620"},{s:"♥",c:"#c62828"},{s:"♦",c:"#c62828"},{s:"♣",c:"#121620"}];
+  const suits=[{s:"♠",c:"#161a22"},{s:"♥",c:"#c62828"},{s:"♦",c:"#c62828"},{s:"♣",c:"#161a22"}];
+
   let shoe=[], cutPoint=0, used=0;
   let bank=500, inRound=false, insuranceOffered=false, insuranceTaken=0;
   let dealer={hand:[], hideHole:true};
@@ -266,14 +275,38 @@ button[disabled]{opacity:.5}
   // stats
   let rounds=0, wins=0, pushes=0, bjs=0, profit=0, streak=0, maxStreak=0;
 
-  function buildShoe(decks=6){ const arr=[]; for(let d=0; d<decks; d++) for(const r of ranks) for(const su of suits) arr.push({rank:r,suit:su.s,color:su.c});
-    shuffle(arr); used=0; cutPoint=Math.floor(arr.length*(OPT.penetration/100)); return arr; }
-  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+  // реплики
+  const L = {
+    start: [
+      "«Ставки повыше — бананы повкуснее…»","«Карты меня обожают. Тебя — посмотрим.»",
+      "«Пахнет победой. Или это мои бананы?»","«Добро пожаловать в джунгли вероятностей.»",
+      "«Ставь смелее — мне веселей.»","«Профессиональный дилер. Любитель чужих бананов.»"
+    ],
+    hit:["«Ещё? Люблю зрелища.»","«Тяни-тяни… пусть боль будет длиннее.»","«Карта не кусается. Я — да.»"],
+    stand:["«Стоишь? Осторожно — зима скуки.»","«Записываю шанс на провал…»"],
+    bust:["«Перебор. Бананы в утиль.»","«22 — тоже число.»","«Назовём это экспериментом.»"],
+    playerWin:["«Хм. Впечатляет. Временно.»","«Запиши: обезьяна отвлеклась.»","«Ладно, унеси эти бананы.»"],
+    dealerWin:["«Обезьяна вас выиграла. Попробуйте снова. Вы потеряли бананы.»","«Спасибо за свежачок.»","«Статистика любит меня.»"],
+    push:["«Пуш. Скучно. Жив пока.»","«Ничья — это когда никто не счастлив.»"],
+    double:["«Дабл? Уважаю дерзость… иногда.»","«Удваивай. Я умножу.»"],
+    split:["«Сплит? Размножил проблемы — стильно.»","«Две попытки — два промаха?»"],
+    insure:["«Страховка с ароматом отчаяния.»","«Полбанана на страх — вкусно.»"],
+    surrender:["«Сдача принята. Умный ход.»","«Полбанана назад. Без комиссии.»"],
+    playerBJ:["«Блэкджек… уважение. Но не привыкай.»","«Красиво. Чисто и больно — для меня.»"]
+  };
+
+  /* ==== shoe/deck ==== */
+  function buildShoe(decks=6){
+    const arr=[]; for(let d=0; d<decks; d++) for(const r of ranks) for(const su of suits) arr.push({rank:r,suit:su.s,color:su.c});
+    shuffle(arr); used=0; cutPoint=Math.floor(arr.length*(OPT.penetration/100));
+    return arr;
+  }
+  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; [a[i],a[j]]=[a[j],a[i]];} return a; }
   function drawOne(){ if(used>=cutPoint) reshuffle(); used++; updateShoeInfo(); return shoe.pop(); }
   function reshuffle(){ toast('🔁 Перетасовка… Обезьяна шепчет картам'); shoe=buildShoe(OPT.decks); }
-  function updateShoeInfo(){ const total=OPT.decks*52; const pct=Math.min(100, Math.floor(used/total*100)); shoeInfoEl.textContent=`Туфля: ${OPT.decks} колод • ${pct}% израсходовано`; }
+  function updateShoeInfo(){ const total=OPT.decks*52; const pct=Math.min(100, Math.floor(used/total*100)); shoeInfoEl.textContent=`${OPT.decks} колод • ${pct}%`; }
 
-  // Cards (SVG)
+  /* ==== cards ==== */
   function cardSVG(rank, suit, color="#111"){
     const top=rank+" "+suit, bot=suit+" "+rank;
     return `<svg viewBox="0 0 72 104" class="face" aria-label="${rank}${suit}">
@@ -301,31 +334,36 @@ button[disabled]{opacity:.5}
     return el;
   }
 
-  // Values
+  /* ==== values ==== */
   function handValue(cards){ let t=0,a=0; for(const c of cards){ if(c.rank==="A"){t+=11;a++;} else if(["K","Q","J"].includes(c.rank)){t+=10;} else t+=(c.rank==="10"?10:parseInt(c.rank,10)); } while(t>21&&a>0){t-=10;a--;} return t; }
   const isBJ = (cards)=> cards.length===2 && handValue(cards)===21;
   const isPair = (cards)=> cards.length===2 && rankVal(cards[0])===rankVal(cards[1]);
   function rankVal(c){ if(c.rank==="A")return 11; if(["K","Q","J","10"].includes(c.rank))return 10; return parseInt(c.rank,10) }
   function isSoft(cards){ let t=0,a=0; for(const c of cards){ if(c.rank==="A"){t+=11;a++;} else if(["K","Q","J"].includes(c.rank)){t+=10;} else t+=(c.rank==="10"?10:parseInt(c.rank,10)); } while(t>21&&a>0){t-=10;a--;} return a>0; }
 
-  // UI helpers
-  function getActiveEl(){ return $('#playerHand'+activeHandIndex); }
-  function setActiveHand(idx){ $$('.hand').forEach(h=>h.classList.remove('is-active')); activeHandIndex=idx; $('#playerHand'+idx).classList.add('is-active'); refreshScores(); setActionsForActive(); }
-  function setComment(el,t){ el.textContent=t; }
+  /* ==== ui helpers ==== */
+  function toast(t){ /* минималист без баннера */ console.log('[toast]',t); }
+  function log(msg){ const row=document.createElement('div'); row.textContent=msg; logEl.prepend(row); }
   function updateBank(){ bankEl.textContent=bank; }
   function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
   function rnd(a){ return a[Math.floor(Math.random()*a.length)]; }
-  function toast(txt){ banner.textContent=txt; banner.classList.add('show'); setTimeout(()=>banner.classList.remove('show'),1400); }
-  function log(msg){ const row=document.createElement('div'); row.textContent=msg; logEl.prepend(row); }
 
-  // Round flow
+  /* ==== hands rendering ==== */
+  function setCompactClass(){
+    const ph = playerHands[activeHandIndex];
+    const playerDiv = $('#playerHand0');
+    playerDiv.classList.toggle('compact', (ph?.cards.length||0) >= 4);
+    dealerHandEl.classList.toggle('compact', dealer.hand.length >= 4);
+  }
+
   function resetTableUI(){
     dealerHandEl.innerHTML=''; dealerScoreEl.textContent='—';
-    handsContainer.innerHTML=''; const h=document.createElement('div'); h.id='playerHand0'; h.className='hand is-active'; handsContainer.appendChild(h);
+    const ph = $('#playerHand0'); ph.innerHTML=''; ph.classList.add('is-active');
     playerScoreEl.textContent='—';
-    surrenderedHands.clear(); insuranceTaken=0; insuranceOffered=false;
-    setComment(dealerCommentEl, rnd(lines.start)); setComment(playerCommentEl, 'Поставь и жми «Раздать».');
+    setComment(dealerCommentEl, rnd(L.start)); setComment(playerCommentEl, 'Нажми «Раздать».');
+    setCompactClass();
   }
+  function setComment(el,t){ el.textContent=t; }
   function refreshScores(){
     const dVal = dealer.hideHole ? handValue(dealer.hand.slice(1)) : handValue(dealer.hand);
     dealerScoreEl.textContent = dealer.hideHole ? `? + ${handValue([dealer.hand[1]])}` : dVal;
@@ -343,12 +381,15 @@ button[disabled]{opacity:.5}
     insuranceBtn.disabled = !(initial && dealerUpAce && !insuranceOffered && bank >= Math.floor(h.bet/2));
   }
 
+  /* ==== round ==== */
   function startRound(){
-    let b=parseInt(betInput.value||25,10);
-    b = clamp(b, OPT.minBet, Math.min(OPT.maxBet, bank)); betInput.value=b;
+    let b = parseInt(betInput.value||25,10);
+    b = clamp(b, OPT.minBet, Math.min(OPT.maxBet, bank)); betInput.value=b; betRange.value=b; betShow.textContent=b;
     if(b>bank) return alert('Недостаточно бананов.');
     if(b<OPT.minBet) return alert(`Мин ставка ${OPT.minBet}🍌`);
+
     inRound=true; surrenderedHands.clear(); insuranceTaken=0; insuranceOffered=false;
+
     bank -= b; updateBank();
 
     dealer={hand:[], hideHole:true};
@@ -357,96 +398,115 @@ button[disabled]{opacity:.5}
 
     resetTableUI();
 
-    const ph=getActiveEl();
+    const ph = $('#playerHand0');
     const p1=drawOne(); playerHands[0].cards.push(p1); ph.appendChild(createCardEl(p1,false,0));
     const d1=drawOne(); dealer.hand.push(d1); dealerHandEl.appendChild(createCardEl(d1,true,1));
     const p2=drawOne(); playerHands[0].cards.push(p2); ph.appendChild(createCardEl(p2,false,2));
     const d2=drawOne(); dealer.hand.push(d2); dealerHandEl.appendChild(createCardEl(d2,false,3));
 
+    setCompactClass();
     refreshScores();
     maybeOfferInsurance();
 
     if(isBJ(playerHands[0].cards)){
-      playerHands[0].isBJ=true; finishPlayerPhase(true); setComment(dealerCommentEl, rnd(lines.playerBlackjack)); return;
+      playerHands[0].isBJ=true; finishPlayerPhase(true); setComment(dealerCommentEl, rnd(L.playerBJ)); return;
     }
     dealBtn.disabled=true; setActionsForActive();
-    setComment(playerCommentEl,'Ход Игрока: Ещё / Хватит / Дабл / Сплит / Сдача.');
+    setComment(playerCommentEl, 'Твой ход: Ещё / Хватит / Дабл / Сплит / Сдача.');
   }
 
   function maybeOfferInsurance(){
-    const up=dealer.hand[1]; if(up && up.rank==='A'){ insuranceOffered=true; insuranceBtn.disabled=false; setComment(dealerCommentEl,'«Туз наверху… берёшь страховку?»'); }
+    const up = dealer.hand[1];
+    if(up && up.rank==='A'){ insuranceOffered=true; insuranceBtn.disabled=false; setComment(dealerCommentEl, '«Туз наверху… берёшь страховку?»'); }
   }
   function takeInsurance(){
-    const h=playerHands[activeHandIndex]; const cost=Math.floor(h.bet/2);
+    const h = playerHands[activeHandIndex];
+    const cost = Math.floor(h.bet/2);
     if(bank < cost) return alert('Недостаточно бананов для страховки.');
-    bank -= cost; updateBank(); insuranceTaken=cost; insuranceBtn.disabled=true; setComment(dealerCommentEl, rnd(lines.insure));
+    bank -= cost; updateBank(); insuranceTaken = cost; insuranceBtn.disabled = true; setComment(dealerCommentEl, rnd(L.insure));
   }
 
   function hit(){
-    const h=playerHands[activeHandIndex]; const el=getActiveEl();
-    const c=drawOne(); h.cards.push(c); el.appendChild(createCardEl(c,false,h.cards.length+1));
-    setComment(dealerCommentEl, rnd(lines.hit)); refreshScores();
-    doubleBtn.disabled=true; splitBtn.disabled=true; surrenderBtn.disabled=true; insuranceBtn.disabled=true;
-    if(handValue(h.cards)>21){ h.isBust=true; setComment(dealerCommentEl, rnd(lines.bust)); nextHandOrDealer(); }
+    const h = playerHands[activeHandIndex];
+    const ph = $('#playerHand0');
+    const c = drawOne(); h.cards.push(c); ph.appendChild(createCardEl(c,false,h.cards.length+1));
+    setCompactClass();
+    setComment(dealerCommentEl, rnd(L.hit)); refreshScores();
+    doubleBtn.disabled = true; splitBtn.disabled = true; surrenderBtn.disabled = true; insuranceBtn.disabled=true;
+    if(handValue(h.cards)>21){ h.isBust=true; setComment(dealerCommentEl, rnd(L.bust)); nextHandOrDealer(); }
   }
-  function stand(){ setComment(dealerCommentEl, rnd(lines.stand)); nextHandOrDealer(); }
+  function stand(){ setComment(dealerCommentEl, rnd(L.stand)); nextHandOrDealer(); }
   function doDouble(){
-    const h=playerHands[activeHandIndex];
+    const h = playerHands[activeHandIndex];
     if(h.cards.length!==2 || bank < h.bet) return;
-    bank -= h.bet; h.bet*=2; h.doubled=true; updateBank();
-    setComment(dealerCommentEl, rnd(lines.double)); hit(); if(!h.isBust) nextHandOrDealer();
+    bank -= h.bet; h.bet *= 2; h.doubled = true; updateBank();
+    setComment(dealerCommentEl, rnd(L.double));
+    hit(); if(!h.isBust) nextHandOrDealer();
   }
   function doSplit(){
-    const base=playerHands[activeHandIndex];
+    const base = playerHands[activeHandIndex];
     if(!(base.cards.length===2 && isPair(base.cards))) return;
     if(playerHands.length>=MAX_HANDS) return alert('Максимум 4 руки.');
     if(bank < base.bet) return alert('Недостаточно бананов на сплит.');
-    bank -= base.bet; updateBank(); setComment(dealerCommentEl, rnd(lines.split));
 
-    const c1=base.cards[0], c2=base.cards[1];
+    bank -= base.bet; updateBank(); setComment(dealerCommentEl, rnd(L.split));
+
+    const c1 = base.cards[0], c2 = base.cards[1];
     base.cards=[c1];
-    const newHand={cards:[c2], bet:base.bet, done:false, doubled:false, isBust:false, isBJ:false};
+    const newHand = {cards:[c2], bet:base.bet, done:false, doubled:false, isBust:false, isBJ:false};
     playerHands.splice(activeHandIndex+1,0,newHand);
 
-    handsContainer.innerHTML='';
-    playerHands.forEach((h, idx)=>{ const d=document.createElement('div'); d.id='playerHand'+idx; d.className='hand'+(idx===activeHandIndex?' is-active':''); d.appendChild(createCardEl(h.cards[0],false,0)); handsContainer.appendChild(d); });
+    const container = $('#playerHand0').parentElement; // простой одноигровой UI — всё в одном блоке
+    // перерисуем: для компактной версии оставляем текущую руку как активную
+    $('#playerHand0').innerHTML='';
+    base.cards.forEach((c,i)=> $('#playerHand0').appendChild(createCardEl(c,false,i)));
+    const nh=document.createElement('div'); nh.className='hand'; nh.id='playerHand1';
+    nh.appendChild(createCardEl(newHand.cards[0],false,0));
+    container.insertBefore(nh, $('#playerComment'));
 
-    const add=(h, idx)=>{ const card=drawOne(); h.cards.push(card); $('#playerHand'+idx).appendChild(createCardEl(card,false,1)); };
-    add(base, activeHandIndex); add(newHand, activeHandIndex+1);
-
-    if(c1.rank==="A" && c2.rank==="A"){ nextHandOrDealer(true); } else { refreshScores(); setActionsForActive(); }
+    // по одной карте
+    const add=(h, id)=>{ const card=drawOne(); h.cards.push(card); $('#'+id).appendChild(createCardEl(card,false,1)); };
+    add(base,'playerHand0'); add(newHand,'playerHand1');
+    setCompactClass(); refreshScores(); setActionsForActive();
   }
   function surrender(){
-    const h=playerHands[activeHandIndex]; if(h.cards.length!==2) return;
-    surrenderedHands.add(activeHandIndex); h.done=true; setComment(dealerCommentEl, rnd(lines.surrender));
-    const refund=Math.floor(h.bet/2); bank += refund; updateBank(); log(`Сдача руки #${activeHandIndex+1}: +${refund}🍌`); nextHandOrDealer();
+    const h = playerHands[activeHandIndex]; if(h.cards.length!==2) return;
+    surrenderedHands.add(activeHandIndex); h.done=true; setComment(dealerCommentEl, rnd(L.surrender));
+    const refund=Math.floor(h.bet/2); bank += refund; updateBank(); log(`Сдача: +${refund}🍌`); nextHandOrDealer();
   }
 
   function nextHandOrDealer(forceFinish=false){
-    playerHands[activeHandIndex].done=true;
+    playerHands[activeHandIndex].done = true;
     const nextIdx = playerHands.findIndex((h, idx)=> idx>activeHandIndex && !h.done);
-    if(nextIdx!==-1 && !forceFinish){ setActiveHand(nextIdx); return; }
+    if(nextIdx!==-1 && !forceFinish){ activeHandIndex=nextIdx; refreshScores(); setActionsForActive(); return; }
     finishPlayerPhase(false);
   }
-  function finishPlayerPhase(){ hitBtn.disabled=standBtn.disabled=doubleBtn.disabled=splitBtn.disabled=surrenderBtn.disabled=insuranceBtn.disabled=true; dealerPlay(); }
+  function finishPlayerPhase(){ [hitBtn,standBtn,doubleBtn,splitBtn,surrenderBtn,insuranceBtn].forEach(b=>b.disabled=true); dealerPlay(); }
 
   function dealerPlay(){
     dealer.hideHole=false; if(dealerHandEl.firstElementChild) dealerHandEl.firstElementChild.classList.remove('hidden'); refreshScores();
-    const anyActive = playerHands.some((h,idx)=> !h.isBust && !surrenderedHands.has(idx)); if(!anyActive){ return resolveRound(); }
-    const step=()=>{ let v=handValue(dealer.hand); const soft=isSoft(dealer.hand);
+    const anyActive = playerHands.some((h,idx)=> !h.isBust && !surrenderedHands.has(idx));
+    if(!anyActive){ return resolveRound(); }
+    const step = ()=>{ let v=handValue(dealer.hand); const soft=isSoft(dealer.hand);
       const mustHit = v<17 || (!OPT.S17 && v===17 && soft);
-      if(mustHit){ const c=drawOne(); dealer.hand.push(c); dealerHandEl.appendChild(createCardEl(c,false,dealer.hand.length+1)); refreshScores(); setTimeout(step, 500); }
+      if(mustHit){ const c=drawOne(); dealer.hand.push(c); dealerHandEl.appendChild(createCardEl(c,false,dealer.hand.length+1)); setCompactClass(); refreshScores(); setTimeout(step,520);}
       else resolveRound();
     };
-    setTimeout(step, 500);
+    setTimeout(step,520);
   }
 
   function resolveRound(){
     dealBtn.disabled=false;
     const dealerTotal=handValue(dealer.hand); const dealerBJ=isBJ(dealer.hand);
-    if(insuranceTaken){ if(dealerBJ){ bank += insuranceTaken*3; log(`Страховка выплатила ${insuranceTaken*2}🍌`);} else { log(`Страховка проиграла ${insuranceTaken}🍌`);} insuranceTaken=0; updateBank(); }
+
+    if(insuranceTaken){
+      if(dealerBJ){ bank += insuranceTaken * 3; log(`Страховка выплатила ${insuranceTaken*2}🍌`); }
+      else { log(`Страховка проиграла ${insuranceTaken}🍌`); }
+      insuranceTaken=0; updateBank();
+    }
 
     let roundProfit=0; let allDealer=true, allPush=true, anyBJ=false, anyPlayerWin=false;
+
     playerHands.forEach((h, idx)=>{
       if(surrenderedHands.has(idx)){ allDealer=false; allPush=false; return; }
       const total=handValue(h.cards); let delta=0, outcome='';
@@ -459,38 +519,57 @@ button[disabled]{opacity:.5}
       else { delta=h.bet; outcome='push'; allDealer=false; pushes++; }
       roundProfit += (delta - h.bet);
       const tag = outcome==='player' || outcome==='playerBJ' ? '✅' : (outcome==='push' ? '⏸️' : '❌');
-      log(`${tag} Рука #${idx+1}: ${format(h.cards)} vs ${dealerTotal} — ${desc(outcome)} | Δ ${delta - h.bet}🍌`);
+      log(`${tag} Рука#${idx+1}: ${format(h.cards)} vs ${dealerTotal} — ${desc(outcome)} | Δ ${delta - h.bet}🍌`);
+      if(outcome==='player' || outcome==='playerBJ') setComment(dealerCommentEl, rnd(L.playerWin));
+      if(outcome==='dealer') setComment(dealerCommentEl, rnd(L.dealerWin));
     });
 
-    profit += roundProfit; rounds++; if(anyPlayerWin){ wins++; streak++; maxStreak=Math.max(maxStreak,streak);} else if(allPush){/* noop */} else { streak=0; }
+    profit += roundProfit; rounds++; if(anyPlayerWin){ wins++; streak++; maxStreak=Math.max(maxStreak,streak);} else if(allPush){ /*no*/ } else { streak=0; }
     stRounds.textContent=rounds; stWins.textContent=wins; stPush.textContent=pushes; stBJ.textContent=bjs; stProfit.textContent=profit; stStreak.textContent=maxStreak;
 
-    if(allDealer){ setComment(dealerCommentEl, rnd(lines.dealerWin)); setComment(playerCommentEl,'Минус бананы. Ещё по одной?'); }
-    else if(allPush){ setComment(dealerCommentEl, rnd(lines.push)); setComment(playerCommentEl,'Пуш. Бананы остались при тебе.'); }
-    else { setComment(dealerCommentEl, anyBJ? rnd(lines.playerBlackjack): rnd(lines.playerWin)); setComment(playerCommentEl,'Красиво. Продолжим.'); }
+    if(allDealer){ setComment(dealerCommentEl, rnd(L.dealerWin)); setComment(playerCommentEl, 'Минус бананы. Ещё по одной?'); }
+    else if(allPush){ setComment(dealerCommentEl, rnd(L.push)); setComment(playerCommentEl, 'Пуш. Бананы остались при тебе.'); }
+    else { setComment(dealerCommentEl, anyBJ? rnd(L.playerBJ): rnd(L.playerWin)); setComment(playerCommentEl, 'Красиво. Продолжим.'); }
     dealerScoreEl.textContent=dealerTotal; inRound=false;
   }
 
   function format(cards){ return cards.map(c=>c.rank+c.suit).join(' '); }
   function desc(o){ return o==='playerBJ'?'Блэкджек (3:2)': o==='player'?'Победа': o==='push'?'Пуш':'Поражение'; }
 
-  // Controls
-  dealBtn.addEventListener('click', ()=>{ if(inRound) return; if(bank<OPT.minBet) return alert('Бананов нет — перезагрузи страницу.'); startRound(); });
+  /* ==== bet sheet logic ==== */
+  const betState = {val:25};
+  function syncBetUI(){
+    betInput.value = betState.val;
+    betRange.value = betState.val;
+    betShow.textContent = betState.val;
+  }
+  betOpen.addEventListener('click', ()=>{ sheet.classList.remove('hide'); sheet.classList.add('show'); sheet.setAttribute('aria-hidden','false'); });
+  sheetClose.addEventListener('click', ()=>{ sheet.classList.remove('show'); sheet.classList.add('hide'); sheet.setAttribute('aria-hidden','true'); });
+
+  betMinus.addEventListener('click', ()=>{ betState.val = Math.max(OPT.minBet, betState.val-5); syncBetUI(); });
+  betPlus.addEventListener('click', ()=>{ betState.val = Math.min(OPT.maxBet, betState.val+5, bank); syncBetUI(); });
+  betRange.addEventListener('input', e=>{ betState.val = parseInt(e.target.value,10); syncBetUI(); });
+  betInput.addEventListener('input', e=>{ betState.val = parseInt(e.target.value||OPT.minBet,10); syncBetUI(); });
+  $$('.chip').forEach(c=> c.addEventListener('click', ()=>{
+    if(c.dataset.chip==='max') betState.val = Math.min(OPT.maxBet, bank);
+    else betState.val = clamp(betState.val + parseInt(c.dataset.chip,10), OPT.minBet, Math.min(OPT.maxBet, bank));
+    syncBetUI();
+  }));
+
+  /* ==== controls ==== */
+  dealBtn.addEventListener('click', ()=>{ if(inRound) return;
+    // подтянуть bet из state
+    betInput.value = betState.val; startRound();
+  });
   hitBtn.addEventListener('click', ()=> !hitBtn.disabled && hit());
   standBtn.addEventListener('click', ()=> !standBtn.disabled && stand());
   doubleBtn.addEventListener('click', ()=> !doubleBtn.disabled && doDouble());
   splitBtn.addEventListener('click', ()=> !splitBtn.disabled && doSplit());
   surrenderBtn.addEventListener('click', ()=> !surrenderBtn.disabled && surrender());
   insuranceBtn.addEventListener('click', ()=> !insuranceBtn.disabled && takeInsurance());
-  $$('.chip').forEach(btn=>btn.addEventListener('click', ()=>{
-    let v=parseInt(betInput.value||25,10); const t=btn.dataset.chip;
-    if(t==='max') v=Math.min(OPT.maxBet, bank); else v+=parseInt(t,10);
-    v = clamp(v, OPT.minBet, Math.min(OPT.maxBet, bank)); betInput.value=v;
-  }));
 
-  // Init
-  shoe = buildShoe(OPT.decks); updateShoeInfo(); ruleText.textContent= OPT.S17 ? 'S17' : 'H17';
-  updateBank(); resetTableUI();
+  /* ==== init ==== */
+  shoe = buildShoe(OPT.decks); updateShoeInfo(); ruleText.textContent = OPT.S17 ? 'S17' : 'H17'; updateBank(); syncBetUI(); resetTableUI();
 })();
 </script>
 </body>
