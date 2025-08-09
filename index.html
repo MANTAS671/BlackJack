@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
-<title>Блэкджек против Обезьяны — vMobile</title>
+<title>Блэкджек против Обезьяны — vMobile+</title>
 <style>
 :root{
   /* Тёмный неон */
@@ -11,52 +11,57 @@
   --felt:#0f2a24; --felt2:#132f28;
   --accent:#00d1b2; --accent2:#8af3e6; --danger:#ff4d6d; --ok:#30e38a; --muted:#9ab0bd;
   --card:#fffdf7; --ink:#0b0f12; --shadow:rgba(0,0,0,.35);
-  /* Адаптив карты: ширина/высота и радиус */
-  --card-w: clamp(54px, 16vw, 76px);
+  /* Карты адаптивно: iPhone 13 высота ~844px — делаем компакт */
+  --card-w: clamp(50px, 15vw, 70px);
   --card-h: calc(var(--card-w) * 1.44);
   --card-r: 10px;
-  /* Вертикальные отступы с учётом safe area */
+  /* Safe area (нижний жест в Safari) */
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-t: env(safe-area-inset-top, 0px);
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:linear-gradient(180deg,var(--bg2),var(--bg)); color:#e9eef1; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial}
-body{min-height:100svh}
+body{min-height:100svh; overflow-x:hidden}
 
-/* Шапка */
-.header{position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:10px; justify-content:space-between; padding:10px 12px calc(8px + var(--safe-t)); background:linear-gradient(180deg,#0e151aee,#0b1014f5); border-bottom:1px solid #1a2a34; backdrop-filter: blur(8px)}
-.h-title{display:flex; align-items:center; gap:8px; font-weight:900}
-.h-title .monkey{font-size:1.4rem}
-.h-bank{margin-left:auto; background:#0e161a; border:1px solid #1d2a32; padding:6px 10px; border-radius:10px; font-weight:800; color:#b1fff1}
+/* ===== Шапка ===== */
+.header{position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:8px; justify-content:space-between;
+  padding:6px 10px calc(6px + var(--safe-t)); background:#0d1419f2; border-bottom:1px solid #1a2a34; backdrop-filter: blur(8px)}
+.h-title{display:flex; align-items:center; gap:6px; font-weight:900; font-size:0.98rem}
+.h-title .monkey{font-size:1.25rem}
+.h-bank{margin-left:auto; background:#0e161a; border:1px solid #1d2a32; padding:5px 8px; border-radius:9px; font-weight:800; color:#b1fff1; font-size:.9rem}
 
-/* Верхняя панель ставок (сворачиваемая) */
-.betbar{position:sticky; top:calc(46px + var(--safe-t)); z-index:4; display:flex; align-items:center; gap:10px; padding:8px 12px; background:#0b1217ef; border-bottom:1px solid #18242b}
-.betbar .chips{margin-left:auto; display:flex; gap:8px}
-.chip{min-width:42px; height:42px; border-radius:999px; display:grid; place-items:center; background:#121a20; border:1px solid #1f2c35; color:#9ed8cc; font-weight:900}
-#bet{width:110px; padding:8px 10px; border-radius:10px; border:1px solid #22323a; background:#0e161a; color:#dce8ee; font-weight:700}
-.betbar .toggle-more{margin-left:4px; font-size:.95rem; color:#9ab0bd; background:transparent; border:none}
+/* ===== Верхняя полка ставок ===== */
+.betbar{position:sticky; top:calc(36px + var(--safe-t)); z-index:4; display:flex; align-items:center; gap:8px; padding:6px 10px; background:#0b1217ef; border-bottom:1px solid #18242b}
+.betbar .label{font-weight:800}
+#bet{width:88px; padding:7px 9px; border-radius:10px; border:1px solid #22323a; background:#0e161a; color:#dce8ee; font-weight:700}
+.chips{margin-left:auto; display:flex; gap:6px}
+.chip{min-width:38px; height:38px; border-radius:999px; display:grid; place-items:center; background:#121a20; border:1px solid #1f2c35; color:#9ed8cc; font-weight:900; font-size:.85rem}
+.btn-tiny{margin-left:6px; font-size:.9rem; color:#9ab0bd; background:transparent; border:none}
 
-/* Основная зона стола */
-.wrap{display:grid; grid-template-columns:1fr; gap:10px; padding:10px 12px 90px;} /* низ под action-bar */
+/* ===== Основная зона ===== */
+.wrap{display:grid; grid-template-columns:1fr; gap:8px; padding:8px 10px 92px;} /* низ зарезервирован под action-bar */
 .table{position:relative; background:
  radial-gradient(60% 80% at 50% 0%, #173b33, #0e2621 60%, #0b1f1b 100%),
  linear-gradient(180deg, var(--felt2), var(--felt));
- border-radius:16px; box-shadow:0 14px 40px #000c, inset 0 0 0 1px #ffffff12; padding:12px; overflow:hidden}
-.glow{position:absolute; inset:-10% -10% auto -10%; height:50%; background:radial-gradient(80% 100% at 50% 0%, #00d1b226 0, #ffffff00 60%)}
-.name-row{display:flex; align-items:center; gap:8px; font-weight:800}
-.avatar{width:34px;height:34px;border-radius:50%; background:#1d3732; display:grid; place-items:center; border:1px solid #2a4e46}
-.score{margin-left:auto; font-weight:900; padding:5px 9px; border-radius:9px; background:#0b141680; border:1px solid #1d2a32}
-.badge{margin-left:8px; padding:5px 8px; border-radius:999px; background:#0d161a; border:1px solid #1b2b32; font-weight:800; font-size:.85rem; color:#b6c8d3}
-.comment{margin:2px 0 8px; font-style:italic; opacity:.95; font-size:.95rem}
+ border-radius:14px; box-shadow:0 14px 38px #000c, inset 0 0 0 1px #ffffff12; padding:10px; overflow:hidden}
+.glow{position:absolute; inset:-10% -10% auto -10%; height:48%; background:radial-gradient(80% 100% at 50% 0%, #00d1b226 0, #ffffff00 60%)}
 
-.dealer-area,.player-area{display:grid; gap:6px; margin-bottom:6px}
-.hands{display:flex; flex-direction:column; gap:8px}
-.hand{display:flex; align-items:flex-start; gap:8px; flex-wrap:wrap; min-height:var(--card-h); padding:4px 0}
-.hand.is-active{outline:2px dashed #00d1b2aa; outline-offset:6px; border-radius:12px; padding:6px; animation:pulse 1.2s ease-in-out infinite}
-@keyframes pulse{50%{outline-color:#8af3e6aa; filter:drop-shadow(0 0 10px #00d1b240)}}
+.name-row{display:flex; align-items:center; gap:8px; font-weight:800; font-size:.98rem}
+.avatar{width:30px;height:30px;border-radius:50%; background:#1d3732; display:grid; place-items:center; border:1px solid #2a4e46}
+.score{margin-left:auto; font-weight:900; padding:4px 8px; border-radius:8px; background:#0b141680; border:1px solid #1d2a32}
+.badge{margin-left:8px; padding:4px 8px; border-radius:999px; background:#0d161a; border:1px solid #1b2b32; font-weight:800; font-size:.8rem; color:#b6c8d3}
+.comment{margin:2px 0 6px; font-style:italic; opacity:.95; font-size:.92rem}
 
-/* Карты — резиновые размеры */
-.card{width:var(--card-w); height:var(--card-h); border-radius:var(--card-r); background:var(--card); box-shadow:0 8px 20px var(--shadow), inset 0 0 0 1px #e7e0cf; position:relative; transform:translateY(-14px) scale(.98); opacity:0; animation:deal .42s cubic-bezier(.21,.98,.6,.99) forwards}
+.dealer-area,.player-area{display:grid; gap:6px; margin-bottom:4px}
+.hands{display:flex; flex-direction:column; gap:6px}
+.hand{display:flex; align-items:flex-start; gap:6px; flex-wrap:wrap; min-height:var(--card-h); padding:2px 0}
+.hand.is-active{outline:2px dashed #00d1b2aa; outline-offset:6px; border-radius:12px; padding:4px; animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{outline-color:#8af3e6aa; filter:drop-shadow(0 0 8px #00d1b240)}}
+
+/* ===== Карты ===== */
+.card{width:var(--card-w); height:var(--card-h); border-radius:var(--card-r); background:var(--card);
+  box-shadow:0 8px 18px var(--shadow), inset 0 0 0 1px #e7e0cf;
+  position:relative; transform:translateY(-12px) scale(.98); opacity:0; animation:deal .40s cubic-bezier(.21,.98,.6,.99) forwards}
 @keyframes deal{to{transform:translateY(0) scale(1); opacity:1}}
 .card svg{width:100%; height:100%}
 .hidden .face{visibility:hidden}
@@ -66,15 +71,14 @@ body{min-height:100svh}
   color:#e5ecff; border-radius:var(--card-r); box-shadow: inset 0 0 0 1px #2d3c90;
 }
 
-/* Нижняя экшн‑панель (фикс) */
+/* ===== Нижняя экшн‑панель ===== */
 .action-bar{
-  position:fixed; left:0; right:0; bottom:0; z-index:6; padding:10px 10px calc(10px + var(--safe-b));
+  position:fixed; left:0; right:0; bottom:0; z-index:6; padding:8px 10px calc(8px + var(--safe-b));
   background:#0b1217ee; backdrop-filter:blur(8px); border-top:1px solid #1a2a34;
 }
-.action-grid{
-  display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px;
-}
-.btn{appearance:none; border:none; background:linear-gradient(180deg,#0e2622,#0b1f1c); color:#bffcf2; border:1px solid #13443b; font-weight:900; letter-spacing:.2px; padding:12px 10px; border-radius:12px; box-shadow:0 6px 16px #00d1b220, inset 0 0 24px #00d1b210; transform:translateY(0); transition:transform .06s ease}
+.action-grid{display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px}
+.btn{appearance:none; border:none; background:linear-gradient(180deg,#0e2622,#0b1f1c); color:#bffcf2; border:1px solid #13443b;
+  font-weight:900; letter-spacing:.2px; padding:11px 8px; border-radius:12px; box-shadow:0 6px 16px #00d1b220, inset 0 0 24px #00d1b210; transform:translateY(0); transition:transform .06s ease}
 .btn:active{transform:translateY(2px)}
 .secondary{background:linear-gradient(180deg,#2b2331,#1e1923); border-color:#3b2b46; color:#e9d2ff}
 .ghost{background:linear-gradient(180deg,#1b2126,#151a1f); border-color:#28313a; color:#d7e2ea}
@@ -82,41 +86,41 @@ body{min-height:100svh}
 .danger{background:linear-gradient(180deg,#2a1219,#1f0f14); border-color:#5a1e2f; color:#ffd7de}
 button[disabled]{opacity:.5}
 
-/* Аккордеоны */
+/* ===== Аккордеоны (мобайл — свёрнуты) ===== */
 .accord{background:#0c1418; border:1px solid #19262c; border-radius:12px; overflow:hidden}
-.accord summary{list-style:none; padding:10px 12px; cursor:pointer; font-weight:800; display:flex; align-items:center; justify-content:space-between}
+.accord summary{list-style:none; padding:8px 10px; cursor:pointer; font-weight:800; display:flex; align-items:center; justify-content:space-between}
 .accord summary::-webkit-details-marker{display:none}
-.accord .body{padding:10px 12px; border-top:1px solid #1a2a34}
+.accord .body{padding:8px 10px; border-top:1px solid #1a2a34}
 .stats{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px}
 .stat{background:#0f1a20; border:1px solid #1a2a34; padding:8px 10px; border-radius:10px; text-align:center; font-weight:800}
 .log{max-height:40vh; overflow:auto; font-size:.92rem}
 
 /* Баннер */
-.banner{position:fixed; left:50%; transform:translate(-50%,-120%); top:8px; background:#0b1217ee; border:1px solid #20313a; padding:10px 14px; border-radius:10px; font-weight:800; color:#affff3; opacity:0; pointer-events:none; box-shadow:0 18px 50px #000a; z-index:7}
+.banner{position:fixed; left:50%; transform:translate(-50%,-120%); top:8px; background:#0b1217ee; border:1px solid #20313a; padding:8px 12px; border-radius:10px; font-weight:800; color:#affff3; opacity:0; pointer-events:none; box-shadow:0 18px 50px #000a; z-index:7}
 .banner.show{animation:drop .9s ease forwards}
 @keyframes drop{0%{transform:translate(-50%,-120%); opacity:0} 40%{transform:translate(-50%,10%); opacity:1} 100%{transform:translate(-50%,-20%); opacity:1}}
 
-/* Лэйаут на планшете/десктопе */
+/* Планшет/десктоп */
 @media (min-width:880px){
   .wrap{grid-template-columns:1fr 320px; padding-bottom:100px}
   .action-grid{grid-template-columns:repeat(6,1fr)}
 }
 
-/* Ультра‑компакт при маленькой высоте (в ландшафте) */
+/* Очень низкий экран (ландшафт) */
 @media (max-height:700px){
-  :root{ --card-w: clamp(48px, 12.5vw, 68px); }
+  :root{ --card-w: clamp(46px, 12vw, 62px); }
   .wrap{padding-bottom:86px}
 }
 </style>
 </head>
 <body>
 <div class="header">
-  <div class="h-title"><span class="monkey">🐒</span> Блэкджек против Обезьяны — vMobile</div>
+  <div class="h-title"><span class="monkey">🐒</span> Блэкджек против Обезьяны — vMobile+</div>
   <div class="h-bank">Бананы: <span id="bank">500</span> 🍌</div>
 </div>
 
 <div class="betbar">
-  <strong>Ставка (🍌):</strong>
+  <span class="label">Ставка (🍌):</span>
   <input id="bet" type="number" min="1" step="1" value="25" />
   <div class="chips">
     <button class="chip" data-chip="10">+10</button>
@@ -125,7 +129,7 @@ button[disabled]{opacity:.5}
     <button class="chip" data-chip="-10">-10</button>
     <button class="chip" data-chip="max">MAX</button>
   </div>
-  <button class="toggle-more" id="togglePanels">Панели ⌄</button>
+  <button class="btn-tiny" id="togglePanels">Панели ⌄</button>
 </div>
 
 <div class="wrap">
@@ -158,7 +162,6 @@ button[disabled]{opacity:.5}
     </div>
   </div>
 
-  <!-- Аккордеоны (мобайл — свёрнуты) -->
   <details class="accord" id="statsAcc">
     <summary>📊 Статистика <span id="statsHint" style="opacity:.7;font-weight:600"></span></summary>
     <div class="body">
@@ -175,13 +178,11 @@ button[disabled]{opacity:.5}
 
   <details class="accord" id="logAcc">
     <summary>📝 История</summary>
-    <div class="body">
-      <div id="log" class="log"></div>
-    </div>
+    <div class="body"><div id="log" class="log"></div></div>
   </details>
 </div>
 
-<!-- Нижняя фикс‑панель действий -->
+<!-- Фикс‑панель действий -->
 <div class="action-bar">
   <div class="action-grid">
     <button id="dealBtn" class="btn">Раздать</button>
@@ -193,7 +194,6 @@ button[disabled]{opacity:.5}
   </div>
   <div class="action-grid" style="margin-top:8px">
     <button id="insuranceBtn" class="btn success" disabled>Страховка</button>
-    <!-- пустые ячейки для аккуратной сетки -->
     <span></span><span></span><span></span><span></span><span></span>
   </div>
 </div>
@@ -204,21 +204,19 @@ button[disabled]{opacity:.5}
   const $$ = s => Array.from(document.querySelectorAll(s));
   const banner = $('#banner'), logEl = $('#log');
 
-  // --- Compact hints
+  // Хинт для аккордеона
   const statsHint = $('#statsHint');
   function setStatsHint(){ statsHint.textContent = window.innerWidth < 880 ? '• нажми, чтобы раскрыть' : ''; }
   setStatsHint(); addEventListener('resize', setStatsHint);
-
-  // --- Panels toggle (скрыть/показать аккордеоны быстро)
   $('#togglePanels').addEventListener('click', ()=>{
     $('#statsAcc').open = !$('#statsAcc').open;
     $('#logAcc').open = !$('#logAcc').open;
   });
 
-  // --- Options
+  // Опции
   let OPT = { decks:6, penetration:75, S17:true, minBet:5, maxBet:500 };
 
-  // --- Elements
+  // Элементы
   const dealerHandEl = $('#dealerHand'), dealerScoreEl = $('#dealerScore'), dealerCommentEl = $('#dealerComment');
   const handsContainer = $('#handsContainer'), playerScoreEl = $('#playerScore'), playerCommentEl = $('#playerComment');
   const bankEl = $('#bank'), shoeInfoEl = $('#shoeInfo'), ruleText = $('#ruleText');
@@ -226,7 +224,7 @@ button[disabled]{opacity:.5}
   const dealBtn = $('#dealBtn'), hitBtn = $('#hitBtn'), standBtn = $('#standBtn'), doubleBtn = $('#doubleBtn'), splitBtn = $('#splitBtn'), surrenderBtn = $('#surrenderBtn'), insuranceBtn = $('#insuranceBtn');
   const stRounds = $('#stRounds'), stWins=$('#stWins'), stPush=$('#stPush'), stBJ=$('#stBJ'), stProfit=$('#stProfit'), stStreak=$('#stStreak');
 
-  // --- Реплики (добавлены язвительные)
+  // Реплики (включая издёвку)
   const lines = {
     start: [
       "«Ставки повыше — бананы повкуснее…»","«Я не жульничаю. Просто карты меня обожают.»","«Пахнет победой. Или это мои бананы?»",
@@ -255,7 +253,7 @@ button[disabled]{opacity:.5}
     surrender: ["«Сдача принята. Смелость — знать, когда бежать.»","«Полбанана назад. Комиссия — ноль.»"]
   };
 
-  // --- Shoe / state
+  // Shoe / state
   const ranks=["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
   const suits=[{s:"♠",c:"#121620"},{s:"♥",c:"#c62828"},{s:"♦",c:"#c62828"},{s:"♣",c:"#121620"}];
   let shoe=[], cutPoint=0, used=0;
@@ -264,16 +262,18 @@ button[disabled]{opacity:.5}
   let playerHands=[]; // {cards:[], bet, done, doubled, isBust, isBJ}
   let surrenderedHands=new Set();
   let activeHandIndex=0; const MAX_HANDS=4;
+
   // stats
   let rounds=0, wins=0, pushes=0, bjs=0, profit=0, streak=0, maxStreak=0;
 
-  function buildShoe(decks=6){ const arr=[]; for(let d=0; d<decks; d++) for(const r of ranks) for(const su of suits) arr.push({rank:r,suit:su.s,color:su.c}); shuffle(arr); used=0; cutPoint=Math.floor(arr.length*(OPT.penetration/100)); return arr; }
+  function buildShoe(decks=6){ const arr=[]; for(let d=0; d<decks; d++) for(const r of ranks) for(const su of suits) arr.push({rank:r,suit:su.s,color:su.c});
+    shuffle(arr); used=0; cutPoint=Math.floor(arr.length*(OPT.penetration/100)); return arr; }
   function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
   function drawOne(){ if(used>=cutPoint) reshuffle(); used++; updateShoeInfo(); return shoe.pop(); }
   function reshuffle(){ toast('🔁 Перетасовка… Обезьяна шепчет картам'); shoe=buildShoe(OPT.decks); }
   function updateShoeInfo(){ const total=OPT.decks*52; const pct=Math.min(100, Math.floor(used/total*100)); shoeInfoEl.textContent=`Туфля: ${OPT.decks} колод • ${pct}% израсходовано`; }
 
-  // --- Cards (SVG)
+  // Cards (SVG)
   function cardSVG(rank, suit, color="#111"){
     const top=rank+" "+suit, bot=suit+" "+rank;
     return `<svg viewBox="0 0 72 104" class="face" aria-label="${rank}${suit}">
@@ -301,14 +301,14 @@ button[disabled]{opacity:.5}
     return el;
   }
 
-  // --- Values
+  // Values
   function handValue(cards){ let t=0,a=0; for(const c of cards){ if(c.rank==="A"){t+=11;a++;} else if(["K","Q","J"].includes(c.rank)){t+=10;} else t+=(c.rank==="10"?10:parseInt(c.rank,10)); } while(t>21&&a>0){t-=10;a--;} return t; }
   const isBJ = (cards)=> cards.length===2 && handValue(cards)===21;
   const isPair = (cards)=> cards.length===2 && rankVal(cards[0])===rankVal(cards[1]);
   function rankVal(c){ if(c.rank==="A")return 11; if(["K","Q","J","10"].includes(c.rank))return 10; return parseInt(c.rank,10) }
   function isSoft(cards){ let t=0,a=0; for(const c of cards){ if(c.rank==="A"){t+=11;a++;} else if(["K","Q","J"].includes(c.rank)){t+=10;} else t+=(c.rank==="10"?10:parseInt(c.rank,10)); } while(t>21&&a>0){t-=10;a--;} return a>0; }
 
-  // --- UI helpers
+  // UI helpers
   function getActiveEl(){ return $('#playerHand'+activeHandIndex); }
   function setActiveHand(idx){ $$('.hand').forEach(h=>h.classList.remove('is-active')); activeHandIndex=idx; $('#playerHand'+idx).classList.add('is-active'); refreshScores(); setActionsForActive(); }
   function setComment(el,t){ el.textContent=t; }
@@ -318,7 +318,7 @@ button[disabled]{opacity:.5}
   function toast(txt){ banner.textContent=txt; banner.classList.add('show'); setTimeout(()=>banner.classList.remove('show'),1400); }
   function log(msg){ const row=document.createElement('div'); row.textContent=msg; logEl.prepend(row); }
 
-  // --- Round flow
+  // Round flow
   function resetTableUI(){
     dealerHandEl.innerHTML=''; dealerScoreEl.textContent='—';
     handsContainer.innerHTML=''; const h=document.createElement('div'); h.id='playerHand0'; h.className='hand is-active'; handsContainer.appendChild(h);
@@ -435,10 +435,10 @@ button[disabled]{opacity:.5}
     const anyActive = playerHands.some((h,idx)=> !h.isBust && !surrenderedHands.has(idx)); if(!anyActive){ return resolveRound(); }
     const step=()=>{ let v=handValue(dealer.hand); const soft=isSoft(dealer.hand);
       const mustHit = v<17 || (!OPT.S17 && v===17 && soft);
-      if(mustHit){ const c=drawOne(); dealer.hand.push(c); dealerHandEl.appendChild(createCardEl(c,false,dealer.hand.length+1)); refreshScores(); setTimeout(step, 520); }
+      if(mustHit){ const c=drawOne(); dealer.hand.push(c); dealerHandEl.appendChild(createCardEl(c,false,dealer.hand.length+1)); refreshScores(); setTimeout(step, 500); }
       else resolveRound();
     };
-    setTimeout(step, 520);
+    setTimeout(step, 500);
   }
 
   function resolveRound(){
@@ -462,7 +462,7 @@ button[disabled]{opacity:.5}
       log(`${tag} Рука #${idx+1}: ${format(h.cards)} vs ${dealerTotal} — ${desc(outcome)} | Δ ${delta - h.bet}🍌`);
     });
 
-    profit += roundProfit; rounds++; if(anyPlayerWin){ wins++; streak++; maxStreak=Math.max(maxStreak,streak);} else if(allPush){/*noop*/} else { streak=0; }
+    profit += roundProfit; rounds++; if(anyPlayerWin){ wins++; streak++; maxStreak=Math.max(maxStreak,streak);} else if(allPush){/* noop */} else { streak=0; }
     stRounds.textContent=rounds; stWins.textContent=wins; stPush.textContent=pushes; stBJ.textContent=bjs; stProfit.textContent=profit; stStreak.textContent=maxStreak;
 
     if(allDealer){ setComment(dealerCommentEl, rnd(lines.dealerWin)); setComment(playerCommentEl,'Минус бананы. Ещё по одной?'); }
@@ -474,7 +474,7 @@ button[disabled]{opacity:.5}
   function format(cards){ return cards.map(c=>c.rank+c.suit).join(' '); }
   function desc(o){ return o==='playerBJ'?'Блэкджек (3:2)': o==='player'?'Победа': o==='push'?'Пуш':'Поражение'; }
 
-  // --- Controls
+  // Controls
   dealBtn.addEventListener('click', ()=>{ if(inRound) return; if(bank<OPT.minBet) return alert('Бананов нет — перезагрузи страницу.'); startRound(); });
   hitBtn.addEventListener('click', ()=> !hitBtn.disabled && hit());
   standBtn.addEventListener('click', ()=> !standBtn.disabled && stand());
@@ -488,10 +488,9 @@ button[disabled]{opacity:.5}
     v = clamp(v, OPT.minBet, Math.min(OPT.maxBet, bank)); betInput.value=v;
   }));
 
-  // --- Init
+  // Init
   shoe = buildShoe(OPT.decks); updateShoeInfo(); ruleText.textContent= OPT.S17 ? 'S17' : 'H17';
   updateBank(); resetTableUI();
-
 })();
 </script>
 </body>
