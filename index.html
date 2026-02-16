@@ -1,467 +1,483 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8">
-<title>Tetris — простая реализация</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-  /* -------------  Визуальная часть ------------- */
-  body{
-    font-family: Arial,Helvetica,sans-serif;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    background:#222;
-    color:#fff;
-    margin:0;
-    padding:0;
-    height:100vh;
-  }
-  h1{margin:20px 0;}
-  #game{
-    display:flex;
-    gap:20px;
-    justify-content:center;
-    align-items:flex-start;
-  }
-  /* 2‑дименсиональная сетка из DIV‑ов */
-  .grid{
-    display:grid;
-    grid-template-rows:repeat(20, 25px);
-    grid-template-columns:repeat(10, 25px);
-    gap:1px;
-    background:#111;
-    width:max-content;
-    padding:1px;
-  }
-  .cell{
-    width:25px;height:25px;
-    background:#000;
-    border-radius:3px;
-  }
-  /* Цвета фигур */
-  .I{background:#0ff;}
-  .J{background:#00f;}
-  .L{background:#ffa500;}
-  .O{background:#ff0;}
-  .S{background:#0f0;}
-  .T{background:#800080;}
-  .Z{background:#f00;}
-  /* Оценка и таймер */
-  #info{
-    font-size:1.1rem;
-  }
-</style>
-</head>
-<body>
-
-<h1>Tetris</h1>
-<div id="game">
-  <div id="field" class="grid"></div>  <!-- игровое поле -->
-  <div id="info">
-    <p>Очки: <span id="score">0</span></p>
-    <p>Следующий блок:</p>
-    <div id="next" class="grid"></div>
-  </div>
-</div>
-
-<script>
-/* -----------------------  Идея -----------------------
-   1. Поле – 10×20 ячеек, хранится как 2‑мерный массив.
-   2. Фигуры – массивы 4×4, каждый элемент 0/1. 4 ориентации.
-   3. Текущее положение (x, y) и тип фигуры.  y растёт вверх → вниз.
-   4. Поворот, движение влево/вправо/вниз, авто‑сдвиг каждую секунду.
-   5. Сброс линии, обновление счета.
-   6. Генерация «следующей» фигуры и простое завершение игры. ----------
-*/
-
-const COLS = 10;
-const ROWS = 20;
-const BLOCK_SIZE = 25; // px
-
-// Список фигур (4 ориентации, 4x4 матрицы)
-const SHAPES = {
-  I: [
-    [
-      [0,0,0,0],
-      [1,1,1,1],
-      [0,0,0,0],
-      [0,0,0,0]
-    ],
-    [
-      [0,0,1,0],
-      [0,0,1,0],
-      [0,0,1,0],
-      [0,0,1,0]
-    ],
-    [
-      [0,0,0,0],
-      [0,0,0,0],
-      [1,1,1,1],
-      [0,0,0,0]
-    ],
-    [
-      [0,1,0,0],
-      [0,1,0,0],
-      [0,1,0,0],
-      [0,1,0,0]
-    ]
-  ],
-  J: [
-    [
-      [1,0,0],
-      [1,1,1],
-      [0,0,0]
-    ],
-    [
-      [0,1,1],
-      [0,1,0],
-      [0,1,0]
-    ],
-    [
-      [0,0,0],
-      [1,1,1],
-      [0,0,1]
-    ],
-    [
-      [0,1,0],
-      [0,1,0],
-      [1,1,0]
-    ]
-  ],
-  L: [
-    [
-      [0,0,1],
-      [1,1,1],
-      [0,0,0]
-    ],
-    [
-      [0,1,0],
-      [0,1,0],
-      [0,1,1]
-    ],
-    [
-      [0,0,0],
-      [1,1,1],
-      [1,0,0]
-    ],
-    [
-      [1,1,0],
-      [0,1,0],
-      [0,1,0]
-    ]
-  ],
-  O: [
-    [
-      [1,1],
-      [1,1]
-    ],
-    // Остальные ориентации идентичны, но оставляем для консистентности
-    [
-      [1,1],
-      [1,1]
-    ],
-    [
-      [1,1],
-      [1,1]
-    ],
-    [
-      [1,1],
-      [1,1]
-    ]
-  ],
-  S: [
-    [
-      [0,1,1],
-      [1,1,0],
-      [0,0,0]
-    ],
-    [
-      [0,1,0],
-      [0,1,1],
-      [0,0,1]
-    ],
-    [
-      [0,0,0],
-      [0,1,1],
-      [1,1,0]
-    ],
-    [
-      [1,0,0],
-      [1,1,0],
-      [0,1,0]
-    ]
-  ],
-  T: [
-    [
-      [0,1,0],
-      [1,1,1],
-      [0,0,0]
-    ],
-    [
-      [0,1,0],
-      [0,1,1],
-      [0,1,0]
-    ],
-    [
-      [0,0,0],
-      [1,1,1],
-      [0,1,0]
-    ],
-    [
-      [0,1,0],
-      [1,1,0],
-      [0,1,0]
-    ]
-  ],
-  Z: [
-    [
-      [1,1,0],
-      [0,1,1],
-      [0,0,0]
-    ],
-    [
-      [0,0,1],
-      [0,1,1],
-      [0,1,0]
-    ],
-    [
-      [0,0,0],
-      [1,1,0],
-      [0,1,1]
-    ],
-    [
-      [0,1,0],
-      [1,1,0],
-      [1,0,0]
-    ]
-  ]
-};
-
-const COLORS = {
-  I: '#00ffff',
-  J: '#0000ff',
-  L: '#ffa500',
-  O: '#ffff00',
-  S: '#00ff00',
-  T: '#800080',
-  Z: '#ff0000'
-};
-
-// -------------- Основные классы -----------------
-
-class Piece {
-  constructor(type) {
-    this.type = type;
-    this.rotation = 0;           // 0–3
-    this.shape = SHAPES[type];
-    this.matrix = this.shape[this.rotation];
-    // Начальное положение: центр поля
-    this.x = Math.floor((COLS - this.matrix[0].length) / 2);
-    this.y = 0;
-  }
-  rotate() {
-    this.rotation = (this.rotation + 1) % 4;
-    this.matrix = this.shape[this.rotation];
-  }
-  move(dx, dy) {
-    this.x += dx;
-    this.y += dy;
-  }
-}
-
-class Tetris {
-  constructor() {
-    this.grid = this.createEmptyGrid();
-    this.score = 0;
-    this.gameOver = false;
-    this.spawn();
-    this.nextPiece = new Piece(this.randomShape());
-    this.updateNextGrid();
-    this.loop();
-  }
-
-  // --- Поля и вспомогательные методы ---
-  createEmptyGrid() {
-    const rows = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
-    return rows;
-  }
-
-  randomShape() {
-    const keys = Object.keys(SHAPES);
-    return keys[Math.floor(Math.random() * keys.length)];
-  }
-
-  // Проверка коллизии текущего блока с полем или краями
-  isColliding(piece, offsetX = 0, offsetY = 0) {
-    const m = piece.matrix;
-    const oX = piece.x + offsetX;
-    const oY = piece.y + offsetY;
-
-    for (let y = 0; y < m.length; ++y) {
-      for (let x = 0; x < m[y].length; ++x) {
-        if (m[y][x]) {  // если в матрице есть блок
-          const gx = oX + x;
-          const gy = oY + y;
-          if (gx < 0 || gx >= COLS || gy >= ROWS) return true; // за пределы
-          if (gy >= 0 && this.grid[gy][gx]) return true;      // уже занят
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Блэкджек 21 | Игра в казино</title>
+    <meta name="description" content="Профессиональная игра в блэкджек с анимациями, красивыми картами и адаптивным дизайном для ПК и мобильных устройств">
+    <style>
+        :root {
+            --neon-purple: #b026ff;
+            --neon-blue: #4da6ff;
+            --neon-green: #00ff9d;
+            --neon-red: #ff2a6d;
+            --felt-green: #035c3d;
+            --card-back: #1a237e;
+            --chip-red: #e53935;
+            --chip-blue: #1e88e5;
+            --chip-green: #43a047;
+            --chip-black: #212121;
+            --chip-purple: #8e24aa;
         }
-      }
-    }
-    return false;
-  }
 
-  // Очищаем строки и обновляем счёт
-  clearLines() {
-    let linesCleared = 0;
-    for (let y = ROWS - 1; y >= 0; --y) {
-      if (this.grid[y].every(cell => cell)) {
-        this.grid.splice(y, 1);                     // удаляем строку
-        this.grid.unshift(Array(COLS).fill(null));  // вставляем пустую сверху
-        ++linesCleared;
-        y++; // проверяем строку на новую позицию
-      }
-    }
-    if (linesCleared) {
-      this.score += [0, 40, 100, 300, 1200][linesCleared]; // стандартные очки
-    }
-  }
-
-  // Пересоздаём текущий блок
-  spawn() {
-    this.current = this.nextPiece;
-    this.nextPiece = new Piece(this.randomShape());
-    this.current.x = Math.floor((COLS - this.current.matrix[0].length) / 2);
-    this.current.y = 0;
-    if (this.isColliding(this.current)) {
-      this.gameOver = true;
-    }
-    this.updateNextGrid();
-  }
-
-  // Поставить блок в сетку
-  lockPiece() {
-    const m = this.current.matrix;
-    for (let y = 0; y < m.length; ++y) {
-      for (let x = 0; x < m[y].length; ++x) {
-        if (m[y][x]) {
-          const gx = this.current.x + x;
-          const gy = this.current.y + y;
-          if (gy >= 0) {
-            this.grid[gy][gx] = this.current.type;
-          }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
-      }
-    }
-  }
 
-  // ----- Основной цикл и рендер -----
-  loop() {
-    if (this.gameOver) {
-      this.render();
-      document.getElementById('status').innerText = 'Игра окончена!';
-      return;
-    }
-
-    // Авто‑сдвиг вниз
-    if (!this.isColliding(this.current, 0, 1)) {
-      this.current.move(0, 1);
-    } else {
-      this.lockPiece();
-      this.clearLines();
-      this.spawn();
-    }
-
-    this.render();
-    setTimeout(() => this.loop(), 500); // 500 мс → 2 блока в секунду
-  }
-
-  // Отрисовка всей сцены (поле + текущий блок + след. блок)
-  render() {
-    this.drawGrid();
-    this.drawNext();
-    document.getElementById('score').innerText = this.score;
-  }
-
-  // Поля: обычный 2‑доменный див
-  drawGrid() {
-    const field = document.getElementById('field');
-    field.innerHTML = '';
-    const tempGrid = this.grid.map(row => [...row]); // копия
-    // Вставляем текущий блок
-    const m = this.current.matrix;
-    for (let y = 0; y < m.length; ++y) {
-      for (let x = 0; x < m[y].length; ++x) {
-        if (m[y][x]) {
-          const gx = this.current.x + x;
-          const gy = this.current.y + y;
-          if (gy >= 0) tempGrid[gy][gx] = this.current.type;
+        body {
+            background-color: #000;
+            color: white;
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
-      }
-    }
-    for (let y = 0; y < ROWS; ++y) {
-      for (let x = 0; x < COLS; ++x) {
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        const type = tempGrid[y][x];
-        if (type) cell.style.backgroundColor = COLORS[type];
-        field.appendChild(cell);
-      }
-    }
-  }
 
-  // Отрисовка «следующего» блока
-  drawNext() {
-    const nextField = document.getElementById('next');
-    nextField.innerHTML = '';
-    const m = this.nextPiece.matrix;
-    const size = 4; // максимальный размер 4×4
-    for (let y = 0; y < size; ++y) {
-      for (let x = 0; x < size; ++x) {
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        if (m[y] && m[y][x]) {
-          cell.style.backgroundColor = COLORS[this.nextPiece.type];
+        .game-container {
+            width: 1000px;
+            height: 700px;
+            position: relative;
+            background: linear-gradient(145deg, #041e42, #052e20);
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 255, 157, 0.3), 
+                        0 0 60px rgba(176, 38, 255, 0.1);
+            overflow: hidden;
         }
-        nextField.appendChild(cell);
-      }
-    }
-  }
-}
 
-/* ------------------- Обработчики клавиш ------------------- */
-const game = new Tetris();
-document.addEventListener('keydown', e => {
-  if (game.gameOver) return;
-  switch (e.key) {
-    case 'ArrowLeft':
-      if (!game.isColliding(game.current, -1, 0))
-        game.current.move(-1, 0);
-      break;
-    case 'ArrowRight':
-      if (!game.isColliding(game.current, 1, 0))
-        game.current.move(1, 0);
-      break;
-    case 'ArrowDown':
-      if (!game.isColliding(game.current, 0, 1))
-        game.current.move(0, 1);
-      break;
-    case 'ArrowUp':
-      const oldRot = game.current.rotation;
-      game.current.rotate();
-      if (game.isColliding(game.current)) {   // если коллизия → откат
-        game.current.rotation = oldRot;
-        game.current.matrix = game.current.shape[oldRot];
-      }
-      break;
-    case ' ':
-      // Свернуть
-      while (!game.isColliding(game.current, 0, 1)) {
-        game.current.move(0, 1);
-      }
-      break;
-  }
-});
-</script>
-</body>
-</html>
+        .game-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--felt-green);
+            clip-path: polygon(0 5%, 100% 0, 100% 95%, 0 100%);
+            z-index: 0;
+        }
+
+        .table {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            width: 320px;
+            padding: 10px 15px;
+            background: rgba(0,0,0,0.8);
+            border-radius: 5px;
+            margin: 10px 0 0 10px;
+            color: white;
+            font-size: 14px;
+            box-shadow: 0 0 10px rgba(176, 38, 255, 0.3);
+            z-index: 10;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .dealer-area, .player-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            flex: 1;
+            position: relative;
+        }
+
+        .dealer-area {
+            justify-content: flex-end;
+        }
+
+        .player-area {
+            justify-content: flex-start;
+        }
+
+        .hand {
+            display: flex;
+            justify-content: center;
+            height: 150px;
+            width: 100%;
+            position: relative;
+        }
+
+        .hand-value {
+            position: absolute;
+            font-size: 20px;
+            color: white;
+            text-shadow: 0 0 5px rgba(255,255,255,0.5);
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 15px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            z-index: 10;
+        }
+
+        .dealer-hand-value {
+            top: -35px;
+            right: 10px;
+        }
+
+        .player-hand-value {
+            bottom: -35px;
+            right: 10px;
+        }
+
+        .card {
+            width: 100px;
+            height: 140px;
+            background-color: white;
+            border-radius: 8px;
+            margin: 0 -20px;
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease-out;
+            transform-style: preserve-3d;
+            transform: perspective(800px) rotateY(180deg);
+            cursor: default;
+        }
+
+        .card.dealt {
+            transform: perspective(800px) rotateY(0deg);
+        }
+
+        .card.hidden {
+            transform: perspective(800px) rotateY(180deg);
+        }
+
+        .card-face, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .card-face {
+            background-color: white;
+            color: black;
+            display: flex;
+            flex-direction: column;
+            padding: 5px;
+        }
+
+        .card-back {
+            background: var(--card-back);
+            background-image: linear-gradient(45deg, #1a237e 25%, transparent 25%), 
+                            linear-gradient(-45deg, #1a237e 25%, transparent 25%), 
+                            linear-gradient(45deg, transparent 75%, #1a237e 75%), 
+                            linear-gradient(-45deg, transparent 75%, #1a237e 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            border: 5px solid #3949ab;
+            transform: rotateY(180deg);
+        }
+
+        .card-value {
+            font-size: 24px;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+        .card-value-bottom {
+            font-size: 24px;
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            transform: rotate(180deg);
+        }
+
+        .card-suit {
+            font-size: 40px;
+            margin: auto;
+        }
+
+        .hearts, .diamonds {
+            color: red;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            min-width: 120px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 255, 157, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px rgba(176, 38, 255, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-hit {
+            border-bottom: 3px solid var(--neon-blue);
+        }
+
+        .btn-stand {
+            border-bottom: 3px solid var(--neon-red);
+        }
+
+        .btn-double {
+            border-bottom: 3px solid var(--neon-purple);
+        }
+
+        .btn-split {
+            border-bottom: 3px solid var(--neon-green);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .chip-tray {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+
+        .chip {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            cursor: grab;
+            box-shadow: 
+                0 1px 0 rgba(255,255,255,0.5) inset,
+                0 -1px 0 rgba(0,0,0,0.5) inset,
+                0 2px 5px rgba(0,0,0,0.3);
+            position: relative;
+            user-select: none;
+            transition: transform 0.2s ease;
+        }
+
+        .chip::before {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px dashed rgba(255,255,255,0.3);
+        }
+
+        .chip:hover {
+            transform: translateY(-3px);
+        }
+
+        .chip[draggable="true"]:active {
+            cursor: grabbing;
+        }
+
+        .chip-5 {
+            background: var(--chip-red);
+        }
+
+        .chip-25 {
+            background: var(--chip-green);
+        }
+
+        .chip-50 {
+            background: var(--chip-blue);
+        }
+
+        .chip-100 {
+            background: var(--chip-black);
+        }
+
+        .chip-500 {
+            background: var(--chip-purple);
+        }
+
+        .bet-area {
+            width: 120px;
+            height: 80px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 15px auto 5px auto;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .bet-area.highlight {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 15px rgba(0, 255, 157, 0.5);
+        }
+
+        .bet-amount {
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background: rgba(0,0,0,0.7);
+            padding: 5px 15px;
+            border-radius: 12px;
+            text-shadow: 0 0 5px rgba(0, 255, 157, 0.5);
+            box-shadow: 0 0 10px rgba(0, 255, 157, 0.3);
+            z-index: 10;
+        }
+
+        .bet-chips {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .bet-chip {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-top: -15px;
+            position: relative;
+            box-shadow: 
+                0 1px 0 rgba(255,255,255,0.5) inset,
+                0 -1px 0 rgba(0,0,0,0.5) inset,
+                0 2px 5px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 10px;
+            transform: perspective(100px) rotateX(30deg);
+        }
+
+        .bet-chip::before {
+            content: '';
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px dashed rgba(255,255,255,0.3);
+        }
+
+        .message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            padding: 20px 40px;
+            border-radius: 10px;
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .message.show {
+            opacity: 1;
+        }
+
+        .win-message {
+            color: var(--neon-green);
+        }
+
+        .lose-message {
+            color: var(--neon-red);
+        }
+
+        .push-message {
+            color: var(--neon-blue);
+        }
+
+        .balance {
+            font-size: 20px;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(0, 255, 157, 0.5);
+        }
+
+        .history-log {
+            max-height: 100px;
+            overflow-y: auto;
+            margin-left: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding-right: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--neon-blue) rgba(0,0,0,0.2);
+        }
+
+        .history-log::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .history-log::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.2);
+            border-radius: 4px;
+        }
+
+        .history-log::-webkit-scrollbar-thumb {
+            background: var(--neon-blue);
+            border-radius: 4px;
+            box-shadow: 0 0 5px var(--neon-blue);
+        }
+
+        .history-log:
