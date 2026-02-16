@@ -1,576 +1,467 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
-<title>Блэкджек против Обезьяны — Mobile v2</title>
+<meta charset="utf-8">
+<title>Tetris — простая реализация</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-/* ===== THEME ===== */
-:root{
-  --bg:#0e1116; --bg2:#0b0f12;
-  --felt1:#0f2a24; --felt2:#14342c;
-  --neon:#00d1b2; --neon2:#8af3e6;
-  --danger:#ff4d6d; --ok:#2dde98; --muted:#9fb4c2;
-  --card:#fffdf7; --shadow:rgba(0,0,0,.35);
-
-  /* Карты — крупнее. Авто под высоту: iPhone 13 = 844px */
-  --card-w: clamp(74px, 22vw, 100px);
-  --card-h: calc(var(--card-w) * 1.45);
-  --card-r: 12px;
-
-  --safe-b: env(safe-area-inset-bottom, 0px);
-  --safe-t: env(safe-area-inset-top, 0px);
-  --radius: 16px;
-  --pad: 12px;
-  --fs: 15px;
-}
-*{box-sizing:border-box}
-html,body{margin:0;padding:0;background:linear-gradient(180deg,var(--bg),var(--bg2)); color:#e8eef2; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial; font-size:var(--fs); -webkit-text-size-adjust:100%}
-body{min-height:100svh; overflow-x:hidden}
-
-/* ===== HEADER ===== */
-.header{
-  position:sticky; top:0; z-index:10;
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  padding:8px 12px calc(6px + var(--safe-t));
-  background:#0c1217f2; backdrop-filter:blur(10px); border-bottom:1px solid #18232b;
-}
-.h-left{display:flex; align-items:center; gap:8px; font-weight:900}
-.h-left .monkey{font-size:1.35rem}
-.bank{background:#0f171c; border:1px solid #1e2b33; padding:6px 10px; border-radius:12px; font-weight:900; color:#affff3}
-
-/* ===== TABLE ===== */
-.wrap{padding:10px 12px calc(140px + var(--safe-b));}
-.table{
-  position:relative; border-radius:var(--radius);
-  background:radial-gradient(70% 90% at 50% 0%, #1b4f43, #0f2e27 55%, #0b211c 100%);
-  box-shadow:0 20px 60px #000b, inset 0 0 0 1px #ffffff12;
-  padding:10px;
-}
-.row-head{display:flex; align-items:center; gap:10px; margin-bottom:6px}
-.badge{padding:6px 10px; border-radius:999px; background:#0f171c; border:1px solid #1e2b33; color:#b6cad6; font-weight:800}
-.title{display:flex; align-items:center; gap:8px; font-weight:900}
-.score{margin-left:auto; background:#0a1216; border:1px solid #20323a; padding:8px 12px; border-radius:12px; font-weight:900; font-size:1.05rem}
-
-.hand{display:flex; align-items:center; gap:12px; min-height:var(--card-h); padding:6px 0; position:relative}
-.hand.is-active{outline:2px dashed #00d1b299; outline-offset:8px; border-radius:12px; animation:pulse 1.2s ease-in-out infinite}
-@keyframes pulse{50%{outline-color:#8af3e6aa; filter:drop-shadow(0 0 12px #00d1b244)}}
-.comment{margin:6px 0 10px; font-style:italic; opacity:.95; line-height:1.25; min-height:1.25em}
-
-/* Карты — большие, с фан-аут при 4+ */
-.card{width:var(--card-w); height:var(--card-h); border-radius:var(--card-r); background:var(--card);
-  box-shadow:0 10px 22px var(--shadow), inset 0 0 0 1px #e7e0cf;
-  position:relative; transform:translateY(-10px) scale(.98); opacity:0; animation:deal .38s cubic-bezier(.21,.98,.6,.99) forwards}
-@keyframes deal{to{transform:translateY(0) scale(1); opacity:1}}
-.card svg{width:100%;height:100%}
-.hidden .face{visibility:hidden}
-.hidden::after{
-  content:"🂠"; position:absolute; inset:0; display:grid; place-items:center; font-size:calc(var(--card-w) * .55);
-  background:repeating-linear-gradient(45deg,#1b255a 0 10px,#121a49 10px 20px);
-  color:#e5ecff; border-radius:var(--card-r); box-shadow: inset 0 0 0 1px #2d3c90;
-}
-/* перекрытие, когда много карт */
-.hand.compact .card{margin-left:-28%}
-.hand.compact .card:first-child{margin-left:0}
-
-/* ===== FLOAT BET PILL ===== */
-.bet-pill{
-  position:fixed; left:12px; bottom:calc(104px + var(--safe-b)); z-index:12;
-  display:flex; align-items:center; gap:8px; padding:10px 12px;
-  background:#0c1418ee; border:1px solid #20313a; border-radius:14px; box-shadow:0 10px 30px #000a;
-}
-.bet-pill strong{font-size:1rem}
-.bet-pill .val{font-weight:900; color:#affff3}
-.bet-pill button{border:none; background:#10181c; color:#d7e6ee; border:1px solid #1e2b33; padding:6px 10px; border-radius:10px; font-weight:800}
-
-/* ===== ACTION BAR ===== */
-.actions{
-  position:fixed; left:0; right:0; bottom:0; z-index:11; padding:10px 12px calc(10px + var(--safe-b));
-  background:#0b1217ee; border-top:1px solid #1a2a34; backdrop-filter:blur(8px);
-}
-.grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
-.btn{appearance:none; border:none; padding:14px 10px; border-radius:14px; font-weight:900; letter-spacing:.2px;
-  background:linear-gradient(180deg,#122d27,#0e251f); border:1px solid #1b4b3f; color:#c9fff6; box-shadow:0 8px 22px #00d1b226, inset 0 0 24px #00d1b214}
-.btn:active{transform:translateY(1px)}
-.secondary{background:linear-gradient(180deg,#2b2331,#1f1823); border-color:#3b2b46; color:#ead9ff}
-.ghost{background:linear-gradient(180deg,#1b2126,#141a1f); border-color:#27313a; color:#e5eef6}
-.success{background:linear-gradient(180deg,#12321f,#0f2a19); border-color:#255c44; color:#caffe6}
-.danger{background:linear-gradient(180deg,#2a1219,#1f0f14); border-color:#5a1e2f; color:#ffd7de}
-button[disabled]{opacity:.5}
-
-/* ===== BOTTOM SHEET: BET ===== */
-.sheet{position:fixed; left:0; right:0; bottom:-100%; z-index:20; background:#0d1419; border-top:1px solid #1c2a33; border-radius:16px 16px 0 0; box-shadow:0 -20px 60px #0008}
-.sheet.show{animation:rise .25s ease forwards}
-.sheet.hide{animation:drop .22s ease forwards}
-@keyframes rise{to{bottom:0}}
-@keyframes drop{to{bottom:-100%}}
-.sheet .hd{display:flex; align-items:center; justify-content:space-between; padding:12px}
-.sheet .hd strong{font-size:1.05rem}
-.sheet .body{padding:0 12px 12px}
-.range{width:100%}
-.sheet .row{display:flex; align-items:center; gap:10px; margin:10px 0}
-.sheet .chips{display:flex; gap:8px; overflow:auto; padding-bottom:6px}
-.sheet .chip{min-width:56px; height:40px; padding:0 12px; border-radius:12px; border:1px solid #1f2c35; background:#121a20; color:#affff3; font-weight:900}
-.sheet .num{display:flex; align-items:center; gap:8px}
-.sheet .num input{width:120px; padding:10px; border-radius:12px; border:1px solid #22323a; background:#0e161a; color:#dce8ee; font-weight:800; font-size:1.1rem; text-align:center}
-.sheet .num button{padding:10px 12px; border-radius:12px; border:1px solid #1e2b33; background:#0f171c; color:#e7f3f8; font-weight:900}
-
-/* ===== ACCORDIONS (лог/стат) ===== */
-.accord{margin-top:10px; background:#0c1418; border:1px solid #19262c; border-radius:12px; overflow:hidden}
-.accord summary{list-style:none; padding:10px 12px; font-weight:800; display:flex; justify-content:space-between; cursor:pointer}
-.accord summary::-webkit-details-marker{display:none}
-.accord .body{padding:10px 12px; border-top:1px solid #1a2a34}
-.stats{display:grid; grid-template-columns:repeat(2,1fr); gap:8px}
-.stat{background:#0f1a20; border:1px solid #1a2a34; padding:8px 10px; border-radius:10px; text-align:center; font-weight:800}
-.log{max-height:40vh; overflow:auto; font-size:.95rem}
-
-/* ===== RESPONSIVE HEIGHT ===== */
-@media (max-height:760px){
-  :root{ --card-w: clamp(68px, 20vw, 88px); }
-}
-@media (max-height:690px){
-  :root{ --card-w: clamp(62px, 19vw, 82px); --fs:14px; }
-  .actions{padding-bottom:calc(8px + var(--safe-b))}
-  .bet-pill{bottom:calc(96px + var(--safe-b))}
-}
+  /* -------------  Визуальная часть ------------- */
+  body{
+    font-family: Arial,Helvetica,sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    background:#222;
+    color:#fff;
+    margin:0;
+    padding:0;
+    height:100vh;
+  }
+  h1{margin:20px 0;}
+  #game{
+    display:flex;
+    gap:20px;
+    justify-content:center;
+    align-items:flex-start;
+  }
+  /* 2‑дименсиональная сетка из DIV‑ов */
+  .grid{
+    display:grid;
+    grid-template-rows:repeat(20, 25px);
+    grid-template-columns:repeat(10, 25px);
+    gap:1px;
+    background:#111;
+    width:max-content;
+    padding:1px;
+  }
+  .cell{
+    width:25px;height:25px;
+    background:#000;
+    border-radius:3px;
+  }
+  /* Цвета фигур */
+  .I{background:#0ff;}
+  .J{background:#00f;}
+  .L{background:#ffa500;}
+  .O{background:#ff0;}
+  .S{background:#0f0;}
+  .T{background:#800080;}
+  .Z{background:#f00;}
+  /* Оценка и таймер */
+  #info{
+    font-size:1.1rem;
+  }
 </style>
 </head>
 <body>
-  <div class="header">
-    <div class="h-left"><span class="monkey">🐒</span><div>Блэкджек против Обезьяны</div></div>
-    <div class="bank">Бананы: <span id="bank">500</span> 🍌</div>
+
+<h1>Tetris</h1>
+<div id="game">
+  <div id="field" class="grid"></div>  <!-- игровое поле -->
+  <div id="info">
+    <p>Очки: <span id="score">0</span></p>
+    <p>Следующий блок:</p>
+    <div id="next" class="grid"></div>
   </div>
-
-  <div class="wrap">
-    <div class="table">
-      <!-- DEALER -->
-      <div class="row-head">
-        <div class="title"><span>🙈</span><span><strong>Дилер: Обезьяна</strong></span></div>
-        <span class="badge" id="shoeInfo">6 колод • 0%</span>
-        <div class="score" id="dealerScore">—</div>
-      </div>
-      <div id="dealerHand" class="hand"></div>
-      <div id="dealerComment" class="comment">«Ставки повыше — бананы повкуснее…»</div>
-
-      <!-- PLAYER -->
-      <div class="row-head" style="margin-top:8px">
-        <div class="title"><span>🧑</span><span><strong>Игрок</strong></span></div>
-        <span class="badge">Правило дилера: <b id="ruleText">S17</b></span>
-        <div class="score" id="playerScore">—</div>
-      </div>
-      <div class="hand is-active" id="playerHand0"></div>
-      <div id="playerComment" class="comment">Нажми «Раздать», ставка внизу.</div>
-
-      <!-- Accordions -->
-      <details class="accord" id="statsAcc">
-        <summary>📊 Статистика</summary>
-        <div class="body">
-          <div class="stats">
-            <div class="stat">Раундов: <span id="stRounds">0</span></div>
-            <div class="stat">Побед: <span id="stWins">0</span></div>
-            <div class="stat">Пушей: <span id="stPush">0</span></div>
-            <div class="stat">Блэкджеков: <span id="stBJ">0</span></div>
-            <div class="stat">Профит (🍌): <span id="stProfit">0</span></div>
-            <div class="stat">Макс серия: <span id="stStreak">0</span></div>
-          </div>
-        </div>
-      </details>
-
-      <details class="accord" id="logAcc">
-        <summary>📝 История</summary>
-        <div class="body"><div id="log" class="log"></div></div>
-      </details>
-    </div>
-  </div>
-
-  <!-- FLOAT BET -->
-  <div class="bet-pill">
-    <strong>Ставка:</strong> <span class="val" id="betShow">25</span> 🍌
-    <button id="betOpen">Изм.</button>
-  </div>
-
-  <!-- ACTIONS -->
-  <div class="actions">
-    <div class="grid">
-      <button id="dealBtn" class="btn">Раздать</button>
-      <button id="hitBtn" class="btn secondary" disabled>Ещё</button>
-      <button id="standBtn" class="btn ghost" disabled>Хватит</button>
-      <button id="doubleBtn" class="btn" disabled>Дабл</button>
-      <button id="splitBtn" class="btn" disabled>Сплит</button>
-      <button id="surrenderBtn" class="btn danger" disabled>Сдача</button>
-    </div>
-    <div class="grid" style="margin-top:10px">
-      <button id="insuranceBtn" class="btn success" disabled>Страховка</button>
-      <span></span><span></span><span></span><span></span><span></span>
-    </div>
-  </div>
-
-  <!-- BET SHEET -->
-  <div id="sheet" class="sheet" aria-hidden="true">
-    <div class="hd">
-      <strong>Изменить ставку</strong>
-      <button id="sheetClose" class="btn ghost" style="padding:8px 12px">Закрыть</button>
-    </div>
-    <div class="body">
-      <div class="row num">
-        <button id="betMinus">−</button>
-        <input id="bet" type="number" min="1" step="1" value="25" />
-        <button id="betPlus">+</button>
-      </div>
-      <input id="betRange" class="range" type="range" min="1" max="500" value="25" />
-      <div class="chips" style="margin-top:10px">
-        <button class="chip" data-chip="10">+10</button>
-        <button class="chip" data-chip="25">+25</button>
-        <button class="chip" data-chip="50">+50</button>
-        <button class="chip" data-chip="-10">-10</button>
-        <button class="chip" data-chip="max">MAX</button>
-      </div>
-    </div>
-  </div>
+</div>
 
 <script>
-(() => {
-  /* ==== helpers ==== */
-  const $ = s => document.querySelector(s);
-  const $$ = s => Array.from(document.querySelectorAll(s));
-  const logEl = $('#log');
+/* -----------------------  Идея -----------------------
+   1. Поле – 10×20 ячеек, хранится как 2‑мерный массив.
+   2. Фигуры – массивы 4×4, каждый элемент 0/1. 4 ориентации.
+   3. Текущее положение (x, y) и тип фигуры.  y растёт вверх → вниз.
+   4. Поворот, движение влево/вправо/вниз, авто‑сдвиг каждую секунду.
+   5. Сброс линии, обновление счета.
+   6. Генерация «следующей» фигуры и простое завершение игры. ----------
+*/
 
-  /* ==== elements ==== */
-  const dealerHandEl = $('#dealerHand');
-  const dealerScoreEl = $('#dealerScore');
-  const dealerCommentEl = $('#dealerComment');
-  const playerScoreEl = $('#playerScore');
-  const playerCommentEl = $('#playerComment');
-  const ruleText = $('#ruleText');
-  const bankEl = $('#bank');
-  const shoeInfoEl = $('#shoeInfo');
+const COLS = 10;
+const ROWS = 20;
+const BLOCK_SIZE = 25; // px
 
-  const dealBtn = $('#dealBtn');
-  const hitBtn = $('#hitBtn');
-  const standBtn = $('#standBtn');
-  const doubleBtn = $('#doubleBtn');
-  const splitBtn = $('#splitBtn');
-  const surrenderBtn = $('#surrenderBtn');
-  const insuranceBtn = $('#insuranceBtn');
-
-  const stRounds = $('#stRounds'), stWins=$('#stWins'), stPush=$('#stPush'), stBJ=$('#stBJ'), stProfit=$('#stProfit'), stStreak=$('#stStreak');
-
-  // bet UI
-  const sheet = $('#sheet'), betOpen = $('#betOpen'), sheetClose = $('#sheetClose');
-  const betInput = $('#bet'), betRange = $('#betRange'), betMinus=$('#betMinus'), betPlus=$('#betPlus'), betShow=$('#betShow');
-
-  /* ==== settings/state ==== */
-  let OPT = { decks:6, penetration:75, S17:true, minBet:5, maxBet:500 };
-
-  const ranks=["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
-  const suits=[{s:"♠",c:"#161a22"},{s:"♥",c:"#c62828"},{s:"♦",c:"#c62828"},{s:"♣",c:"#161a22"}];
-
-  let shoe=[], cutPoint=0, used=0;
-  let bank=500, inRound=false, insuranceOffered=false, insuranceTaken=0;
-  let dealer={hand:[], hideHole:true};
-  let playerHands=[]; // {cards:[], bet, done, doubled, isBust, isBJ}
-  let surrenderedHands=new Set();
-  let activeHandIndex=0; const MAX_HANDS=4;
-
-  // stats
-  let rounds=0, wins=0, pushes=0, bjs=0, profit=0, streak=0, maxStreak=0;
-
-  // реплики
-  const L = {
-    start: [
-      "«Ставки повыше — бананы повкуснее…»","«Карты меня обожают. Тебя — посмотрим.»",
-      "«Пахнет победой. Или это мои бананы?»","«Добро пожаловать в джунгли вероятностей.»",
-      "«Ставь смелее — мне веселей.»","«Профессиональный дилер. Любитель чужих бананов.»"
+// Список фигур (4 ориентации, 4x4 матрицы)
+const SHAPES = {
+  I: [
+    [
+      [0,0,0,0],
+      [1,1,1,1],
+      [0,0,0,0],
+      [0,0,0,0]
     ],
-    hit:["«Ещё? Люблю зрелища.»","«Тяни-тяни… пусть боль будет длиннее.»","«Карта не кусается. Я — да.»"],
-    stand:["«Стоишь? Осторожно — зима скуки.»","«Записываю шанс на провал…»"],
-    bust:["«Перебор. Бананы в утиль.»","«22 — тоже число.»","«Назовём это экспериментом.»"],
-    playerWin:["«Хм. Впечатляет. Временно.»","«Запиши: обезьяна отвлеклась.»","«Ладно, унеси эти бананы.»"],
-    dealerWin:["«Обезьяна вас выиграла. Попробуйте снова. Вы потеряли бананы.»","«Спасибо за свежачок.»","«Статистика любит меня.»"],
-    push:["«Пуш. Скучно. Жив пока.»","«Ничья — это когда никто не счастлив.»"],
-    double:["«Дабл? Уважаю дерзость… иногда.»","«Удваивай. Я умножу.»"],
-    split:["«Сплит? Размножил проблемы — стильно.»","«Две попытки — два промаха?»"],
-    insure:["«Страховка с ароматом отчаяния.»","«Полбанана на страх — вкусно.»"],
-    surrender:["«Сдача принята. Умный ход.»","«Полбанана назад. Без комиссии.»"],
-    playerBJ:["«Блэкджек… уважение. Но не привыкай.»","«Красиво. Чисто и больно — для меня.»"]
-  };
+    [
+      [0,0,1,0],
+      [0,0,1,0],
+      [0,0,1,0],
+      [0,0,1,0]
+    ],
+    [
+      [0,0,0,0],
+      [0,0,0,0],
+      [1,1,1,1],
+      [0,0,0,0]
+    ],
+    [
+      [0,1,0,0],
+      [0,1,0,0],
+      [0,1,0,0],
+      [0,1,0,0]
+    ]
+  ],
+  J: [
+    [
+      [1,0,0],
+      [1,1,1],
+      [0,0,0]
+    ],
+    [
+      [0,1,1],
+      [0,1,0],
+      [0,1,0]
+    ],
+    [
+      [0,0,0],
+      [1,1,1],
+      [0,0,1]
+    ],
+    [
+      [0,1,0],
+      [0,1,0],
+      [1,1,0]
+    ]
+  ],
+  L: [
+    [
+      [0,0,1],
+      [1,1,1],
+      [0,0,0]
+    ],
+    [
+      [0,1,0],
+      [0,1,0],
+      [0,1,1]
+    ],
+    [
+      [0,0,0],
+      [1,1,1],
+      [1,0,0]
+    ],
+    [
+      [1,1,0],
+      [0,1,0],
+      [0,1,0]
+    ]
+  ],
+  O: [
+    [
+      [1,1],
+      [1,1]
+    ],
+    // Остальные ориентации идентичны, но оставляем для консистентности
+    [
+      [1,1],
+      [1,1]
+    ],
+    [
+      [1,1],
+      [1,1]
+    ],
+    [
+      [1,1],
+      [1,1]
+    ]
+  ],
+  S: [
+    [
+      [0,1,1],
+      [1,1,0],
+      [0,0,0]
+    ],
+    [
+      [0,1,0],
+      [0,1,1],
+      [0,0,1]
+    ],
+    [
+      [0,0,0],
+      [0,1,1],
+      [1,1,0]
+    ],
+    [
+      [1,0,0],
+      [1,1,0],
+      [0,1,0]
+    ]
+  ],
+  T: [
+    [
+      [0,1,0],
+      [1,1,1],
+      [0,0,0]
+    ],
+    [
+      [0,1,0],
+      [0,1,1],
+      [0,1,0]
+    ],
+    [
+      [0,0,0],
+      [1,1,1],
+      [0,1,0]
+    ],
+    [
+      [0,1,0],
+      [1,1,0],
+      [0,1,0]
+    ]
+  ],
+  Z: [
+    [
+      [1,1,0],
+      [0,1,1],
+      [0,0,0]
+    ],
+    [
+      [0,0,1],
+      [0,1,1],
+      [0,1,0]
+    ],
+    [
+      [0,0,0],
+      [1,1,0],
+      [0,1,1]
+    ],
+    [
+      [0,1,0],
+      [1,1,0],
+      [1,0,0]
+    ]
+  ]
+};
 
-  /* ==== shoe/deck ==== */
-  function buildShoe(decks=6){
-    const arr=[]; for(let d=0; d<decks; d++) for(const r of ranks) for(const su of suits) arr.push({rank:r,suit:su.s,color:su.c});
-    shuffle(arr); used=0; cutPoint=Math.floor(arr.length*(OPT.penetration/100));
-    return arr;
-  }
-  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; [a[i],a[j]]=[a[j],a[i]];} return a; }
-  function drawOne(){ if(used>=cutPoint) reshuffle(); used++; updateShoeInfo(); return shoe.pop(); }
-  function reshuffle(){ toast('🔁 Перетасовка… Обезьяна шепчет картам'); shoe=buildShoe(OPT.decks); }
-  function updateShoeInfo(){ const total=OPT.decks*52; const pct=Math.min(100, Math.floor(used/total*100)); shoeInfoEl.textContent=`${OPT.decks} колод • ${pct}%`; }
+const COLORS = {
+  I: '#00ffff',
+  J: '#0000ff',
+  L: '#ffa500',
+  O: '#ffff00',
+  S: '#00ff00',
+  T: '#800080',
+  Z: '#ff0000'
+};
 
-  /* ==== cards ==== */
-  function cardSVG(rank, suit, color="#111"){
-    const top=rank+" "+suit, bot=suit+" "+rank;
-    return `<svg viewBox="0 0 72 104" class="face" aria-label="${rank}${suit}">
-      <defs><filter id="sd"><feDropShadow dx="0" dy="1" stdDeviation="1" flood-opacity=".25"/></filter></defs>
-      <rect x="1.5" y="1.5" width="69" height="101" rx="9" fill="#fffdf7" stroke="#e7e0cf"/>
-      <text x="6" y="14" font-family="ui-sans" font-weight="900" font-size="12" fill="${color}">${top}</text>
-      <g transform="rotate(180,36,52)"><text x="6" y="14" font-family="ui-sans" font-weight="900" font-size="12" fill="${color}">${bot}</text></g>
-      <g filter="url(#sd)">${pips(rank,suit,color)}</g></svg>`;
+// -------------- Основные классы -----------------
+
+class Piece {
+  constructor(type) {
+    this.type = type;
+    this.rotation = 0;           // 0–3
+    this.shape = SHAPES[type];
+    this.matrix = this.shape[this.rotation];
+    // Начальное положение: центр поля
+    this.x = Math.floor((COLS - this.matrix[0].length) / 2);
+    this.y = 0;
   }
-  function pips(rank,suit,color){
-    const cx=36, cy=52;
-    if(rank==="A") return `<text x="${cx}" y="${cy+10}" text-anchor="middle" font-size="52" font-weight="900" fill="${color}">${suit}</text>`;
-    if(/^[2-9]|10$/.test(rank)){
-      const n=(rank==="10")?10:parseInt(rank,10);
-      const coords=[[36,32],[36,72],[20,42],[52,42],[20,62],[52,62],[20,32],[52,32],[20,72],[52,72]];
-      return coords.slice(0,n).map(([x,y])=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="18" font-weight="800" fill="${color}">${suit}</text>`).join("");
+  rotate() {
+    this.rotation = (this.rotation + 1) % 4;
+    this.matrix = this.shape[this.rotation];
+  }
+  move(dx, dy) {
+    this.x += dx;
+    this.y += dy;
+  }
+}
+
+class Tetris {
+  constructor() {
+    this.grid = this.createEmptyGrid();
+    this.score = 0;
+    this.gameOver = false;
+    this.spawn();
+    this.nextPiece = new Piece(this.randomShape());
+    this.updateNextGrid();
+    this.loop();
+  }
+
+  // --- Поля и вспомогательные методы ---
+  createEmptyGrid() {
+    const rows = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+    return rows;
+  }
+
+  randomShape() {
+    const keys = Object.keys(SHAPES);
+    return keys[Math.floor(Math.random() * keys.length)];
+  }
+
+  // Проверка коллизии текущего блока с полем или краями
+  isColliding(piece, offsetX = 0, offsetY = 0) {
+    const m = piece.matrix;
+    const oX = piece.x + offsetX;
+    const oY = piece.y + offsetY;
+
+    for (let y = 0; y < m.length; ++y) {
+      for (let x = 0; x < m[y].length; ++x) {
+        if (m[y][x]) {  // если в матрице есть блок
+          const gx = oX + x;
+          const gy = oY + y;
+          if (gx < 0 || gx >= COLS || gy >= ROWS) return true; // за пределы
+          if (gy >= 0 && this.grid[gy][gx]) return true;      // уже занят
+        }
+      }
     }
-    return `<text x="${cx}" y="${cy+10}" text-anchor="middle" font-size="46" font-weight="800" fill="${color}">${suit}</text>`;
-  }
-  function createCardEl(card, hidden=false, delayIdx=0){
-    const el=document.createElement('div');
-    el.className='card'+(hidden?' hidden':'');
-    el.style.animationDelay=(0.08*delayIdx)+'s';
-    el.innerHTML = card ? cardSVG(card.rank, card.suit, card.color) : '';
-    return el;
+    return false;
   }
 
-  /* ==== values ==== */
-  function handValue(cards){ let t=0,a=0; for(const c of cards){ if(c.rank==="A"){t+=11;a++;} else if(["K","Q","J"].includes(c.rank)){t+=10;} else t+=(c.rank==="10"?10:parseInt(c.rank,10)); } while(t>21&&a>0){t-=10;a--;} return t; }
-  const isBJ = (cards)=> cards.length===2 && handValue(cards)===21;
-  const isPair = (cards)=> cards.length===2 && rankVal(cards[0])===rankVal(cards[1]);
-  function rankVal(c){ if(c.rank==="A")return 11; if(["K","Q","J","10"].includes(c.rank))return 10; return parseInt(c.rank,10) }
-  function isSoft(cards){ let t=0,a=0; for(const c of cards){ if(c.rank==="A"){t+=11;a++;} else if(["K","Q","J"].includes(c.rank)){t+=10;} else t+=(c.rank==="10"?10:parseInt(c.rank,10)); } while(t>21&&a>0){t-=10;a--;} return a>0; }
-
-  /* ==== ui helpers ==== */
-  function toast(t){ /* минималист без баннера */ console.log('[toast]',t); }
-  function log(msg){ const row=document.createElement('div'); row.textContent=msg; logEl.prepend(row); }
-  function updateBank(){ bankEl.textContent=bank; }
-  function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
-  function rnd(a){ return a[Math.floor(Math.random()*a.length)]; }
-
-  /* ==== hands rendering ==== */
-  function setCompactClass(){
-    const ph = playerHands[activeHandIndex];
-    const playerDiv = $('#playerHand0');
-    playerDiv.classList.toggle('compact', (ph?.cards.length||0) >= 4);
-    dealerHandEl.classList.toggle('compact', dealer.hand.length >= 4);
-  }
-
-  function resetTableUI(){
-    dealerHandEl.innerHTML=''; dealerScoreEl.textContent='—';
-    const ph = $('#playerHand0'); ph.innerHTML=''; ph.classList.add('is-active');
-    playerScoreEl.textContent='—';
-    setComment(dealerCommentEl, rnd(L.start)); setComment(playerCommentEl, 'Нажми «Раздать».');
-    setCompactClass();
-  }
-  function setComment(el,t){ el.textContent=t; }
-  function refreshScores(){
-    const dVal = dealer.hideHole ? handValue(dealer.hand.slice(1)) : handValue(dealer.hand);
-    dealerScoreEl.textContent = dealer.hideHole ? `? + ${handValue([dealer.hand[1]])}` : dVal;
-    const active = playerHands[activeHandIndex] || playerHands[0];
-    playerScoreEl.textContent = handValue(active.cards);
-  }
-  function setActionsForActive(){
-    const h = playerHands[activeHandIndex];
-    const initial = h.cards.length===2;
-    hitBtn.disabled=false; standBtn.disabled=false;
-    doubleBtn.disabled = !initial || bank < h.bet;
-    splitBtn.disabled  = !(initial && isPair(h.cards) && playerHands.length<MAX_HANDS && bank >= h.bet);
-    surrenderBtn.disabled = !initial;
-    const dealerUpAce = dealer.hand[1]?.rank==='A' && dealer.hideHole;
-    insuranceBtn.disabled = !(initial && dealerUpAce && !insuranceOffered && bank >= Math.floor(h.bet/2));
-  }
-
-  /* ==== round ==== */
-  function startRound(){
-    let b = parseInt(betInput.value||25,10);
-    b = clamp(b, OPT.minBet, Math.min(OPT.maxBet, bank)); betInput.value=b; betRange.value=b; betShow.textContent=b;
-    if(b>bank) return alert('Недостаточно бананов.');
-    if(b<OPT.minBet) return alert(`Мин ставка ${OPT.minBet}🍌`);
-
-    inRound=true; surrenderedHands.clear(); insuranceTaken=0; insuranceOffered=false;
-
-    bank -= b; updateBank();
-
-    dealer={hand:[], hideHole:true};
-    playerHands=[{cards:[], bet:b, done:false, doubled:false, isBust:false, isBJ:false}];
-    activeHandIndex=0;
-
-    resetTableUI();
-
-    const ph = $('#playerHand0');
-    const p1=drawOne(); playerHands[0].cards.push(p1); ph.appendChild(createCardEl(p1,false,0));
-    const d1=drawOne(); dealer.hand.push(d1); dealerHandEl.appendChild(createCardEl(d1,true,1));
-    const p2=drawOne(); playerHands[0].cards.push(p2); ph.appendChild(createCardEl(p2,false,2));
-    const d2=drawOne(); dealer.hand.push(d2); dealerHandEl.appendChild(createCardEl(d2,false,3));
-
-    setCompactClass();
-    refreshScores();
-    maybeOfferInsurance();
-
-    if(isBJ(playerHands[0].cards)){
-      playerHands[0].isBJ=true; finishPlayerPhase(true); setComment(dealerCommentEl, rnd(L.playerBJ)); return;
+  // Очищаем строки и обновляем счёт
+  clearLines() {
+    let linesCleared = 0;
+    for (let y = ROWS - 1; y >= 0; --y) {
+      if (this.grid[y].every(cell => cell)) {
+        this.grid.splice(y, 1);                     // удаляем строку
+        this.grid.unshift(Array(COLS).fill(null));  // вставляем пустую сверху
+        ++linesCleared;
+        y++; // проверяем строку на новую позицию
+      }
     }
-    dealBtn.disabled=true; setActionsForActive();
-    setComment(playerCommentEl, 'Твой ход: Ещё / Хватит / Дабл / Сплит / Сдача.');
+    if (linesCleared) {
+      this.score += [0, 40, 100, 300, 1200][linesCleared]; // стандартные очки
+    }
   }
 
-  function maybeOfferInsurance(){
-    const up = dealer.hand[1];
-    if(up && up.rank==='A'){ insuranceOffered=true; insuranceBtn.disabled=false; setComment(dealerCommentEl, '«Туз наверху… берёшь страховку?»'); }
-  }
-  function takeInsurance(){
-    const h = playerHands[activeHandIndex];
-    const cost = Math.floor(h.bet/2);
-    if(bank < cost) return alert('Недостаточно бананов для страховки.');
-    bank -= cost; updateBank(); insuranceTaken = cost; insuranceBtn.disabled = true; setComment(dealerCommentEl, rnd(L.insure));
-  }
-
-  function hit(){
-    const h = playerHands[activeHandIndex];
-    const ph = $('#playerHand0');
-    const c = drawOne(); h.cards.push(c); ph.appendChild(createCardEl(c,false,h.cards.length+1));
-    setCompactClass();
-    setComment(dealerCommentEl, rnd(L.hit)); refreshScores();
-    doubleBtn.disabled = true; splitBtn.disabled = true; surrenderBtn.disabled = true; insuranceBtn.disabled=true;
-    if(handValue(h.cards)>21){ h.isBust=true; setComment(dealerCommentEl, rnd(L.bust)); nextHandOrDealer(); }
-  }
-  function stand(){ setComment(dealerCommentEl, rnd(L.stand)); nextHandOrDealer(); }
-  function doDouble(){
-    const h = playerHands[activeHandIndex];
-    if(h.cards.length!==2 || bank < h.bet) return;
-    bank -= h.bet; h.bet *= 2; h.doubled = true; updateBank();
-    setComment(dealerCommentEl, rnd(L.double));
-    hit(); if(!h.isBust) nextHandOrDealer();
-  }
-  function doSplit(){
-    const base = playerHands[activeHandIndex];
-    if(!(base.cards.length===2 && isPair(base.cards))) return;
-    if(playerHands.length>=MAX_HANDS) return alert('Максимум 4 руки.');
-    if(bank < base.bet) return alert('Недостаточно бананов на сплит.');
-
-    bank -= base.bet; updateBank(); setComment(dealerCommentEl, rnd(L.split));
-
-    const c1 = base.cards[0], c2 = base.cards[1];
-    base.cards=[c1];
-    const newHand = {cards:[c2], bet:base.bet, done:false, doubled:false, isBust:false, isBJ:false};
-    playerHands.splice(activeHandIndex+1,0,newHand);
-
-    const container = $('#playerHand0').parentElement; // простой одноигровой UI — всё в одном блоке
-    // перерисуем: для компактной версии оставляем текущую руку как активную
-    $('#playerHand0').innerHTML='';
-    base.cards.forEach((c,i)=> $('#playerHand0').appendChild(createCardEl(c,false,i)));
-    const nh=document.createElement('div'); nh.className='hand'; nh.id='playerHand1';
-    nh.appendChild(createCardEl(newHand.cards[0],false,0));
-    container.insertBefore(nh, $('#playerComment'));
-
-    // по одной карте
-    const add=(h, id)=>{ const card=drawOne(); h.cards.push(card); $('#'+id).appendChild(createCardEl(card,false,1)); };
-    add(base,'playerHand0'); add(newHand,'playerHand1');
-    setCompactClass(); refreshScores(); setActionsForActive();
-  }
-  function surrender(){
-    const h = playerHands[activeHandIndex]; if(h.cards.length!==2) return;
-    surrenderedHands.add(activeHandIndex); h.done=true; setComment(dealerCommentEl, rnd(L.surrender));
-    const refund=Math.floor(h.bet/2); bank += refund; updateBank(); log(`Сдача: +${refund}🍌`); nextHandOrDealer();
+  // Пересоздаём текущий блок
+  spawn() {
+    this.current = this.nextPiece;
+    this.nextPiece = new Piece(this.randomShape());
+    this.current.x = Math.floor((COLS - this.current.matrix[0].length) / 2);
+    this.current.y = 0;
+    if (this.isColliding(this.current)) {
+      this.gameOver = true;
+    }
+    this.updateNextGrid();
   }
 
-  function nextHandOrDealer(forceFinish=false){
-    playerHands[activeHandIndex].done = true;
-    const nextIdx = playerHands.findIndex((h, idx)=> idx>activeHandIndex && !h.done);
-    if(nextIdx!==-1 && !forceFinish){ activeHandIndex=nextIdx; refreshScores(); setActionsForActive(); return; }
-    finishPlayerPhase(false);
-  }
-  function finishPlayerPhase(){ [hitBtn,standBtn,doubleBtn,splitBtn,surrenderBtn,insuranceBtn].forEach(b=>b.disabled=true); dealerPlay(); }
-
-  function dealerPlay(){
-    dealer.hideHole=false; if(dealerHandEl.firstElementChild) dealerHandEl.firstElementChild.classList.remove('hidden'); refreshScores();
-    const anyActive = playerHands.some((h,idx)=> !h.isBust && !surrenderedHands.has(idx));
-    if(!anyActive){ return resolveRound(); }
-    const step = ()=>{ let v=handValue(dealer.hand); const soft=isSoft(dealer.hand);
-      const mustHit = v<17 || (!OPT.S17 && v===17 && soft);
-      if(mustHit){ const c=drawOne(); dealer.hand.push(c); dealerHandEl.appendChild(createCardEl(c,false,dealer.hand.length+1)); setCompactClass(); refreshScores(); setTimeout(step,520);}
-      else resolveRound();
-    };
-    setTimeout(step,520);
+  // Поставить блок в сетку
+  lockPiece() {
+    const m = this.current.matrix;
+    for (let y = 0; y < m.length; ++y) {
+      for (let x = 0; x < m[y].length; ++x) {
+        if (m[y][x]) {
+          const gx = this.current.x + x;
+          const gy = this.current.y + y;
+          if (gy >= 0) {
+            this.grid[gy][gx] = this.current.type;
+          }
+        }
+      }
+    }
   }
 
-  function resolveRound(){
-    dealBtn.disabled=false;
-    const dealerTotal=handValue(dealer.hand); const dealerBJ=isBJ(dealer.hand);
-
-    if(insuranceTaken){
-      if(dealerBJ){ bank += insuranceTaken * 3; log(`Страховка выплатила ${insuranceTaken*2}🍌`); }
-      else { log(`Страховка проиграла ${insuranceTaken}🍌`); }
-      insuranceTaken=0; updateBank();
+  // ----- Основной цикл и рендер -----
+  loop() {
+    if (this.gameOver) {
+      this.render();
+      document.getElementById('status').innerText = 'Игра окончена!';
+      return;
     }
 
-    let roundProfit=0; let allDealer=true, allPush=true, anyBJ=false, anyPlayerWin=false;
+    // Авто‑сдвиг вниз
+    if (!this.isColliding(this.current, 0, 1)) {
+      this.current.move(0, 1);
+    } else {
+      this.lockPiece();
+      this.clearLines();
+      this.spawn();
+    }
 
-    playerHands.forEach((h, idx)=>{
-      if(surrenderedHands.has(idx)){ allDealer=false; allPush=false; return; }
-      const total=handValue(h.cards); let delta=0, outcome='';
-      if(h.isBJ && !dealerBJ){ delta=Math.floor(h.bet*2.5); outcome='playerBJ'; anyBJ=true; anyPlayerWin=true; allDealer=false; allPush=false; bjs++; }
-      else if(h.isBust){ outcome='dealer'; }
-      else if(dealerTotal>21){ delta=h.bet*2; outcome='player'; anyPlayerWin=true; allDealer=false; allPush=false; }
-      else if(dealerBJ && !h.isBJ){ outcome='dealer'; }
-      else if(total>dealerTotal){ delta=h.bet*2; outcome='player'; anyPlayerWin=true; allDealer=false; allPush=false; }
-      else if(total<dealerTotal){ outcome='dealer'; }
-      else { delta=h.bet; outcome='push'; allDealer=false; pushes++; }
-      roundProfit += (delta - h.bet);
-      const tag = outcome==='player' || outcome==='playerBJ' ? '✅' : (outcome==='push' ? '⏸️' : '❌');
-      log(`${tag} Рука#${idx+1}: ${format(h.cards)} vs ${dealerTotal} — ${desc(outcome)} | Δ ${delta - h.bet}🍌`);
-      if(outcome==='player' || outcome==='playerBJ') setComment(dealerCommentEl, rnd(L.playerWin));
-      if(outcome==='dealer') setComment(dealerCommentEl, rnd(L.dealerWin));
-    });
-
-    profit += roundProfit; rounds++; if(anyPlayerWin){ wins++; streak++; maxStreak=Math.max(maxStreak,streak);} else if(allPush){ /*no*/ } else { streak=0; }
-    stRounds.textContent=rounds; stWins.textContent=wins; stPush.textContent=pushes; stBJ.textContent=bjs; stProfit.textContent=profit; stStreak.textContent=maxStreak;
-
-    if(allDealer){ setComment(dealerCommentEl, rnd(L.dealerWin)); setComment(playerCommentEl, 'Минус бананы. Ещё по одной?'); }
-    else if(allPush){ setComment(dealerCommentEl, rnd(L.push)); setComment(playerCommentEl, 'Пуш. Бананы остались при тебе.'); }
-    else { setComment(dealerCommentEl, anyBJ? rnd(L.playerBJ): rnd(L.playerWin)); setComment(playerCommentEl, 'Красиво. Продолжим.'); }
-    dealerScoreEl.textContent=dealerTotal; inRound=false;
+    this.render();
+    setTimeout(() => this.loop(), 500); // 500 мс → 2 блока в секунду
   }
 
-  function format(cards){ return cards.map(c=>c.rank+c.suit).join(' '); }
-  function desc(o){ return o==='playerBJ'?'Блэкджек (3:2)': o==='player'?'Победа': o==='push'?'Пуш':'Поражение'; }
-
-  /* ==== bet sheet logic ==== */
-  const betState = {val:25};
-  function syncBetUI(){
-    betInput.value = betState.val;
-    betRange.value = betState.val;
-    betShow.textContent = betState.val;
+  // Отрисовка всей сцены (поле + текущий блок + след. блок)
+  render() {
+    this.drawGrid();
+    this.drawNext();
+    document.getElementById('score').innerText = this.score;
   }
-  betOpen.addEventListener('click', ()=>{ sheet.classList.remove('hide'); sheet.classList.add('show'); sheet.setAttribute('aria-hidden','false'); });
-  sheetClose.addEventListener('click', ()=>{ sheet.classList.remove('show'); sheet.classList.add('hide'); sheet.setAttribute('aria-hidden','true'); });
 
-  betMinus.addEventListener('click', ()=>{ betState.val = Math.max(OPT.minBet, betState.val-5); syncBetUI(); });
-  betPlus.addEventListener('click', ()=>{ betState.val = Math.min(OPT.maxBet, betState.val+5, bank); syncBetUI(); });
-  betRange.addEventListener('input', e=>{ betState.val = parseInt(e.target.value,10); syncBetUI(); });
-  betInput.addEventListener('input', e=>{ betState.val = parseInt(e.target.value||OPT.minBet,10); syncBetUI(); });
-  $$('.chip').forEach(c=> c.addEventListener('click', ()=>{
-    if(c.dataset.chip==='max') betState.val = Math.min(OPT.maxBet, bank);
-    else betState.val = clamp(betState.val + parseInt(c.dataset.chip,10), OPT.minBet, Math.min(OPT.maxBet, bank));
-    syncBetUI();
-  }));
+  // Поля: обычный 2‑доменный див
+  drawGrid() {
+    const field = document.getElementById('field');
+    field.innerHTML = '';
+    const tempGrid = this.grid.map(row => [...row]); // копия
+    // Вставляем текущий блок
+    const m = this.current.matrix;
+    for (let y = 0; y < m.length; ++y) {
+      for (let x = 0; x < m[y].length; ++x) {
+        if (m[y][x]) {
+          const gx = this.current.x + x;
+          const gy = this.current.y + y;
+          if (gy >= 0) tempGrid[gy][gx] = this.current.type;
+        }
+      }
+    }
+    for (let y = 0; y < ROWS; ++y) {
+      for (let x = 0; x < COLS; ++x) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        const type = tempGrid[y][x];
+        if (type) cell.style.backgroundColor = COLORS[type];
+        field.appendChild(cell);
+      }
+    }
+  }
 
-  /* ==== controls ==== */
-  dealBtn.addEventListener('click', ()=>{ if(inRound) return;
-    // подтянуть bet из state
-    betInput.value = betState.val; startRound();
-  });
-  hitBtn.addEventListener('click', ()=> !hitBtn.disabled && hit());
-  standBtn.addEventListener('click', ()=> !standBtn.disabled && stand());
-  doubleBtn.addEventListener('click', ()=> !doubleBtn.disabled && doDouble());
-  splitBtn.addEventListener('click', ()=> !splitBtn.disabled && doSplit());
-  surrenderBtn.addEventListener('click', ()=> !surrenderBtn.disabled && surrender());
-  insuranceBtn.addEventListener('click', ()=> !insuranceBtn.disabled && takeInsurance());
+  // Отрисовка «следующего» блока
+  drawNext() {
+    const nextField = document.getElementById('next');
+    nextField.innerHTML = '';
+    const m = this.nextPiece.matrix;
+    const size = 4; // максимальный размер 4×4
+    for (let y = 0; y < size; ++y) {
+      for (let x = 0; x < size; ++x) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        if (m[y] && m[y][x]) {
+          cell.style.backgroundColor = COLORS[this.nextPiece.type];
+        }
+        nextField.appendChild(cell);
+      }
+    }
+  }
+}
 
-  /* ==== init ==== */
-  shoe = buildShoe(OPT.decks); updateShoeInfo(); ruleText.textContent = OPT.S17 ? 'S17' : 'H17'; updateBank(); syncBetUI(); resetTableUI();
-})();
+/* ------------------- Обработчики клавиш ------------------- */
+const game = new Tetris();
+document.addEventListener('keydown', e => {
+  if (game.gameOver) return;
+  switch (e.key) {
+    case 'ArrowLeft':
+      if (!game.isColliding(game.current, -1, 0))
+        game.current.move(-1, 0);
+      break;
+    case 'ArrowRight':
+      if (!game.isColliding(game.current, 1, 0))
+        game.current.move(1, 0);
+      break;
+    case 'ArrowDown':
+      if (!game.isColliding(game.current, 0, 1))
+        game.current.move(0, 1);
+      break;
+    case 'ArrowUp':
+      const oldRot = game.current.rotation;
+      game.current.rotate();
+      if (game.isColliding(game.current)) {   // если коллизия → откат
+        game.current.rotation = oldRot;
+        game.current.matrix = game.current.shape[oldRot];
+      }
+      break;
+    case ' ':
+      // Свернуть
+      while (!game.isColliding(game.current, 0, 1)) {
+        game.current.move(0, 1);
+      }
+      break;
+  }
+});
 </script>
 </body>
 </html>
