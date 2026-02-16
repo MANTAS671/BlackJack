@@ -35,6 +35,7 @@
       --blur-glass: 14px;
       --transition-fast: 0.16s ease-out;
       --transition-med: 0.24s ease-out;
+      --vh: 100vh; /* будет переопределено JS под реальное окно на мобиле[web:26] */
     }
 
     * {
@@ -63,7 +64,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Главный контейнер: по центру, высота под экран, без скролла */
+    /* Обёртка по всей высоте окна */
 
     .viewport-wrapper {
       width: 100%;
@@ -71,19 +72,27 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      height: calc(var(--vh, 1vh) * 100);
     }
+
+    @supports (height: 100dvh) {
+      .viewport-wrapper {
+        height: 100dvh; /* современные браузеры и iOS 15.4+[web:24][web:27] */
+      }
+    }
+
+    /* Главный контейнер */
 
     .game-shell {
       position: relative;
       width: 100%;
       max-width: 920px;
-      max-height: 580px;
-      min-height: 420px;
+      height: 100%;
+      border-radius: var(--radius-shell);
+      padding: 12px 12px 14px;
       background: radial-gradient(circle at 10% -10%, rgba(79, 140, 255, 0.18), transparent 55%),
                   radial-gradient(circle at 100% 100%, rgba(66, 221, 156, 0.15), transparent 60%),
                   linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.98));
-      border-radius: var(--radius-shell);
-      padding: 12px 12px 14px;
       box-shadow:
         0 24px 80px rgba(0, 0, 0, 1),
         0 0 0 1px rgba(15, 23, 42, 1),
@@ -114,7 +123,7 @@
       height: 100%;
     }
 
-    /* Верхняя панель */
+    /* HEADER */
 
     .table-header {
       display: flex;
@@ -240,7 +249,7 @@
         0 6px 12px rgba(15, 23, 42, 0.85);
     }
 
-    /* Основная зона стола */
+    /* MAIN AREA */
 
     .glass-main {
       flex: 1;
@@ -419,7 +428,7 @@
       flex-shrink: 0;
     }
 
-    /* Карты */
+    /* CARDS */
 
     .card {
       width: clamp(50px, 9vw, 80px);
@@ -598,7 +607,7 @@
       }
     }
 
-    /* Ставки и кнопки */
+    /* CONTROLS */
 
     .controls-panel {
       display: grid;
@@ -770,7 +779,7 @@
       box-shadow: 0 8px 18px rgba(15, 23, 42, 1);
     }
 
-    /* Сообщения */
+    /* MESSAGE BAR */
 
     .message-bar {
       border-radius: var(--radius-pill);
@@ -825,12 +834,11 @@
       border-color: rgba(249, 216, 108, 0.9);
     }
 
-    /* Адаптив */
+    /* ADAPTIVE */
 
     @media (max-width: 840px) {
-      .game-shell {
-        max-height: 540px;
-        min-height: 420px;
+      body {
+        padding: 8px;
       }
 
       .glass-main {
@@ -865,20 +873,32 @@
 
     @media (max-width: 560px) {
       body {
-        padding: 6px;
+        padding: 4px;
+      }
+
+      .viewport-wrapper {
+        max-width: 100%;
       }
 
       .game-shell {
         border-radius: 18px;
-        padding: 10px;
-        max-height: 520px;
-        min-height: 410px;
+        padding: 8px;
       }
 
       .table-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 6px;
+        gap: 4px;
+        padding: 4px 8px;
+      }
+
+      .title-main {
+        font-size: 12px;
+        letter-spacing: 0.14em;
+      }
+
+      .title-sub {
+        font-size: 11px;
       }
 
       .stats-group {
@@ -886,12 +906,41 @@
         justify-content: space-between;
       }
 
+      .pill,
+      .pill.chip {
+        transform: scale(0.9);
+        transform-origin: right center;
+      }
+
       .glass-main {
-        grid-template-rows: 1fr 1fr 0.9fr;
+        grid-template-rows: 1fr 1fr 0.8fr;
+        gap: 6px;
+      }
+
+      .panel {
+        padding: 6px 8px;
+        gap: 4px;
+      }
+
+      .hand-header {
+        gap: 6px;
+      }
+
+      .hand-title {
+        font-size: 11px;
+      }
+
+      .hand-status {
+        font-size: 10px;
+      }
+
+      .hand-cards-wrapper {
+        gap: 8px;
+        padding: 2px 0;
       }
 
       .hand-cards {
-        max-width: calc(100% - 56px);
+        max-width: calc(100% - 52px);
       }
 
       .deck-stack {
@@ -899,24 +948,57 @@
       }
 
       .deck-slot {
-        width: 56px;
+        width: 52px;
+        font-size: 9px;
       }
 
       .card {
-        width: clamp(46px, 17vw, 68px);
+        width: clamp(42px, 17vw, 64px);
+      }
+
+      .controls-panel {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      .bet-display {
+        padding: 3px 8px;
+        font-size: 11px;
+      }
+
+      .small-note {
+        font-size: 10px;
+      }
+
+      .btn-main {
+        padding: 6px 12px;
+        font-size: 11px;
+      }
+
+      .btn-ghost {
+        min-width: 26px;
+        height: 26px;
       }
 
       .message-bar {
-        gap: 4px;
+        padding: 4px 8px;
+        flex-direction: column;
+        align-items: flex-start;
+        font-size: 11px;
+        gap: 3px;
+      }
+
+      .message-text {
+        white-space: normal;
+      }
+
+      .message-tag {
+        font-size: 9px;
+        padding: 2px 8px;
       }
     }
 
     @media (max-height: 640px) {
-      .game-shell {
-        max-height: 500px;
-        min-height: 380px;
-        padding: 8px;
-      }
       .glass-main {
         grid-template-rows: 1fr 1fr 0.8fr;
       }
@@ -1048,6 +1130,15 @@
   </div>
 
   <script>
+    // фиксим vh на мобилках: ставим CSS‑переменную --vh под реальную высоту окна[web:26]
+    function setViewportHeight() {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty("--vh", vh + "px");
+    }
+    setViewportHeight();
+    window.addEventListener("resize", setViewportHeight);
+    window.addEventListener("orientationchange", setViewportHeight);
+
     (function () {
       const suits = ["♠", "♥", "♦", "♣"];
       const ranks = ["A", "K", "Q", "J", "10", "9", "8", "7", "6", "5", "4", "3", "2"];
