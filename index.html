@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 <title>CYBER MASTER</title>
 <!-- Google Fonts: Orbitron для футуристического стиля -->
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
@@ -144,13 +144,47 @@
   h1, h2, h3, .logo, .nav a, .btn {
     font-family: 'Orbitron', sans-serif;
   }
+  
   h1 {
-    font-size:clamp(36px,6vw,64px);
-    margin-bottom:20px;
-    line-height:1.1;
+    font-size: clamp(36px, 6vw, 64px);
+    margin-bottom: 20px;
+    line-height: 1.2;
     text-transform: uppercase;
     letter-spacing: 2px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
   }
+  
+  /* Фиксированный контейнер для печатаемого текста, чтобы избежать дергания */
+  .typewriter-wrapper {
+    display: inline-block;
+    min-height: 1.3em;          /* фиксированная минимальная высота по размеру шрифта */
+    vertical-align: middle;
+    line-height: 1.2;
+  }
+  
+  #typewriter-text {
+    display: inline-block;
+    color: #00ffff;
+    text-shadow: 0 0 10px #00ffff;
+    border-right: 3px solid #ff00ff;
+    padding-right: 10px;
+    white-space: nowrap;        /* предотвращаем перенос текста */
+  }
+  
+  /* Курсор может быть отдельно */
+  .cursor {
+    display: inline-block;
+    color: #ff00ff;
+    animation: blink 0.8s infinite;
+    margin-left: 4px;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
   /* Glitch effect on hover for h1 */
   .glitch-hover {
     transition: 0.2s;
@@ -337,14 +371,6 @@
     transform:none;
   }
 
-  /* ===== TYPING ANIMATION ===== */
-  .typewriter {
-    color: #00ffff;
-    text-shadow: 0 0 10px #00ffff;
-    border-right: 3px solid #ff00ff;
-    padding-right: 10px;
-  }
-
   /* Исправление для мобильных */
   html { overflow-y: auto; height: 100%; }
   body { min-height: 100vh; display: flex; flex-direction: column; }
@@ -355,6 +381,18 @@
     .nav { flex-direction: column; gap: 10px; }
     .nav div { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
     .nav a { margin-left: 0; }
+    
+    /* Для мобильных: если заголовок слишком длинный, разрешаем перенос, но сохраняем высоту */
+    #typewriter-text {
+      white-space: normal;      /* на мобильных разрешаем перенос */
+      word-break: break-word;
+    }
+    h1 {
+      line-height: 1.3;
+    }
+    .typewriter-wrapper {
+      min-height: calc(1.3em * 2); /* на случай переноса строки даём запас */
+    }
   }
 </style>
 </head>
@@ -380,8 +418,9 @@
 
 <section class="hero reveal">
   <h1 class="glitch-hover">
-    <span id="typewriter-text" class="typewriter"></span>
-    <span class="cursor">_</span>
+    <span class="typewriter-wrapper">
+      <span id="typewriter-text"></span><span class="cursor">_</span>
+    </span>
   </h1>
   <p>
     Решаю проблемы с ПК быстро и без лишнего.  
