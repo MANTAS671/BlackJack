@@ -1,33 +1,21 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CYBER MASTER</title>
-
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-html{
-  scroll-behavior:smooth;
-  scroll-padding-top: 88px; /* высота header */
-  overflow-x:hidden;
-}
-
 body{
   font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;
   color:#e5e7eb;
-  background:linear-gradient(180deg, #0a0d12 0%, #05070c 70%);
-  line-height:1.5;
-  position:relative;
+  overflow-x:hidden;
+  background:
+    radial-gradient(circle at top left, rgba(79,140,255,0.18), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(139,92,246,0.16), transparent 30%),
+    linear-gradient(180deg, #070b12 0%, #0a0f18 45%, #05070c 100%);
+  background-attachment:fixed;
 }
 
-/* ===== CANVAS ===== */
+/* основной фон */
 #bg{
   position:fixed;
   inset:0;
   width:100%;
-  height:100vh;
-  z-index:-2;
+  height:100%;
+  z-index:-3;
   pointer-events:none;
 }
 
@@ -36,378 +24,27 @@ body::before{
   content:'';
   position:fixed;
   inset:0;
-  z-index:-1;
+  z-index:-2;
   background:
-    radial-gradient(circle at 15% 25%, rgba(79,140,255,0.14) 0%, transparent 40%),
-    radial-gradient(circle at 85% 75%, rgba(139,92,246,0.12) 0%, transparent 40%);
+    radial-gradient(circle at 20% 20%, rgba(0,180,255,0.12), transparent 35%),
+    radial-gradient(circle at 80% 30%, rgba(167,85,247,0.10), transparent 32%),
+    radial-gradient(circle at 50% 90%, rgba(59,130,246,0.08), transparent 35%);
   pointer-events:none;
 }
 
-/* ===== SCROLL ===== */
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-thumb{
-  background:linear-gradient(#4f8cff,#8b5cf6);
-  border-radius:10px;
-}
-
-/* ===== HEADER ===== */
-header{
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  width:100%;
-  height:88px;
-  backdrop-filter:blur(16px);
-  background:rgba(10,13,18,0.95);
-  border-bottom:1px solid rgba(255,255,255,0.12);
-  z-index:100;
-}
-
-.nav{
-  max-width:1100px;
-  margin:auto;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  height:88px;
-  padding:0 20px;
-}
-
-.logo{
-  font-weight:700;
-  font-size:20px;
-  letter-spacing:1px;
-  background:linear-gradient(90deg,#fff,#9ecbff);
-  -webkit-background-clip:text;
-  color:transparent;
-}
-
-.nav a{
-  color:#9ca3af;
-  text-decoration:none;
-  margin-left:16px;
-  font-size:14px;
-  transition:.25s;
-}
-.nav a:hover{color:#fff}
-
-/* ===== PROGRESS ===== */
-.progress{
-  position:fixed;
-  top:0;
-  left:0;
-  height:2px;
-  background:linear-gradient(90deg,#4f8cff,#8b5cf6);
-  width:0%;
-  z-index:200;
-}
-
-/* ===== LAYOUT ===== */
-.container{
-  max-width:1100px;
-  margin:0 auto;
-  padding:88px 16px 40px; /* padding-top = высота header */
-  min-height:calc(100vh - 88px);
-}
-
-/* ===== HERO ===== */
-.hero{margin-bottom:80px;text-align:center}
-
-h1{
-  font-size:clamp(32px,7vw,52px);
-  margin-bottom:18px;
-  line-height:1.1;
-}
-
-.hero p{
-  color:#9ca3af;
-  max-width:520px;
-  margin:0 auto 25px;
-  line-height:1.55;
-  font-size:16px;
-}
-
-.btn{
-  display:inline-block;
-  padding:14px 32px;
-  background:linear-gradient(135deg,#4f8cff,#8b5cf6);
-  border-radius:12px;
-  text-decoration:none;
-  color:#fff;
-  font-size:15px;
-  font-weight:500;
-  transition:.3s;
-  border:1px solid rgba(255,255,255,0.15);
-  box-shadow:0 4px 15px rgba(80,120,255,0.2);
-}
-.btn:hover{
-  transform:translateY(-1px);
-  box-shadow:0 8px 25px rgba(80,120,255,0.35);
-}
-
-/* ===== SECTION ===== */
-section{margin-bottom:70px}
-
-h2{
-  font-size:26px;
-  margin-bottom:24px;
-  text-align:center;
-}
-
-/* ===== CARDS ===== */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:20px;
-}
-
-.card{
-  padding:24px;
-  background:rgba(17,24,39,0.92);
-  backdrop-filter:blur(16px);
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,0.12);
-  position:relative;
-  transition:.3s;
-}
-
-.card::after{
+/* сетка + шум */
+body::after{
   content:'';
-  position:absolute;
+  position:fixed;
   inset:0;
-  background:linear-gradient(120deg,rgba(79,140,255,0.15),rgba(139,92,246,0.15));
-  opacity:0;
-  transition:.3s;
-  border-radius:16px;
+  z-index:-1;
+  pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 70px 70px, 70px 70px, 4px 4px;
+  background-position: 0 0, 0 0, 0 0;
+  opacity:0.18;
+  mix-blend-mode:screen;
 }
-
-.card:hover::after{opacity:1}
-.card:hover{
-  transform:translateY(-6px);
-  border-color:rgba(79,140,255,0.5);
-  box-shadow:0 15px 35px rgba(0,0,0,0.4);
-}
-
-.card h3{margin-bottom:8px;font-size:18px}
-.card p{font-size:14px;color:#9ca3af;line-height:1.5}
-
-/* ===== STEPS ===== */
-.steps{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:16px;
-}
-
-.step{
-  padding:20px;
-  border-left:3px solid #4f8cff;
-  background:rgba(15,23,42,0.92);
-  backdrop-filter:blur(12px);
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,0.08);
-}
-
-/* ===== ABOUT ===== */
-.about{
-  background:rgba(17,24,39,0.92);
-  backdrop-filter:blur(16px);
-  padding:28px;
-  border-radius:16px;
-  color:#9ca3af;
-  line-height:1.65;
-  font-size:16px;
-  border:1px solid rgba(255,255,255,0.12);
-  max-width:700px;
-  margin:0 auto;
-}
-
-/* ===== ADV ===== */
-.adv{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-  gap:16px;
-  max-width:600px;
-  margin:0 auto;
-}
-
-.adv div{
-  background:rgba(15,23,42,0.92);
-  backdrop-filter:blur(12px);
-  padding:18px;
-  border-radius:12px;
-  text-align:center;
-  border:1px solid rgba(255,255,255,0.08);
-  font-weight:500;
-}
-
-/* ===== CONTACT ===== */
-.contact-box{
-  background:rgba(17,24,39,0.92);
-  backdrop-filter:blur(16px);
-  padding:28px;
-  border-radius:16px;
-  max-width:400px;
-  margin:0 auto;
-  border:1px solid rgba(255,255,255,0.12);
-}
-
-/* ===== ANIMATION ===== */
-.reveal{
-  opacity:0;
-  transform:translateY(25px);
-  transition:.6s ease;
-}
-.reveal.active{
-  opacity:1;
-  transform:none;
-}
-
-/* МОБИЛЬНАЯ */
-@media (max-width: 768px) {
-  .container{padding:88px 16px 40px}
-  .nav{padding:0 16px}
-}
-</style>
-</head>
-
-<body>
-
-anvas id="bg"></canvas>
-<div class="progress"></div>
-
-<header>
-  <div class="nav">
-    <div class="logo">CYBER MASTER</div>
-    <div>
-      <a href="#services">Услуги</a>
-      <a href="#process">Как работаю</a>
-      <a href="#about">Обо мне</a>
-      <a href="#contacts">Контакты</a>
-    </div>
-  </div>
-</header>
-
-<div class="container">
-<!-- остальной контент без изменений -->
-<section class="hero reveal">
-  <h1>Компьютерный мастер</h1>
-  <p>Решаю проблемы с ПК быстро и без лишнего. Настройка Windows, BIOS, драйверов и сети. Делаю так, чтобы система реально работала, а не просто включалась.</p>
-  <a href="#contacts" class="btn">Написать в Telegram</a>
-</section>
-
-<section id="services">
-  <h2>Услуги</h2>
-  <div class="grid">
-    <div class="card reveal"><h3>Windows</h3><p>Чистая установка и оптимизация</p></div>
-    <div class="card reveal"><h3>Драйверы</h3><p>Настройка и устранение проблем</p></div>
-    <div class="card reveal"><h3>BIOS</h3><p>Прошивка и стабильность</p></div>
-    <div class="card reveal"><h3>VPN</h3><p>Безопасность и доступ</p></div>
-    <div class="card reveal"><h3>Сборка ПК</h3><p>Подбор и сборка под задачи</p></div>
-    <div class="card reveal"><h3>Сложные задачи</h3><p>Глубокая диагностика</p></div>
-  </div>
-</section>
-
-<section id="process">
-  <h2>Как проходит работа</h2>
-  <div class="steps">
-    <div class="step reveal"><strong>1. Связь</strong><br>Пишешь в Telegram</div>
-    <div class="step reveal"><strong>2. Анализ</strong><br>Определяю проблему</div>
-    <div class="step reveal"><strong>3. Работа</strong><br>Удалённо или выезд</div>
-    <div class="step reveal"><strong>4. Результат</strong><br>Рабочий ПК</div>
-  </div>
-</section>
-
-<section id="about">
-  <h2>Обо мне</h2>
-  <div class="about reveal">
-    Работаю без лишней воды. Понимаю систему глубже обычного "мастера". Не ставлю мусор, не тяну время — делаю так, чтобы всё работало стабильно и быстро.
-  </div>
-</section>
-
-<section>
-  <h2>Почему я</h2>
-  <div class="adv">
-    <div class="reveal">Быстро</div>
-    <div class="reveal">Без переплат</div>
-    <div class="reveal">Опыт</div>
-    <div class="reveal">По делу</div>
-  </div>
-</section>
-
-<section id="contacts">
-  <h2>Контакты</h2>
-  <div class="contact-box reveal">
-    <a href="https://t.me/mantas671" target="_blank" class="btn">Написать в Telegram</a>
-  </div>
-</section>
-</div>
-
-<script>
-const els=document.querySelectorAll('.reveal');
-const obs=new IntersectionObserver(entries=>{
-  entries.forEach(i=>{
-    if(i.isIntersecting)i.target.classList.add('active');
-  });
-});
-els.forEach(el=>obs.observe(el));
-
-window.addEventListener('scroll',()=>{
-  let sc=document.documentElement.scrollTop;
-  let h=document.documentElement.scrollHeight - document.documentElement.clientHeight;
-  document.querySelector('.progress').style.width=(sc/h)*100+"%";
-});
-
-// canvas (без изменений)
-const canvas=document.getElementById('bg');
-const ctx=canvas.getContext('2d');
-let w,h;
-function resize(){
-  w=canvas.width=window.innerWidth;
-  h=canvas.height=window.innerHeight;
-}
-resize();
-window.addEventListener('resize',resize);
-
-const particles=[];
-for(let i=0;i<35;i++){
-  particles.push({
-    x:Math.random()*w,
-    y:Math.random()*h,
-    r:Math.random()*1.5+0.3,
-    vx:(Math.random()-0.5)*0.2,
-    vy:(Math.random()-0.5)*0.2
-  });
-}
-
-function draw(){
-  ctx.clearRect(0,0,w,h);
-  const size=90;
-  ctx.strokeStyle="rgba(80,140,255,0.06)";
-  ctx.lineWidth=1;
-  ctx.lineCap="round";
-  for(let x=0;x<=w;x+=size){
-    ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();
-  }
-  for(let y=0;y<=h;y+=size){
-    ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();
-  }
-  particles.forEach(p=>{
-    p.x+=p.vx;p.y+=p.vy;
-    if(p.x<0)p.x=w;if(p.x>w)p.x=0;if(p.y<0)p.y=h;if(p.y>h)p.y=0;
-    ctx.save();
-    ctx.beginPath();
-    ctx.fillStyle="rgba(120,180,255,0.3)";
-    ctx.shadowColor="rgba(79,140,255,0.6)";
-    ctx.shadowBlur=12;
-    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ctx.fill();
-    ctx.restore();
-  });
-  requestAnimationFrame(draw);
-}
-draw();
-</script>
-
-</body>
-</html>
