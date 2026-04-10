@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Компьютерный мастер · Профессиональная помощь</title>
+  <title>Компьютерный мастер · Элитный сервис</title>
+  <!-- Favicon (опционально) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23141a26'/%3E%3Cpath d='M30 40 L70 40 M50 30 L50 70' stroke='%23ffffff' stroke-width='6' stroke-linecap='round' opacity='0.8'/%3E%3C/svg%3E">
   <style>
-    /* -------------------- RESET & BASE -------------------- */
+    /* -------------------- СОВРЕМЕННЫЙ СБРОС -------------------- */
     * {
       margin: 0;
       padding: 0;
@@ -17,100 +19,132 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background: radial-gradient(circle at 10% 20%, #141a26 0%, #0b0f16 100%);
-      color: rgba(255, 255, 255, 0.92);
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Helvetica, sans-serif;
+      background: #0a0e14;
+      /* Глубокий анимированный градиент */
+      background: radial-gradient(circle at 20% 30%, #1a2635 0%, #0b1018 90%);
+      color: rgba(255, 255, 255, 0.94);
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
       min-height: 100vh;
-      padding: 0 24px;
+      padding: 0 28px;
+      animation: bgPulse 16s infinite alternate ease-in-out;
     }
 
-    /* -------------------- UTILITY -------------------- */
+    @keyframes bgPulse {
+      0% { background: radial-gradient(circle at 20% 30%, #1a2635, #0b1018); }
+      100% { background: radial-gradient(circle at 80% 70%, #1e2a3a, #0a0f16); }
+    }
+
+    /* -------------------- УТИЛИТЫ -------------------- */
     .container {
-      max-width: 1200px;
+      max-width: 1280px;
       margin: 0 auto;
       padding: 0 8px;
     }
 
-    /* Glassmorphism base */
+    /* Стеклянные карточки (glassmorphism) */
     .glass-card, .service-card, .advantage-item, .contact-card {
-      background: rgba(18, 28, 40, 0.45);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 28px;
-      box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.35), 0 0 0 0.5px rgba(255, 255, 255, 0.02) inset;
-      transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+      background: rgba(15, 25, 35, 0.4);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      border-radius: 32px;
+      box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.45), 0 0 0 0.5px rgba(255, 255, 255, 0.03) inset;
+      transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1);
     }
 
-    /* -------------------- TYPOGRAPHY -------------------- */
+    /* -------------------- ТИПОГРАФИКА -------------------- */
     h1, h2, h3 {
-      font-weight: 500;
+      font-weight: 470;
       letter-spacing: -0.02em;
     }
 
     h1 {
-      font-size: clamp(3.2rem, 10vw, 5.2rem);
-      line-height: 1.1;
-      background: linear-gradient(135deg, #ffffff, #e0e7ff);
+      font-size: clamp(3.6rem, 11vw, 5.8rem);
+      line-height: 1.05;
+      background: linear-gradient(145deg, #ffffff 0%, #d6e3ff 100%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
     }
 
     h2 {
-      font-size: clamp(2.2rem, 6vw, 3.2rem);
-      margin-bottom: 48px;
-      color: #fff;
-      font-weight: 450;
+      font-size: clamp(2.4rem, 6vw, 3.6rem);
+      margin-bottom: 56px;
+      color: #ffffff;
+      font-weight: 430;
       letter-spacing: -0.02em;
+      position: relative;
+      display: inline-block;
+    }
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: -14px;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+    h2:hover::after {
+      width: 100%;
+      background: rgba(255,255,255,0.6);
     }
 
-    .section-subhead {
-      font-size: 1.2rem;
-      color: rgba(255, 255, 255, 0.65);
-      max-width: 600px;
-      margin-bottom: 32px;
-    }
-
-    /* -------------------- BUTTONS & LINKS -------------------- */
+    /* -------------------- КНОПКИ И ССЫЛКИ -------------------- */
     .btn {
       display: inline-block;
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 14px 34px;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 0.5px solid rgba(255, 255, 255, 0.12);
+      padding: 16px 42px;
       border-radius: 60px;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       font-weight: 450;
       color: white;
       text-decoration: none;
-      letter-spacing: 0.3px;
-      transition: all 0.25s ease;
-      box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.3);
+      letter-spacing: 0.2px;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      box-shadow: 0 12px 28px -10px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
     }
-
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transition: left 0.6s;
+    }
     .btn:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.25);
-      transform: scale(1.02);
-      box-shadow: 0 12px 28px -10px rgba(0, 0, 0, 0.5);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: scale(1.02) translateY(-2px);
+      box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.5);
+    }
+    .btn:hover::before {
+      left: 100%;
     }
 
     .contact-link {
       color: white;
       text-decoration: none;
       font-weight: 450;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-      transition: border-color 0.2s;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      transition: border-color 0.2s, color 0.2s;
     }
-
     .contact-link:hover {
-      border-bottom-color: rgba(255, 255, 255, 0.7);
+      border-bottom-color: rgba(255, 255, 255, 0.8);
+      color: #ffffff;
     }
 
     /* -------------------- HERO -------------------- */
@@ -118,193 +152,219 @@
       min-height: 85vh;
       display: flex;
       align-items: center;
-      padding: 40px 0 20px;
+      padding: 30px 0 20px;
     }
-
     .hero-content {
-      max-width: 800px;
+      max-width: 860px;
     }
-
     .hero p {
-      font-size: 1.4rem;
+      font-size: 1.5rem;
       color: rgba(255, 255, 255, 0.7);
-      margin-bottom: 40px;
-      line-height: 1.5;
+      margin-bottom: 44px;
+      line-height: 1.4;
+      font-weight: 350;
     }
 
-    /* -------------------- SERVICES GRID -------------------- */
+    /* Анимированная подсказка под hero */
+    .hero-note {
+      margin-top: 20px;
+      opacity: 0.6;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: #5f9ea0;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #5f9ea0;
+      animation: pulseDot 2s infinite;
+    }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 0.5; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* -------------------- СЕТКА УСЛУГ -------------------- */
     .services-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 24px;
-      margin-top: 16px;
+      gap: 28px;
+      margin-top: 20px;
     }
-
     .service-card {
-      padding: 32px 24px;
-      transition: transform 0.3s ease, border-color 0.2s, box-shadow 0.3s;
+      padding: 36px 28px;
+      transition: transform 0.35s ease, border-color 0.25s, box-shadow 0.4s, background 0.3s;
     }
-
     .service-card:hover {
-      transform: translateY(-6px);
-      border-color: rgba(255, 255, 255, 0.18);
-      box-shadow: 0 28px 40px -16px rgba(0, 0, 0, 0.5), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset;
-      background: rgba(25, 38, 55, 0.5);
+      transform: translateY(-8px) scale(1.01);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 32px 50px -18px rgba(0, 0, 0, 0.6), 0 0 0 0.5px rgba(255, 255, 255, 0.1) inset;
+      background: rgba(25, 40, 55, 0.5);
     }
-
     .service-icon {
-      font-size: 2.8rem;
-      margin-bottom: 24px;
-      opacity: 0.9;
+      font-size: 3rem;
+      margin-bottom: 28px;
+      display: inline-block;
+      transition: transform 0.3s ease;
     }
-
+    .service-card:hover .service-icon {
+      transform: scale(1.05) rotate(1deg);
+    }
     .service-card h3 {
-      font-size: 1.7rem;
-      margin-bottom: 12px;
+      font-size: 1.8rem;
+      margin-bottom: 14px;
       font-weight: 450;
       color: #fff;
     }
-
     .service-card p {
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 1.05rem;
+      line-height: 1.5;
+    }
+
+    /* -------------------- ПРЕИМУЩЕСТВА -------------------- */
+    .advantages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 28px;
+      margin: 40px 0 30px;
+    }
+    .advantage-item {
+      padding: 32px 24px;
+      text-align: center;
+      backdrop-filter: blur(16px);
+      background: rgba(18, 28, 40, 0.35);
+      transition: all 0.35s;
+    }
+    .advantage-item:hover {
+      background: rgba(30, 45, 60, 0.5);
+      border-color: rgba(255,255,255,0.15);
+      transform: translateY(-5px);
+    }
+    .advantage-emoji {
+      font-size: 2.8rem;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 6px 8px rgba(0,0,0,0.2));
+    }
+    .advantage-item h4 {
+      font-size: 1.6rem;
+      font-weight: 450;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+    .advantage-item p {
       color: rgba(255, 255, 255, 0.6);
       font-size: 1rem;
     }
 
-    /* -------------------- ADVANTAGES -------------------- */
-    .advantages-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 24px;
-      margin: 32px 0 20px;
-    }
-
-    .advantage-item {
-      padding: 28px 24px;
-      text-align: center;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      background: rgba(18, 28, 40, 0.3);
-    }
-
-    .advantage-item .emoji-big {
-      font-size: 2.4rem;
-      margin-bottom: 16px;
-      opacity: 0.9;
-    }
-
-    .advantage-item h4 {
-      font-size: 1.5rem;
-      font-weight: 450;
-      margin-bottom: 8px;
-      color: #fff;
-    }
-
-    .advantage-item p {
-      color: rgba(255, 255, 255, 0.55);
-      font-size: 0.95rem;
-    }
-
-    /* -------------------- CONTACTS -------------------- */
+    /* -------------------- КОНТАКТЫ -------------------- */
     .contact-card {
-      padding: 40px 40px;
-      max-width: 700px;
-      margin: 20px 0 40px;
-      background: rgba(12, 20, 30, 0.5);
+      padding: 44px 48px;
+      max-width: 780px;
+      margin: 30px 0 50px;
+      background: rgba(12, 22, 32, 0.5);
+      transition: box-shadow 0.3s;
     }
-
+    .contact-card:hover {
+      box-shadow: 0 30px 50px -16px rgba(0,0,0,0.5), 0 0 0 0.5px rgba(255,255,255,0.08) inset;
+    }
     .contact-row {
       display: flex;
       align-items: baseline;
       flex-wrap: wrap;
-      gap: 32px 48px;
+      gap: 40px 60px;
       margin: 24px 0 16px;
     }
-
     .contact-method {
       display: flex;
       flex-direction: column;
     }
-
     .contact-label {
       font-size: 0.9rem;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      color: rgba(255, 255, 255, 0.4);
-      margin-bottom: 6px;
+      letter-spacing: 2px;
+      color: rgba(255, 255, 255, 0.35);
+      margin-bottom: 8px;
     }
-
     .contact-value {
-      font-size: 1.8rem;
+      font-size: 2rem;
       font-weight: 400;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-
     .contact-note {
-      margin-top: 28px;
-      color: rgba(255, 255, 255, 0.5);
-      font-style: italic;
-      border-left: 2px solid rgba(255, 255, 255, 0.15);
-      padding-left: 20px;
+      margin-top: 32px;
+      color: rgba(255, 255, 255, 0.55);
+      font-style: normal;
+      border-left: 2px solid rgba(255, 255, 255, 0.2);
+      padding-left: 24px;
+      font-size: 1.1rem;
     }
 
     /* -------------------- FOOTER -------------------- */
     footer {
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      padding: 32px 0;
-      margin-top: 60px;
+      border-top: 0.5px solid rgba(255, 255, 255, 0.06);
+      padding: 36px 0;
+      margin-top: 70px;
       color: rgba(255, 255, 255, 0.35);
       font-size: 0.95rem;
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 16px;
+      gap: 20px;
     }
 
-    /* -------------------- SCROLL REVEAL -------------------- */
+    /* -------------------- АНИМАЦИИ ПОЯВЛЕНИЯ -------------------- */
     .reveal {
       opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1), transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+      transform: translateY(36px);
+      transition: opacity 0.9s cubic-bezier(0.15, 0.9, 0.25, 1), transform 0.9s cubic-bezier(0.15, 0.9, 0.25, 1);
     }
-
     .reveal.visible {
       opacity: 1;
       transform: translateY(0);
     }
 
-    /* staggered children (optional) */
-    .services-grid .reveal {
-      transition-delay: calc(0.05s * var(--i, 0));
-    }
+    /* Задержки для дочерних элементов (сетка) */
+    .services-grid .reveal:nth-child(1) { transition-delay: 0.05s; }
+    .services-grid .reveal:nth-child(2) { transition-delay: 0.1s; }
+    .services-grid .reveal:nth-child(3) { transition-delay: 0.15s; }
+    .services-grid .reveal:nth-child(4) { transition-delay: 0.2s; }
+    .services-grid .reveal:nth-child(5) { transition-delay: 0.25s; }
+    .services-grid .reveal:nth-child(6) { transition-delay: 0.3s; }
 
-    /* -------------------- RESPONSIVE -------------------- */
-    @media (max-width: 640px) {
+    .advantages-grid .reveal:nth-child(1) { transition-delay: 0.05s; }
+    .advantages-grid .reveal:nth-child(2) { transition-delay: 0.1s; }
+    .advantages-grid .reveal:nth-child(3) { transition-delay: 0.15s; }
+    .advantages-grid .reveal:nth-child(4) { transition-delay: 0.2s; }
+
+    /* -------------------- АДАПТИВНОСТЬ -------------------- */
+    @media (max-width: 768px) {
       body {
-        padding: 0 16px;
+        padding: 0 20px;
       }
       h1 {
-        font-size: 2.8rem;
+        font-size: 3.2rem;
       }
       .hero p {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
       }
       .btn {
-        padding: 12px 28px;
-        font-size: 1rem;
+        padding: 14px 34px;
+        font-size: 1.1rem;
       }
       .contact-value {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
       }
       .contact-card {
-        padding: 28px 24px;
+        padding: 32px 28px;
       }
       .contact-row {
-        gap: 24px;
-      }
-      h2 {
-        margin-bottom: 32px;
-      }
-      .service-card {
-        padding: 24px 20px;
+        gap: 28px;
       }
     }
 
@@ -312,97 +372,115 @@
       .services-grid {
         grid-template-columns: 1fr;
       }
+      h2::after {
+        width: 40px;
+      }
+      .contact-row {
+        flex-direction: column;
+        gap: 20px;
+      }
+      .btn {
+        width: 100%;
+        text-align: center;
+      }
     }
 
-    /* subtle gradient text selection */
+    /* дополнительные улучшения */
+    .service-card, .advantage-item, .contact-card {
+      will-change: transform, box-shadow;
+    }
+    /* плавная прокрутка */
     ::selection {
-      background: rgba(100, 150, 255, 0.25);
-      color: white;
+      background: rgba(80, 140, 200, 0.25);
+      color: #fff;
     }
-
-    /* smooth focus outline */
-    a:focus-visible, button:focus-visible {
-      outline: 2px solid rgba(255, 255, 255, 0.5);
-      outline-offset: 4px;
+    /* иконки в контактах */
+    .contact-value i {
+      font-style: normal;
+      margin-right: 6px;
+      opacity: 0.7;
+    }
+    /* небольшая анимация для телефона/telegram */
+    .contact-value:hover {
+      transform: translateX(2px);
+      transition: transform 0.2s;
     }
   </style>
 </head>
 <body>
   <main class="container">
-    <!-- HERO -->
+    <!-- HERO блок -->
     <section class="hero reveal" id="hero">
       <div class="hero-content">
         <h1>Компьютерный<br>мастер</h1>
-        <p>Windows · драйверы · BIOS · OpenWrt · VPN<br>Сборка ПК и любые индивидуальные задачи</p>
-        <a href="#contacts" class="btn">Связаться</a>
+        <p>Windows · драйверы · BIOS · OpenWrt · VPN<br>Сборка ПК и задачи любой сложности</p>
+        <a href="#contacts" class="btn">Обсудить проект</a>
+        <div class="hero-note">
+          <span class="pulse-dot"></span>
+          <span>Работаю удалённо и с выездом</span>
+        </div>
       </div>
     </section>
 
     <!-- УСЛУГИ -->
-    <section class="services-section">
+    <section>
       <h2 class="reveal">Услуги</h2>
       <div class="services-grid">
-        <!-- карточка 1 -->
-        <div class="service-card reveal" style="--i:1;">
+        <div class="service-card reveal">
           <div class="service-icon">💿</div>
           <h3>Установка Windows</h3>
-          <p>Чистая установка, активация, базовая оптимизация под ваше железо.</p>
+          <p>Чистая установка, активация, тонкая оптимизация под железо.</p>
         </div>
-        <!-- карточка 2 -->
-        <div class="service-card reveal" style="--i:2;">
+        <div class="service-card reveal">
           <div class="service-icon">⚙️</div>
           <h3>Драйверы и настройка</h3>
-          <p>Подбор, установка и обновление драйверов, тонкая настройка системы.</p>
+          <p>Подбор, обновление, решение конфликтов, максимальная производительность.</p>
         </div>
-        <!-- карточка 3 -->
-        <div class="service-card reveal" style="--i:3;">
+        <div class="service-card reveal">
           <div class="service-icon">🧬</div>
           <h3>Прошивка BIOS</h3>
-          <p>Обновление, настройка параметров, разгон и стабильность.</p>
+          <p>Обновление микрокода, разгон, стабильность, кастомные настройки.</p>
         </div>
-        <!-- карточка 4 -->
-        <div class="service-card reveal" style="--i:4;">
+        <div class="service-card reveal">
           <div class="service-icon">🌐</div>
-          <h3>Роутеры OpenWrt + VPN</h3>
-          <p>Прошивка, настройка защищённого соединения, WireGuard, OpenVPN.</p>
+          <h3>OpenWrt + VPN</h3>
+          <p>Прошивка роутеров, настройка WireGuard, OpenVPN, безопасная сеть.</p>
         </div>
-        <!-- карточка 5 -->
-        <div class="service-card reveal" style="--i:5;">
+        <div class="service-card reveal">
           <div class="service-icon">🖥️</div>
           <h3>Сборка ПК</h3>
-          <p>Подбор компонентов под бюджет, профессиональная сборка и тестирование.</p>
+          <p>Подбор комплектующих, профессиональная сборка, тестирование.</p>
         </div>
-        <!-- карточка 6 -->
-        <div class="service-card reveal" style="--i:6;">
+        <div class="service-card reveal">
           <div class="service-icon">🔧</div>
           <h3>Индивидуальные задачи</h3>
-          <p>Нетиповые запросы, консультации, удалённая помощь.</p>
+          <p>Нетиповые запросы, удалённая помощь, консультации.</p>
         </div>
       </div>
     </section>
 
     <!-- ПРЕИМУЩЕСТВА -->
-    <section style="margin: 80px 0 40px;">
-      <h2 class="reveal">Почему я</h2>
+    <section style="margin: 90px 0 40px;">
+      <h2 class="reveal">Почему выбирают меня</h2>
       <div class="advantages-grid">
         <div class="advantage-item reveal">
-          <div class="emoji-big">✧</div>
-          <h4>Без лишних слов</h4>
-          <p>Чётко, прозрачно, только по делу.</p>
+          <div class="advantage-emoji">✧</div>
+          <h4>Без воды</h4>
+          <p>Только суть и честные сроки.</p>
         </div>
         <div class="advantage-item reveal">
-          <div class="emoji-big">⚡</div>
-          <h4>Быстро и аккуратно</h4>
-          <p>Ценю ваше время и технику.</p>
+          <div class="advantage-emoji">⚡</div>
+          <h4>Быстро</h4>
+          <p>Ценю ваше время, работаю оперативно.</p>
         </div>
         <div class="advantage-item reveal">
-          <div class="emoji-big">📊</div>
-          <h4>Подбор под бюджет</h4>
+          <div class="advantage-emoji">📊</div>
+          <h4>Под бюджет</h4>
           <p>Оптимальные решения без переплат.</p>
         </div>
         <div class="advantage-item reveal">
-          <div class="emoji-big">💬</div>
-          <h4>Консультация</h4>
+          <div class="advantage-emoji">💬</div>
+          <h4>Понятно</h4>
           <p>Объясню сложное простым языком.</p>
         </div>
       </div>
@@ -410,20 +488,24 @@
 
     <!-- КОНТАКТЫ -->
     <section id="contacts">
-      <h2 class="reveal">Контакты</h2>
+      <h2 class="reveal">Связаться</h2>
       <div class="contact-card reveal">
         <div class="contact-row">
           <div class="contact-method">
             <span class="contact-label">Телефон</span>
-            <a href="tel:+79882847709" class="contact-value contact-link">+7 988 284-77-09</a>
+            <a href="tel:+79882847709" class="contact-value contact-link">
+              <i>📱</i> +7 988 284-77-09
+            </a>
           </div>
           <div class="contact-method">
             <span class="contact-label">Telegram</span>
-            <a href="https://t.me/mantas671" target="_blank" rel="noopener noreferrer" class="contact-value contact-link">@mantas671</a>
+            <a href="https://t.me/mantas671" target="_blank" rel="noopener noreferrer" class="contact-value contact-link">
+              <i>✈️</i> @mantas671
+            </a>
           </div>
         </div>
         <div class="contact-note">
-          Пиши или звони — всё обсудим, отвечаю быстро.
+          Напишите или позвоните — отвечаю в течение часа. Все обсудим и найдём решение.
         </div>
       </div>
     </section>
@@ -432,43 +514,39 @@
   <!-- FOOTER -->
   <footer class="container">
     <span>© 2025 Компьютерный мастер</span>
-    <span>Точность · Надёжность · Профессионализм</span>
+    <span>Точность · Надёжность · Конфиденциальность</span>
   </footer>
 
-  <!-- минимальный JS для плавного появления при скролле -->
+  <!-- JS: reveal при скролле + улучшения -->
   <script>
-    (function() {
+    (function(){
       "use strict";
 
-      // Intersection Observer для reveal-анимации
-      const revealElements = document.querySelectorAll('.reveal');
+      const revealEls = document.querySelectorAll('.reveal');
       
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             entry.target.classList.add('visible');
-            // можно оставить наблюдение или отключить (опционально)
-            // observer.unobserve(entry.target); 
+            // Можно отключить наблюдение для улучшения производительности
+            // observer.unobserve(entry.target);
           }
         });
-      }, {
-        threshold: 0.12,
-        rootMargin: '0px 0px -10px 0px'
-      });
+      }, { threshold: 0.15, rootMargin: '0px 0px -20px 0px' });
 
-      revealElements.forEach(el => observer.observe(el));
+      revealEls.forEach(el => observer.observe(el));
 
-      // небольшая задержка для уже видимых при загрузке
+      // Принудительно показать элементы, которые уже видны при загрузке
       setTimeout(() => {
-        revealElements.forEach(el => {
+        revealEls.forEach(el => {
           const rect = el.getBoundingClientRect();
           if (rect.top < window.innerHeight * 0.85) {
             el.classList.add('visible');
           }
         });
-      }, 80);
+      }, 100);
 
-      // плавный скролл для якорных ссылок (на всякий случай, если браузер без smooth)
+      // Плавная прокрутка для якорей (резерв)
       document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
           const href = this.getAttribute('href');
@@ -476,42 +554,41 @@
           const target = document.querySelector(href);
           if (target) {
             e.preventDefault();
-            target.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start'
-            });
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
         });
       });
 
-      // Добавим небольшую задержку для карточек услуг (индивидуальный индекс уже учтён в style)
-      // Это только для красоты.
+      // Дополнительно: микроанимация при загрузке hero
+      const hero = document.querySelector('.hero');
+      if(hero) hero.classList.add('visible');
     })();
   </script>
 
-  <!-- дополнительный мелкий стиль для улучшения отображения на очень широких экранах -->
+  <!-- Небольшие правки для идеального отображения -->
   <style>
-    /* лёгкая подстройка */
-    .hero, section {
-      margin-bottom: 40px;
+    /* Улучшение читаемости на очень широких экранах */
+    @media (min-width: 1440px) {
+      .container {
+        max-width: 1320px;
+      }
     }
-    .service-card, .advantage-item, .contact-card {
-      transition: transform 0.25s ease, border-color 0.2s, box-shadow 0.3s, background 0.3s;
+    /* Кнопка и карточки без резких переходов */
+    .glass-card, .btn, .service-card {
+      transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.4, 1), 
+                  border-color 0.3s, 
+                  box-shadow 0.4s, 
+                  background 0.3s;
     }
-    /* убираем стандартный подчерк для телефона в некоторых браузерах */
-    a[href^="tel"] {
-      text-decoration: none;
+    /* Фокус для доступности */
+    a:focus-visible, .btn:focus-visible {
+      outline: 2px solid rgba(120, 180, 255, 0.7);
+      outline-offset: 4px;
     }
-    /* аккуратный hover на преимуществах */
-    .advantage-item:hover {
-      background: rgba(30, 45, 65, 0.45);
-      border-color: rgba(255, 255, 255, 0.12);
-      transform: scale(1.01);
-    }
-    /* чтобы кнопка в hero была заметнее */
-    .btn {
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+    /* Иконки контактов более элегантные */
+    .contact-value i {
+      font-style: normal;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
     }
   </style>
 </body>
