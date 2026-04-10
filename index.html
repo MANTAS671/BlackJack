@@ -1,280 +1,518 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Компьютерный мастер</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Компьютерный мастер · Профессиональная помощь</title>
+  <style>
+    /* -------------------- RESET & BASE -------------------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-<style>
-:root{
-  --bg:#0b0b0c;
-  --card:rgba(255,255,255,0.04);
-  --border:rgba(255,255,255,0.08);
-  --text:#f5f5f7;
-  --muted:#9ca3af;
-  --accent:#4ea1ff;
-}
+    html {
+      scroll-behavior: smooth;
+    }
 
-*{margin:0;padding:0;box-sizing:border-box;}
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at 10% 20%, #141a26 0%, #0b0f16 100%);
+      color: rgba(255, 255, 255, 0.92);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+      padding: 0 24px;
+    }
 
-body{
-  font-family:-apple-system, BlinkMacSystemFont, "SF Pro Display", Arial, sans-serif;
-  background:linear-gradient(180deg,#0a0a0a,#0f1115);
-  color:var(--text);
-  overflow-x:hidden;
-}
+    /* -------------------- UTILITY -------------------- */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 8px;
+    }
 
-/* контейнер */
-.container{
-  max-width:1100px;
-  margin:auto;
-  padding:20px;
-}
+    /* Glassmorphism base */
+    .glass-card, .service-card, .advantage-item, .contact-card {
+      background: rgba(18, 28, 40, 0.45);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 28px;
+      box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.35), 0 0 0 0.5px rgba(255, 255, 255, 0.02) inset;
+      transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+    }
 
-/* HERO */
-.hero{
-  padding:120px 0 80px;
-  text-align:center;
-  animation:fadeUp 1s ease;
-}
+    /* -------------------- TYPOGRAPHY -------------------- */
+    h1, h2, h3 {
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
 
-.hero h1{
-  font-size:56px;
-  letter-spacing:-1px;
-  margin-bottom:20px;
-}
+    h1 {
+      font-size: clamp(3.2rem, 10vw, 5.2rem);
+      line-height: 1.1;
+      background: linear-gradient(135deg, #ffffff, #e0e7ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 20px;
+    }
 
-.hero p{
-  color:var(--muted);
-  font-size:20px;
-  max-width:600px;
-  margin:0 auto 30px;
-}
+    h2 {
+      font-size: clamp(2.2rem, 6vw, 3.2rem);
+      margin-bottom: 48px;
+      color: #fff;
+      font-weight: 450;
+      letter-spacing: -0.02em;
+    }
 
-/* кнопки */
-.btn{
-  display:inline-block;
-  padding:14px 28px;
-  border-radius:999px;
-  background:linear-gradient(135deg,#4ea1ff,#7df9c1);
-  color:#000;
-  font-weight:600;
-  transition:.3s;
-}
+    .section-subhead {
+      font-size: 1.2rem;
+      color: rgba(255, 255, 255, 0.65);
+      max-width: 600px;
+      margin-bottom: 32px;
+    }
 
-.btn:hover{
-  transform:translateY(-3px);
-  box-shadow:0 10px 30px rgba(78,161,255,0.3);
-}
+    /* -------------------- BUTTONS & LINKS -------------------- */
+    .btn {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 14px 34px;
+      border-radius: 60px;
+      font-size: 1.1rem;
+      font-weight: 450;
+      color: white;
+      text-decoration: none;
+      letter-spacing: 0.3px;
+      transition: all 0.25s ease;
+      box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.3);
+    }
 
-/* секции */
-section{
-  padding:60px 0;
-}
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: scale(1.02);
+      box-shadow: 0 12px 28px -10px rgba(0, 0, 0, 0.5);
+    }
 
-/* заголовки */
-h2{
-  font-size:34px;
-  margin-bottom:30px;
-  text-align:center;
-}
+    .contact-link {
+      color: white;
+      text-decoration: none;
+      font-weight: 450;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      transition: border-color 0.2s;
+    }
 
-/* сетка */
-.grid{
-  display:grid;
-  gap:20px;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-}
+    .contact-link:hover {
+      border-bottom-color: rgba(255, 255, 255, 0.7);
+    }
 
-/* карточки */
-.card{
-  padding:24px;
-  border-radius:20px;
-  background:var(--card);
-  border:1px solid var(--border);
-  backdrop-filter:blur(20px);
-  transition:.4s;
-  position:relative;
-  overflow:hidden;
-}
+    /* -------------------- HERO -------------------- */
+    .hero {
+      min-height: 85vh;
+      display: flex;
+      align-items: center;
+      padding: 40px 0 20px;
+    }
 
-.card:hover{
-  transform:translateY(-6px) scale(1.02);
-  border-color:rgba(78,161,255,0.3);
-}
+    .hero-content {
+      max-width: 800px;
+    }
 
-/* свет при наведении */
-.card::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:radial-gradient(circle at top, rgba(78,161,255,0.15), transparent 60%);
-  opacity:0;
-  transition:.4s;
-}
+    .hero p {
+      font-size: 1.4rem;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 40px;
+      line-height: 1.5;
+    }
 
-.card:hover::after{
-  opacity:1;
-}
+    /* -------------------- SERVICES GRID -------------------- */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 16px;
+    }
 
-.card h3{
-  margin-bottom:10px;
-  font-size:20px;
-}
+    .service-card {
+      padding: 32px 24px;
+      transition: transform 0.3s ease, border-color 0.2s, box-shadow 0.3s;
+    }
 
-.card ul{
-  list-style:none;
-  color:var(--muted);
-}
+    .service-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(255, 255, 255, 0.18);
+      box-shadow: 0 28px 40px -16px rgba(0, 0, 0, 0.5), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset;
+      background: rgba(25, 38, 55, 0.5);
+    }
 
-.card li{
-  margin-bottom:6px;
-}
+    .service-icon {
+      font-size: 2.8rem;
+      margin-bottom: 24px;
+      opacity: 0.9;
+    }
 
-/* контакты */
-.contact{
-  text-align:center;
-}
+    .service-card h3 {
+      font-size: 1.7rem;
+      margin-bottom: 12px;
+      font-weight: 450;
+      color: #fff;
+    }
 
-.contact-box{
-  margin-top:20px;
-  padding:30px;
-  border-radius:20px;
-  background:var(--card);
-  border:1px solid var(--border);
-  backdrop-filter:blur(20px);
-}
+    .service-card p {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1rem;
+    }
 
-.contact a{
-  display:block;
-  margin:10px 0;
-  font-size:18px;
-  transition:.2s;
-}
+    /* -------------------- ADVANTAGES -------------------- */
+    .advantages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      margin: 32px 0 20px;
+    }
 
-.contact a:hover{
-  color:var(--accent);
-}
+    .advantage-item {
+      padding: 28px 24px;
+      text-align: center;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(18, 28, 40, 0.3);
+    }
 
-/* футер */
-.footer{
-  text-align:center;
-  padding:40px 0;
-  color:var(--muted);
-}
+    .advantage-item .emoji-big {
+      font-size: 2.4rem;
+      margin-bottom: 16px;
+      opacity: 0.9;
+    }
 
-/* анимации */
-@keyframes fadeUp{
-  from{
-    opacity:0;
-    transform:translateY(30px);
-  }
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
-}
+    .advantage-item h4 {
+      font-size: 1.5rem;
+      font-weight: 450;
+      margin-bottom: 8px;
+      color: #fff;
+    }
 
-/* мобилька */
-@media(max-width:600px){
-  .hero h1{
-    font-size:34px;
-  }
-  .hero p{
-    font-size:16px;
-  }
-}
-</style>
+    .advantage-item p {
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 0.95rem;
+    }
+
+    /* -------------------- CONTACTS -------------------- */
+    .contact-card {
+      padding: 40px 40px;
+      max-width: 700px;
+      margin: 20px 0 40px;
+      background: rgba(12, 20, 30, 0.5);
+    }
+
+    .contact-row {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 32px 48px;
+      margin: 24px 0 16px;
+    }
+
+    .contact-method {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .contact-label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255, 255, 255, 0.4);
+      margin-bottom: 6px;
+    }
+
+    .contact-value {
+      font-size: 1.8rem;
+      font-weight: 400;
+    }
+
+    .contact-note {
+      margin-top: 28px;
+      color: rgba(255, 255, 255, 0.5);
+      font-style: italic;
+      border-left: 2px solid rgba(255, 255, 255, 0.15);
+      padding-left: 20px;
+    }
+
+    /* -------------------- FOOTER -------------------- */
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 32px 0;
+      margin-top: 60px;
+      color: rgba(255, 255, 255, 0.35);
+      font-size: 0.95rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    /* -------------------- SCROLL REVEAL -------------------- */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1), transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* staggered children (optional) */
+    .services-grid .reveal {
+      transition-delay: calc(0.05s * var(--i, 0));
+    }
+
+    /* -------------------- RESPONSIVE -------------------- */
+    @media (max-width: 640px) {
+      body {
+        padding: 0 16px;
+      }
+      h1 {
+        font-size: 2.8rem;
+      }
+      .hero p {
+        font-size: 1.2rem;
+      }
+      .btn {
+        padding: 12px 28px;
+        font-size: 1rem;
+      }
+      .contact-value {
+        font-size: 1.5rem;
+      }
+      .contact-card {
+        padding: 28px 24px;
+      }
+      .contact-row {
+        gap: 24px;
+      }
+      h2 {
+        margin-bottom: 32px;
+      }
+      .service-card {
+        padding: 24px 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .services-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* subtle gradient text selection */
+    ::selection {
+      background: rgba(100, 150, 255, 0.25);
+      color: white;
+    }
+
+    /* smooth focus outline */
+    a:focus-visible, button:focus-visible {
+      outline: 2px solid rgba(255, 255, 255, 0.5);
+      outline-offset: 4px;
+    }
+  </style>
 </head>
-
 <body>
-
-<div class="container">
-
-  <!-- HERO -->
-  <div class="hero">
-    <h1>Компьютерный мастер</h1>
-    <p>Установка Windows, драйверы, BIOS, OpenWrt и VPN. Аккуратно, без лишних разговоров — просто работает.</p>
-    <a href="tel:+79882847709" class="btn">Связаться</a>
-  </div>
-
-  <!-- УСЛУГИ -->
-  <section>
-    <h2>Услуги</h2>
-
-    <div class="grid">
-
-      <div class="card">
-        <h3>Windows</h3>
-        <ul>
-          <li>Установка</li>
-          <li>Обновление</li>
-          <li>Оптимизация</li>
-        </ul>
+  <main class="container">
+    <!-- HERO -->
+    <section class="hero reveal" id="hero">
+      <div class="hero-content">
+        <h1>Компьютерный<br>мастер</h1>
+        <p>Windows · драйверы · BIOS · OpenWrt · VPN<br>Сборка ПК и любые индивидуальные задачи</p>
+        <a href="#contacts" class="btn">Связаться</a>
       </div>
+    </section>
 
-      <div class="card">
-        <h3>Драйверы</h3>
-        <ul>
-          <li>Установка</li>
-          <li>Настройка</li>
-          <li>Диагностика</li>
-        </ul>
+    <!-- УСЛУГИ -->
+    <section class="services-section">
+      <h2 class="reveal">Услуги</h2>
+      <div class="services-grid">
+        <!-- карточка 1 -->
+        <div class="service-card reveal" style="--i:1;">
+          <div class="service-icon">💿</div>
+          <h3>Установка Windows</h3>
+          <p>Чистая установка, активация, базовая оптимизация под ваше железо.</p>
+        </div>
+        <!-- карточка 2 -->
+        <div class="service-card reveal" style="--i:2;">
+          <div class="service-icon">⚙️</div>
+          <h3>Драйверы и настройка</h3>
+          <p>Подбор, установка и обновление драйверов, тонкая настройка системы.</p>
+        </div>
+        <!-- карточка 3 -->
+        <div class="service-card reveal" style="--i:3;">
+          <div class="service-icon">🧬</div>
+          <h3>Прошивка BIOS</h3>
+          <p>Обновление, настройка параметров, разгон и стабильность.</p>
+        </div>
+        <!-- карточка 4 -->
+        <div class="service-card reveal" style="--i:4;">
+          <div class="service-icon">🌐</div>
+          <h3>Роутеры OpenWrt + VPN</h3>
+          <p>Прошивка, настройка защищённого соединения, WireGuard, OpenVPN.</p>
+        </div>
+        <!-- карточка 5 -->
+        <div class="service-card reveal" style="--i:5;">
+          <div class="service-icon">🖥️</div>
+          <h3>Сборка ПК</h3>
+          <p>Подбор компонентов под бюджет, профессиональная сборка и тестирование.</p>
+        </div>
+        <!-- карточка 6 -->
+        <div class="service-card reveal" style="--i:6;">
+          <div class="service-icon">🔧</div>
+          <h3>Индивидуальные задачи</h3>
+          <p>Нетиповые запросы, консультации, удалённая помощь.</p>
+        </div>
       </div>
+    </section>
 
-      <div class="card">
-        <h3>BIOS</h3>
-        <ul>
-          <li>Прошивка</li>
-          <li>Обновление</li>
-        </ul>
+    <!-- ПРЕИМУЩЕСТВА -->
+    <section style="margin: 80px 0 40px;">
+      <h2 class="reveal">Почему я</h2>
+      <div class="advantages-grid">
+        <div class="advantage-item reveal">
+          <div class="emoji-big">✧</div>
+          <h4>Без лишних слов</h4>
+          <p>Чётко, прозрачно, только по делу.</p>
+        </div>
+        <div class="advantage-item reveal">
+          <div class="emoji-big">⚡</div>
+          <h4>Быстро и аккуратно</h4>
+          <p>Ценю ваше время и технику.</p>
+        </div>
+        <div class="advantage-item reveal">
+          <div class="emoji-big">📊</div>
+          <h4>Подбор под бюджет</h4>
+          <p>Оптимальные решения без переплат.</p>
+        </div>
+        <div class="advantage-item reveal">
+          <div class="emoji-big">💬</div>
+          <h4>Консультация</h4>
+          <p>Объясню сложное простым языком.</p>
+        </div>
       </div>
+    </section>
 
-      <div class="card">
-        <h3>Сети</h3>
-        <ul>
-          <li>OpenWrt</li>
-          <li>VPN</li>
-          <li>Роутеры</li>
-        </ul>
+    <!-- КОНТАКТЫ -->
+    <section id="contacts">
+      <h2 class="reveal">Контакты</h2>
+      <div class="contact-card reveal">
+        <div class="contact-row">
+          <div class="contact-method">
+            <span class="contact-label">Телефон</span>
+            <a href="tel:+79882847709" class="contact-value contact-link">+7 988 284-77-09</a>
+          </div>
+          <div class="contact-method">
+            <span class="contact-label">Telegram</span>
+            <a href="https://t.me/mantas671" target="_blank" rel="noopener noreferrer" class="contact-value contact-link">@mantas671</a>
+          </div>
+        </div>
+        <div class="contact-note">
+          Пиши или звони — всё обсудим, отвечаю быстро.
+        </div>
       </div>
+    </section>
+  </main>
 
-      <div class="card">
-        <h3>Сборка ПК</h3>
-        <ul>
-          <li>Подбор</li>
-          <li>Сборка</li>
-          <li>Консультация</li>
-        </ul>
-      </div>
+  <!-- FOOTER -->
+  <footer class="container">
+    <span>© 2025 Компьютерный мастер</span>
+    <span>Точность · Надёжность · Профессионализм</span>
+  </footer>
 
-      <div class="card">
-        <h3>Индивидуально</h3>
-        <ul>
-          <li>Любые задачи</li>
-          <li>Обсуждение</li>
-        </ul>
-      </div>
+  <!-- минимальный JS для плавного появления при скролле -->
+  <script>
+    (function() {
+      "use strict";
 
-    </div>
-  </section>
+      // Intersection Observer для reveal-анимации
+      const revealElements = document.querySelectorAll('.reveal');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            // можно оставить наблюдение или отключить (опционально)
+            // observer.unobserve(entry.target); 
+          }
+        });
+      }, {
+        threshold: 0.12,
+        rootMargin: '0px 0px -10px 0px'
+      });
 
-  <!-- КОНТАКТЫ -->
-  <section class="contact">
-    <h2>Связь</h2>
+      revealElements.forEach(el => observer.observe(el));
 
-    <div class="contact-box">
-      <a href="tel:+79882847709">📞 +7 988 284-77-09</a>
-      <a href="https://t.me/mantas671" target="_blank">💬 @mantas671</a>
-      <p>Пиши или звони — решим вопрос.</p>
-    </div>
-  </section>
+      // небольшая задержка для уже видимых при загрузке
+      setTimeout(() => {
+        revealElements.forEach(el => {
+          const rect = el.getBoundingClientRect();
+          if (rect.top < window.innerHeight * 0.85) {
+            el.classList.add('visible');
+          }
+        });
+      }, 80);
 
-  <div class="footer">
-    © 2026
-  </div>
+      // плавный скролл для якорных ссылок (на всякий случай, если браузер без smooth)
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          const href = this.getAttribute('href');
+          if (href === "#" || href === "") return;
+          const target = document.querySelector(href);
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        });
+      });
 
-</div>
+      // Добавим небольшую задержку для карточек услуг (индивидуальный индекс уже учтён в style)
+      // Это только для красоты.
+    })();
+  </script>
 
+  <!-- дополнительный мелкий стиль для улучшения отображения на очень широких экранах -->
+  <style>
+    /* лёгкая подстройка */
+    .hero, section {
+      margin-bottom: 40px;
+    }
+    .service-card, .advantage-item, .contact-card {
+      transition: transform 0.25s ease, border-color 0.2s, box-shadow 0.3s, background 0.3s;
+    }
+    /* убираем стандартный подчерк для телефона в некоторых браузерах */
+    a[href^="tel"] {
+      text-decoration: none;
+    }
+    /* аккуратный hover на преимуществах */
+    .advantage-item:hover {
+      background: rgba(30, 45, 65, 0.45);
+      border-color: rgba(255, 255, 255, 0.12);
+      transform: scale(1.01);
+    }
+    /* чтобы кнопка в hero была заметнее */
+    .btn {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+  </style>
 </body>
 </html>
