@@ -6,73 +6,124 @@
 <title>Компьютерный мастер</title>
 
 <style>
-:root {
-  --bg:#0d1117;
-  --card:#161b22;
-  --text:#e6edf3;
-  --muted:#8b949e;
-  --accent:#58a6ff;
+:root{
+  --bg:#0b0b0c;
+  --card:rgba(255,255,255,0.04);
+  --border:rgba(255,255,255,0.08);
+  --text:#f5f5f7;
+  --muted:#9ca3af;
+  --accent:#4ea1ff;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
 
 body{
-  font-family: Arial, sans-serif;
-  background:var(--bg);
+  font-family:-apple-system, BlinkMacSystemFont, "SF Pro Display", Arial, sans-serif;
+  background:linear-gradient(180deg,#0a0a0a,#0f1115);
   color:var(--text);
+  overflow-x:hidden;
 }
 
+/* контейнер */
 .container{
   max-width:1100px;
   margin:auto;
   padding:20px;
 }
 
-h1{
-  font-size:42px;
-  margin-bottom:10px;
-}
-
-h2{
-  margin-bottom:15px;
-}
-
-p{
-  color:var(--muted);
-}
-
+/* HERO */
 .hero{
+  padding:120px 0 80px;
+  text-align:center;
+  animation:fadeUp 1s ease;
+}
+
+.hero h1{
+  font-size:56px;
+  letter-spacing:-1px;
+  margin-bottom:20px;
+}
+
+.hero p{
+  color:var(--muted);
+  font-size:20px;
+  max-width:600px;
+  margin:0 auto 30px;
+}
+
+/* кнопки */
+.btn{
+  display:inline-block;
+  padding:14px 28px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#4ea1ff,#7df9c1);
+  color:#000;
+  font-weight:600;
+  transition:.3s;
+}
+
+.btn:hover{
+  transform:translateY(-3px);
+  box-shadow:0 10px 30px rgba(78,161,255,0.3);
+}
+
+/* секции */
+section{
   padding:60px 0;
 }
 
-.btn{
-  display:inline-block;
-  padding:12px 20px;
-  border-radius:8px;
-  background:var(--accent);
-  color:#000;
-  font-weight:bold;
-  margin-top:15px;
+/* заголовки */
+h2{
+  font-size:34px;
+  margin-bottom:30px;
+  text-align:center;
 }
 
+/* сетка */
 .grid{
   display:grid;
   gap:20px;
-}
-
-.services{
   grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  margin-top:30px;
 }
 
+/* карточки */
 .card{
+  padding:24px;
+  border-radius:20px;
   background:var(--card);
-  padding:20px;
-  border-radius:12px;
+  border:1px solid var(--border);
+  backdrop-filter:blur(20px);
+  transition:.4s;
+  position:relative;
+  overflow:hidden;
+}
+
+.card:hover{
+  transform:translateY(-6px) scale(1.02);
+  border-color:rgba(78,161,255,0.3);
+}
+
+/* свет при наведении */
+.card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at top, rgba(78,161,255,0.15), transparent 60%);
+  opacity:0;
+  transition:.4s;
+}
+
+.card:hover::after{
+  opacity:1;
+}
+
+.card h3{
+  margin-bottom:10px;
+  font-size:20px;
 }
 
 .card ul{
-  margin-top:10px;
+  list-style:none;
   color:var(--muted);
 }
 
@@ -80,88 +131,120 @@ p{
   margin-bottom:6px;
 }
 
-.contacts{
-  margin-top:40px;
+/* контакты */
+.contact{
+  text-align:center;
 }
 
 .contact-box{
+  margin-top:20px;
+  padding:30px;
+  border-radius:20px;
   background:var(--card);
-  padding:20px;
-  border-radius:12px;
-  margin-top:15px;
+  border:1px solid var(--border);
+  backdrop-filter:blur(20px);
 }
 
+.contact a{
+  display:block;
+  margin:10px 0;
+  font-size:18px;
+  transition:.2s;
+}
+
+.contact a:hover{
+  color:var(--accent);
+}
+
+/* футер */
 .footer{
   text-align:center;
-  margin-top:40px;
+  padding:40px 0;
   color:var(--muted);
-  font-size:14px;
 }
 
+/* анимации */
+@keyframes fadeUp{
+  from{
+    opacity:0;
+    transform:translateY(30px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+/* мобилька */
 @media(max-width:600px){
-  h1{font-size:28px;}
+  .hero h1{
+    font-size:34px;
+  }
+  .hero p{
+    font-size:16px;
+  }
 }
 </style>
-
 </head>
+
 <body>
 
 <div class="container">
 
   <!-- HERO -->
-  <section class="hero">
+  <div class="hero">
     <h1>Компьютерный мастер</h1>
-    <p>Установка Windows, драйверы, прошивка BIOS, настройка роутеров и VPN. Без лишнего — быстро и по делу.</p>
-    <a href="tel:+79882847709" class="btn">Позвонить</a>
-  </section>
+    <p>Установка Windows, драйверы, BIOS, OpenWrt и VPN. Аккуратно, без лишних разговоров — просто работает.</p>
+    <a href="tel:+79882847709" class="btn">Связаться</a>
+  </div>
 
   <!-- УСЛУГИ -->
   <section>
     <h2>Услуги</h2>
 
-    <div class="grid services">
+    <div class="grid">
 
       <div class="card">
-        <h3>Windows и ПО</h3>
+        <h3>Windows</h3>
         <ul>
-          <li>Установка Windows</li>
-          <li>Обновление системы</li>
-          <li>Настройка и оптимизация</li>
+          <li>Установка</li>
+          <li>Обновление</li>
+          <li>Оптимизация</li>
         </ul>
       </div>
 
       <div class="card">
-        <h3>Драйверы и железо</h3>
+        <h3>Драйверы</h3>
         <ul>
-          <li>Установка драйверов</li>
-          <li>Настройка комплектующих</li>
-          <li>Диагностика ПК</li>
+          <li>Установка</li>
+          <li>Настройка</li>
+          <li>Диагностика</li>
         </ul>
       </div>
 
       <div class="card">
         <h3>BIOS</h3>
         <ul>
-          <li>Обновление BIOS</li>
-          <li>Прошивка и настройка</li>
+          <li>Прошивка</li>
+          <li>Обновление</li>
         </ul>
       </div>
 
       <div class="card">
-        <h3>Роутеры и сети</h3>
+        <h3>Сети</h3>
         <ul>
-          <li>Прошивка OpenWrt</li>
-          <li>Настройка VPN</li>
-          <li>Оптимизация сети</li>
+          <li>OpenWrt</li>
+          <li>VPN</li>
+          <li>Роутеры</li>
         </ul>
       </div>
 
       <div class="card">
         <h3>Сборка ПК</h3>
         <ul>
-          <li>Помощь в подборе</li>
-          <li>Сборка под задачи</li>
-          <li>Баланс цена/производительность</li>
+          <li>Подбор</li>
+          <li>Сборка</li>
+          <li>Консультация</li>
         </ul>
       </div>
 
@@ -169,8 +252,7 @@ p{
         <h3>Индивидуально</h3>
         <ul>
           <li>Любые задачи</li>
-          <li>Консультации</li>
-          <li>Обсуждается лично</li>
+          <li>Обсуждение</li>
         </ul>
       </div>
 
@@ -178,27 +260,18 @@ p{
   </section>
 
   <!-- КОНТАКТЫ -->
-  <section class="contacts">
+  <section class="contact">
     <h2>Связь</h2>
 
     <div class="contact-box">
-      <p><strong>Телефон:</strong></p>
-      <p><a href="tel:+79882847709">+7 988 284-77-09</a></p>
-
-      <br>
-
-      <p><strong>Telegram:</strong></p>
-      <p><a href="https://t.me/mantas671" target="_blank">@mantas671</a></p>
-
-      <br>
-
-      <p>Пиши или звони — всё обсудим и решим.</p>
+      <a href="tel:+79882847709">📞 +7 988 284-77-09</a>
+      <a href="https://t.me/mantas671" target="_blank">💬 @mantas671</a>
+      <p>Пиши или звони — решим вопрос.</p>
     </div>
   </section>
 
-  <!-- FOOTER -->
   <div class="footer">
-    © 2026 Компьютерный мастер
+    © 2026
   </div>
 
 </div>
