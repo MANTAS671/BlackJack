@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
 <title>CYBER MASTER</title>
 <!-- Google Fonts: Orbitron для футуристического стиля -->
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
@@ -15,8 +15,9 @@
     font-family: 'Roboto', sans-serif;
     color:#e5e7eb;
     overflow-x:hidden;
-    background-color: #05070c; /* глубокий фон, если canvas не загрузится */
+    background-color: #05070c;
     min-height: 100vh;
+    width: 100%;
   }
 
   /* ===== CANVAS (MATRIX RAIN) ===== */
@@ -67,7 +68,7 @@
     border-radius:10px;
   }
 
-  /* ===== HEADER (с улучшенным блюром и неоном) ===== */
+  /* ===== HEADER ===== */
   header{
     position:fixed;
     top: 0;
@@ -105,11 +106,15 @@
     100% { text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 30px #ff00ff; }
   }
 
+  .nav-links {
+    display: flex;
+    gap: 24px;
+  }
+
   .nav a{
     font-family: 'Orbitron', sans-serif;
     color:#9ca3af;
     text-decoration:none;
-    margin-left:24px;
     font-size:14px;
     transition:.25s;
     letter-spacing: 1px;
@@ -118,6 +123,18 @@
   .nav a:hover{
     color:#00ffff;
     text-shadow: 0 0 8px #00ffff;
+  }
+
+  .menu-toggle {
+    display: none;
+    background: none;
+    border: 1px solid #00ffff;
+    color: #00ffff;
+    font-size: 24px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
   }
 
   /* ===== PROGRESS ===== */
@@ -151,38 +168,36 @@
     line-height: 1.2;
     text-transform: uppercase;
     letter-spacing: 2px;
+  }
+
+  /* ✅ ИСПРАВЛЕНИЕ: НОВЫЙ СТАБИЛЬНЫЙ КОНТЕЙНЕР ДЛЯ АНИМАЦИИ */
+  .typewriter-container {
+    min-height: 1.5em; /* Фиксируем высоту, чтобы текст не прыгал */
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
+    justify-content: flex-start; /* Выравнивание по левому краю, как и было */
+    width: 100%;
   }
-  
-  /* Фиксированный контейнер для печатаемого текста, чтобы избежать дергания */
-  .typewriter-wrapper {
-    display: inline-block;
-    min-height: 1.3em;          /* фиксированная минимальная высота по размеру шрифта */
-    vertical-align: middle;
-    line-height: 1.2;
-  }
-  
-  #typewriter-text {
+
+  .typewriter {
+    font-family: 'Orbitron', sans-serif;
     display: inline-block;
     color: #00ffff;
     text-shadow: 0 0 10px #00ffff;
     border-right: 3px solid #ff00ff;
     padding-right: 10px;
-    white-space: nowrap;        /* предотвращаем перенос текста */
+    white-space: nowrap;
+    overflow: hidden;
+    line-height: 1.4;
+    letter-spacing: 1px;
+    animation: blinkCursor 0.8s step-end infinite;
+    width: 0; /* Начальная ширина 0, будет расширяться в анимации */
+    max-width: 100%;
   }
-  
-  /* Курсор может быть отдельно */
-  .cursor {
-    display: inline-block;
-    color: #ff00ff;
-    animation: blink 0.8s infinite;
-    margin-left: 4px;
-  }
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
+
+  @keyframes blinkCursor {
+    0%, 100% { border-color: #ff00ff; }
+    50% { border-color: transparent; }
   }
 
   /* Glitch effect on hover for h1 */
@@ -225,7 +240,7 @@
     display:inline-block;
     padding:14px 30px;
     background:linear-gradient(135deg,#00ffff,#ff00ff);
-    border-radius:0px; /* острые углы для киберпанка */
+    border-radius:0px;
     text-decoration:none;
     color:#05070c;
     font-weight: 700;
@@ -249,7 +264,7 @@
   /* ===== SECTIONS ===== */
   section{margin-bottom:80px}
 
-  /* ===== CARDS (с неоновой подсветкой) ===== */
+  /* ===== CARDS ===== */
   .grid{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
@@ -376,22 +391,66 @@
   body { min-height: 100vh; display: flex; flex-direction: column; }
   .container { flex: 1; }
 
-  /* Адаптивность для меню */
-  @media (max-width: 600px) {
-    .nav { flex-direction: column; gap: 10px; }
-    .nav div { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-    .nav a { margin-left: 0; }
+  /* ===== 📱 АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ ===== */
+  @media (max-width: 768px) {
+    .nav {
+      flex-wrap: wrap;
+    }
+    .nav-links {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      padding: 15px 0;
+    }
+    .nav-links.active {
+      display: flex;
+    }
+    .menu-toggle {
+      display: block;
+    }
     
-    /* Для мобильных: если заголовок слишком длинный, разрешаем перенос, но сохраняем высоту */
-    #typewriter-text {
-      white-space: normal;      /* на мобильных разрешаем перенос */
-      word-break: break-word;
+    h1 {
+      font-size: 32px;
+    }
+    h2 {
+      font-size: 24px;
+    }
+    .hero p {
+      font-size: 1rem;
+    }
+    .btn {
+      padding: 12px 20px;
+      font-size: 13px;
+    }
+    .grid {
+      grid-template-columns: 1fr;
+    }
+    .steps {
+      grid-template-columns: 1fr;
+    }
+    .adv {
+      grid-template-columns: 1fr 1fr;
+    }
+    /* Фикс для анимации на мобильных */
+    .typewriter {
+      font-size: 0.9em;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      padding: 80px 15px 40px;
     }
     h1 {
-      line-height: 1.3;
+      font-size: 28px;
     }
-    .typewriter-wrapper {
-      min-height: calc(1.3em * 2); /* на случай переноса строки даём запас */
+    .logo {
+      font-size: 18px;
+    }
+    .adv {
+      grid-template-columns: 1fr;
     }
   }
 </style>
@@ -405,7 +464,8 @@
 <header>
   <div class="nav">
     <div class="logo">CYBER MASTER</div>
-    <div>
+    <button class="menu-toggle" id="menuToggle">☰</button>
+    <div class="nav-links" id="navLinks">
       <a href="#services">Услуги</a>
       <a href="#process">Процесс</a>
       <a href="#about">Обо мне</a>
@@ -418,8 +478,8 @@
 
 <section class="hero reveal">
   <h1 class="glitch-hover">
-    <span class="typewriter-wrapper">
-      <span id="typewriter-text"></span><span class="cursor">_</span>
+    <span class="typewriter-container">
+      <span class="typewriter" id="typewriter"></span>
     </span>
   </h1>
   <p>
@@ -510,7 +570,8 @@
     if (h > 0) progressBar.style.width = (sc / h) * 100 + "%";
   });
 
-  // ===== TYPING ANIMATION =====
+  // ✅ ИСПРАВЛЕНИЕ: НОВАЯ АНИМАЦИЯ ПЕЧАТИ НА CSS
+  const typewriterElement = document.getElementById('typewriter');
   const textArray = [
     "Компьютерный мастер",
     "Настройка Windows",
@@ -520,35 +581,50 @@
     "Сборка ПК"
   ];
   let textIndex = 0;
-  let charIndex = 0;
-  let isDeleting = false;
-  const typewriterSpan = document.getElementById('typewriter-text');
   
-  function typeEffect() {
+  function animateTypewriter() {
     const currentText = textArray[textIndex];
-    if (isDeleting) {
-      typewriterSpan.textContent = currentText.substring(0, charIndex - 1);
-      charIndex--;
-      if (charIndex === 0) {
-        isDeleting = false;
-        textIndex = (textIndex + 1) % textArray.length;
-      }
-    } else {
-      typewriterSpan.textContent = currentText.substring(0, charIndex + 1);
-      charIndex++;
-      if (charIndex === currentText.length) {
-        isDeleting = true;
-      }
-    }
-    const speed = isDeleting ? 50 : 100;
-    setTimeout(typeEffect, speed);
+    const textLength = currentText.length;
+    
+    // Устанавливаем ширину в ch и текст
+    typewriterElement.textContent = currentText;
+    typewriterElement.style.width = '0';
+    
+    // Принудительный рефлоу
+    void typewriterElement.offsetWidth;
+    
+    // Запускаем анимацию ширины
+    typewriterElement.style.transition = `width ${textLength * 0.1}s steps(${textLength})`;
+    typewriterElement.style.width = `${textLength}ch`;
+    
+    // Ждём завершения анимации и переключаем текст
+    setTimeout(() => {
+      textIndex = (textIndex + 1) % textArray.length;
+      animateTypewriter();
+    }, textLength * 100 + 1500); // Время анимации + пауза
   }
+  
   // Запускаем анимацию печати
-  if (typewriterSpan) {
-    typeEffect();
+  if (typewriterElement) {
+    animateTypewriter();
   }
 
-  // ===== MATRIX RAIN CANVAS =====
+  // Мобильное меню
+  const menuToggle = document.getElementById('menuToggle');
+  const navLinks = document.getElementById('navLinks');
+  if (menuToggle) {
+    menuToggle.addEventListener('click', function() {
+      navLinks.classList.toggle('active');
+    });
+  }
+  // Закрываем меню при клике на ссылку
+  document.querySelectorAll('.nav a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('active');
+    });
+  });
+
+  // ✅ ОПТИМИЗАЦИЯ: MATRIX RAIN CANVAS ДЛЯ МОБИЛЬНЫХ
   const canvas = document.getElementById('bg');
   const ctx = canvas.getContext('2d');
 
@@ -560,19 +636,35 @@
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  // Настройки "дождя"
-  const fontSize = 14;
+  // Определяем, мобильное ли устройство
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+  
+  // Настройки "дождя" с учётом производительности
+  const fontSize = isMobile ? 12 : 14;
   const columns = Math.floor(w / fontSize);
   const drops = [];
-  for (let i = 0; i < columns; i++) {
-    drops[i] = Math.floor(Math.random() * -h / fontSize); // старт с отрицательной позиции
+  
+  // Уменьшаем количество колонок для мобильных
+  const effectiveColumns = isMobile ? Math.min(columns, 30) : columns;
+  for (let i = 0; i < effectiveColumns; i++) {
+    drops[i] = Math.floor(Math.random() * -h / fontSize);
   }
 
   // Символы для дождя (катакана + цифры)
   const chars = "01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン".split("");
 
-  function drawMatrix() {
+  let lastFrameTime = 0;
+  const frameInterval = isMobile ? 50 : 33; // ~20 FPS на мобильных, ~30 FPS на десктопе для плавности
+
+  function drawMatrix(timestamp) {
     if (!ctx) return;
+    
+    // Троттлинг для мобильных
+    if (timestamp - lastFrameTime < frameInterval) {
+      requestAnimationFrame(drawMatrix);
+      return;
+    }
+    lastFrameTime = timestamp;
     
     // Полупрозрачный черный фон для эффекта затухания
     ctx.fillStyle = 'rgba(5, 7, 12, 0.1)';
@@ -592,7 +684,7 @@
       
       ctx.fillStyle = gradient;
       ctx.shadowColor = '#00ffff';
-      ctx.shadowBlur = 10;
+      ctx.shadowBlur = isMobile ? 5 : 10; // Меньше свечения на мобильных для производительности
       
       // Рисуем символ
       ctx.fillText(text, i * fontSize, drops[i] * fontSize);
@@ -612,7 +704,7 @@
     requestAnimationFrame(drawMatrix);
   }
   
-  drawMatrix();
+  requestAnimationFrame(drawMatrix);
 })();
 </script>
 
